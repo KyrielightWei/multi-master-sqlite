@@ -1,5 +1,5 @@
 # multi-master-sqlite
-a prototype of multi-master share-storage database
+A prototype of multi-master share-storage database
 
 ### Basis
 
@@ -16,3 +16,14 @@ a prototype of multi-master share-storage database
 
 + sqlite-src-3280000 分文件版源码（参考用）
 + sqlite-autoconf-3280000 单文件编译版
+
+### Comment Format
+```
+//===============修改编号+起始点
+修改代码
+//===============修改编号+结束点
+```
+### Modify Index
+| 修改编号 | 修改人 | 修改时间 | 修改简述 |
+| ------ | ------ | ------ | ------ |
+| id  | name | date | brief |
