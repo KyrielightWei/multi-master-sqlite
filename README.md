@@ -11,6 +11,8 @@ A prototype of multi-master share-storage database
 + sqlite 源码分析 <http://huili.github.io/>
 + Sqlite3.07.14中文注释源码 <https://github.com/HuiLi/Sqlite3.07.14>
 + grpc 文档 <https://grpc.io/docs/guides/>
++ oltpbench <https://github.com/oltpbenchmark/oltpbench>
++ sqlite JDBC <https://github.com/xerial/sqlite-jdbc>
 
 ### Folder
 
