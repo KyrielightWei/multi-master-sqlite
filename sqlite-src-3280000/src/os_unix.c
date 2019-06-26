@@ -198,8 +198,9 @@ struct UnixUnusedFd {
 ** The unixFile structure is subclass of sqlite3_file specific to the unix
 ** VFS implementations.
 */
+//结构体子类，概念上的子类，包含了sqlite3_file的成员变量
 typedef struct unixFile unixFile;
-struct unixFile {
+struct unixFile {    
   sqlite3_io_methods const *pMethod;  /* Always the first entry */
   sqlite3_vfs *pVfs;                  /* The VFS that created this unixFile */
   unixInodeInfo *pInode;              /* Info about locks on this inode */

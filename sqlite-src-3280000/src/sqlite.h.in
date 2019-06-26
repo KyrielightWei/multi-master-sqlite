@@ -674,6 +674,9 @@ int sqlite3_exec(
 ** [sqlite3_io_methods] object that defines methods for performing
 ** I/O operations on the open file.
 */
+/**
+* 注释：sqlite3_file对象代表了VFS的一个打开文件
+*/
 typedef struct sqlite3_file sqlite3_file;
 struct sqlite3_file {
   const struct sqlite3_io_methods *pMethods;  /* Methods for an open file */

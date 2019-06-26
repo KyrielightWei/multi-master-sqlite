@@ -20,12 +20,34 @@ A prototype of multi-master share-storage database
 + sqlite-autoconf-3280000 单文件编译版
 
 ### Comment Format
+#### Sqlite-autoconf
 ```
-//===============修改编号+起始点
+//===============修改编号+起始
 修改代码
-//===============修改编号+结束点
+//===============修改编号+结束
 ```
-### Modify Index
+#### Sqlite-src
+##### modify
+```
+/*
+* 摘要：
+* 修改人：
+* 修改时间：
+*/
+```
+##### note
+```
+/*
+* 注释：
+*/
+```
+
+### Autoconf Modify Index
 | 修改编号 | 修改人 | 修改时间 | 修改简述 |
 | ------ | ------ | ------ | ------ |
 | id  | name | date | brief |
+
+### Src Modify Index
+| 修改文件 | 修改人 | 修改时间 | 修改简述 |
+| ------ | ------ | ------ | ------ |
+| file_path  | name | date | brief |

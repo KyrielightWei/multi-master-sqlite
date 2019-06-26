@@ -61,6 +61,9 @@
 ** enough to know that calling the developer will not help get rid
 ** of the file.
 */
+/*注释：
+临时文件，存储在OS的标准临时文件目录，在exit前删除
+*/
 #ifndef SQLITE_TEMP_FILE_PREFIX
 # define SQLITE_TEMP_FILE_PREFIX "etilqs_"
 #endif
