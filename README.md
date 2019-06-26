@@ -13,6 +13,7 @@ A prototype of multi-master share-storage database
 + grpc 文档 <https://grpc.io/docs/guides/>
 + oltpbench <https://github.com/oltpbenchmark/oltpbench>
 + sqlite JDBC <https://github.com/xerial/sqlite-jdbc>
++ Google开源项目风格指南-命名约定 <https://zh-google-styleguide.readthedocs.io/en/latest/google-cpp-styleguide/naming/>
 
 ### Folder
 
