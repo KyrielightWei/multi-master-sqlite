@@ -30,7 +30,7 @@ int main() {
 /*
 ** Close a file.
 */
-static int unixClose(sqlite3_file *id){
+static int remoteClose(sqlite3_file *id){
 }
 
 /*
@@ -38,7 +38,7 @@ static int unixClose(sqlite3_file *id){
 ** bytes were read successfully and SQLITE_IOERR if anything goes
 ** wrong.
 */
-static int unixRead(
+static int remoteRead(
   sqlite3_file *id, 
   void *pBuf, 
   int amt,
@@ -49,7 +49,7 @@ static int unixRead(
 ** Write data from a buffer into a file.  Return SQLITE_OK on success
 ** or some other error code on failure.
 */
-static int unixWrite(
+static int remoteWrite(
   sqlite3_file *id, 
   const void *pBuf, 
   int amt,
@@ -59,7 +59,7 @@ static int unixWrite(
 /*
 ** Truncate an open file to a specified size
 */
-static int unixTruncate(sqlite3_file *id, i64 nByte){}
+static int remoteTruncate(sqlite3_file *id, i64 nByte){}
 
 /*
 ** Make sure all writes to a particular file are committed to disk.
@@ -68,7 +68,7 @@ static int unixTruncate(sqlite3_file *id, i64 nByte){}
 ** size, access time, etc) are synced.  If dataOnly!=0 then only the
 ** file data is synced.
 **
-** Under Unix, also make sure that the directory entry for the file
+** Under remote, also make sure that the directory entry for the file
 ** has been created by fsync-ing the directory that contains the file.
 ** If we do not do this and we encounter a power failure, the directory
 ** entry for the journal might not exist after we reboot.  The next
@@ -76,18 +76,18 @@ static int unixTruncate(sqlite3_file *id, i64 nByte){}
 ** the directory entry for the journal was never created) and the transaction
 ** will not roll back - possibly leading to database corruption.
 */
-static int unixSync(sqlite3_file *id, int flags){}
+static int remoteSync(sqlite3_file *id, int flags){}
 
 /*
 ** Determine the current size of a file in bytes
 */
-static int unixFileSize(sqlite3_file *id, i64 *pSize){}
+static int remoteFileSize(sqlite3_file *id, i64 *pSize){}
 
 /*
 * file lock logic
  */
-static int unixLock(sqlite3_file *id, int eFileLock){}
-static int unixUnlock(sqlite3_file *id, int eFileLock){}
+static int remoteLock(sqlite3_file *id, int eFileLock){}
+static int remoteUnlock(sqlite3_file *id, int eFileLock){}
 
 /*
 ** This routine checks if there is a RESERVED lock held on the specified
@@ -95,12 +95,12 @@ static int unixUnlock(sqlite3_file *id, int eFileLock){}
 ** to a non-zero value otherwise *pResOut is set to zero.  The return value
 ** is set to SQLITE_OK unless an I/O error occurs during lock checking.
 */
-static int unixCheckReservedLock(sqlite3_file *id, int *pResOut){}
+static int remoteCheckReservedLock(sqlite3_file *id, int *pResOut){}
 
 /*
 ** Information and control of an open file handle.
 */
-static int unixFileControl(sqlite3_file *id, int op, void *pArg){}
+static int remoteFileControl(sqlite3_file *id, int op, void *pArg){}
 
 /*
 ** Return the sector size in bytes of the underlying block device for
@@ -112,7 +112,7 @@ static int unixFileControl(sqlite3_file *id, int op, void *pArg){}
 ** a database and its journal file) that the sector size will be the
 ** same for both.
 */
-static int unixSectorSize(sqlite3_file *id){}
+static int remoteSectorSize(sqlite3_file *id){}
 
 /*
 ** Return the device characteristics for the file.
@@ -127,7 +127,7 @@ static int unixSectorSize(sqlite3_file *id){}
 **  Hence, while POWERSAFE_OVERWRITE is on by default, there is a file-control
 ** available to turn it off and URI query parameter available to turn it off.
 */
-static int unixDeviceCharacteristics(sqlite3_file *id){}
+static int remoteDeviceCharacteristics(sqlite3_file *id){}
 
 /*
 ** This function is called to obtain a pointer to region iRegion of the 
@@ -148,7 +148,7 @@ static int unixDeviceCharacteristics(sqlite3_file *id){}
 ** address space (if it is not already), *pp is set to point to the mapped 
 ** memory and SQLITE_OK returned.
 */
-static int unixShmMap(
+static int remoteShmMap(
   sqlite3_file *fd,               /* Handle open on database file */
   int iRegion,                    /* Region to retrieve */
   int szRegion,                   /* Size of regions */
@@ -164,7 +164,7 @@ static int unixShmMap(
 ** to shared and back or from unlocked to exclusive and back.  But one may
 ** not go from shared to exclusive or from exclusive to shared.
 */
-static int unixShmLock(
+static int remoteShmLock(
   sqlite3_file *fd,          /* Database file holding the shared memory */
   int ofst,                  /* First lock to acquire or release */
   int n,                     /* Number of locks to acquire or release */
@@ -177,7 +177,7 @@ static int unixShmLock(
 ** All loads and stores begun before the barrier must complete before
 ** any load or store begun after the barrier.
 */
-static void unixShmBarrier(
+static void remoteShmBarrier(
   sqlite3_file *fd                /* Database file holding the shared memory */
 ){}
 
@@ -192,9 +192,9 @@ static void unixShmBarrier(
 ** value of *pp is undefined in this case.
 **
 ** If this function does return a pointer, the caller must eventually 
-** release the reference by calling unixUnfetch().
+** release the reference by calling remoteUnfetch().
 */
-static int unixFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp){}
+static int remoteFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp){}
 
 /*
 ** If the third argument is non-NULL, then this function releases a 
@@ -206,7 +206,7 @@ static int unixFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp){}
 ** to inform the VFS layer that, according to POSIX, any existing mapping 
 ** may now be invalid and should be unmapped.
 */
-static int unixUnfetch(sqlite3_file *fd, i64 iOff, void *p){}
+static int remoteUnfetch(sqlite3_file *fd, i64 iOff, void *p){}
 
  /**
  * End of sqlitefile  function 
