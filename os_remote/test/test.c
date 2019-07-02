@@ -1,9 +1,9 @@
-#      define SQLITE_OS_WIN 0
-#      define SQLITE_OS_UNIX 1
+//#include "sqlite3.h"
 
-#include "sqlite3.h"
+/*gcc test.c -o test -pthread -ldl */
 #include "sqlite3.c"
 
+#include <stdio.h>
 
 int main() {
     #define UNIXVFS(VFSNAME, FINDER) {                        \
@@ -42,7 +42,12 @@ int main() {
     UNIXVFS("unix",          posixIoFinder ),
   };
 
-    printf("%d",aVfs[0].iVersion);
+    printf("%d\n",aVfs[0].iVersion);
+    unixFile fi;
+    int rc = unixOpen(&aVfs[0],"./sqlite3.h",(sqlite3_file*)&fi,0,0);
+    printf("%d\n",fi.h);
 
+
+    printf("%d\n",rc);
     return 0;
 }
