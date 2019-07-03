@@ -34,7 +34,7 @@ GRPC_CPP_PLUGIN_PATH ?= `which $(GRPC_CPP_PLUGIN)`
 
 PROTOS_PATH = ./protos
 
-CLIENT = test_clien
+CLIENT = test_client
 SERVER = test_server
 RPC_NAME = test
 
