@@ -17,6 +17,7 @@
 HOST_SYSTEM = $(shell uname | cut -f 1 -d_)
 SYSTEM ?= $(HOST_SYSTEM)
 CXX = g++
+GCC = gcc
 CPPFLAGS += `pkg-config --cflags protobuf grpc`
 CXXFLAGS += -std=c++11
 ifeq ($(SYSTEM),Darwin)
@@ -37,32 +38,26 @@ PROTOS_PATH = ./protos
 CLIENT = test_client
 SERVER = test_server
 RPC_NAME = test
+REMOTE_TOOL = remote_tool
+CIENT_WRAP = client_wrap
+SERVER_WRAP = server_wrap
+
+CLIENT_PRE = $(RPC_NAME).pb.o $(RPC_NAME).grpc.pb.o $(CLIENT).o $(CLIENT_WRAP).o $(REMOTE_TOOL).o
+SERVER_PRE = $(RPC_NAME).pb.o $(RPC_NAME).grpc.pb.o $(SERVER).o $(SERVER_WRAP).o
+
+show:
+	echo "$(CLIENT_PRE)"
 
 vpath %.proto $(PROTOS_PATH)
 
 all: system-check $(CLIENT) $(SERVER)
 
 
-$(CLIENT): $(RPC_NAME).pb.o $(RPC_NAME).grpc.pb.o $(CLIENT).o
-	$(CXX) $^ $(LDFLAGS) -o $@
+$(CLIENT): $(CLIENT_PRE)
+	$(GCC) $(CLIENT_PRE) $(LDFLAGS) -lstdc++ -o $(CLIENT) 
 
-$(SERVER): $(RPC_NAME).pb.o $(RPC_NAME).grpc.pb.o $(SERVER).o
-	$(CXX) $^ $(LDFLAGS) -o $@
-
-#greeter_client: helloworld.pb.o helloworld.grpc.pb.o greeter_client.o
-#	$(CXX) $^ $(LDFLAGS) -o $@
-
-#greeter_server: helloworld.pb.o helloworld.grpc.pb.o greeter_server.o
-#	$(CXX) $^ $(LDFLAGS) -o $@
-
-#greeter_async_client: helloworld.pb.o helloworld.grpc.pb.o greeter_async_client.o
-#	$(CXX) $^ $(LDFLAGS) -o $@
-
-#greeter_async_client2: helloworld.pb.o helloworld.grpc.pb.o greeter_async_client2.o
-#	$(CXX) $^ $(LDFLAGS) -o $@
-
-#greeter_async_server: helloworld.pb.o helloworld.grpc.pb.o greeter_async_server.o
-#	$(CXX) $^ $(LDFLAGS) -o $@
+$(SERVER): $(SERVER_PRE)
+	$(CXX) $(SERVER_PRE) $(LDFLAGS) -o $(SERVER)
 
 .PRECIOUS: %.grpc.pb.cc
 %.grpc.pb.cc: %.proto
@@ -72,8 +67,14 @@ $(SERVER): $(RPC_NAME).pb.o $(RPC_NAME).grpc.pb.o $(SERVER).o
 %.pb.cc: %.proto
 	$(PROTOC) -I $(PROTOS_PATH) --cpp_out=. $<
 
+$(CLIENT_WRAP).o: $(CLIENT_WRAP).cc
+	$(CXX) -c $(CLIENT_WRAP).cc
+
+$(REMOTE_TOOL).o: $(REMOTE_TOOL).cc
+	$(CXX) -c $(REMOTE_TOOL).cc
+
 clean:
-	rm -f *.o *.pb.cc *.pb.h greeter_client greeter_server greeter_async_client greeter_async_client2 greeter_async_server
+	rm -f *.o *.pb.cc *.pb.h $(CLIENT) $(SERVER)
 
 
 # The following is to test your system and ensure a smoother experience.

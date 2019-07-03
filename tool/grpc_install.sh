@@ -32,9 +32,9 @@ echo 'export LD_LIBRARY_PATH="$PROTOBUF/lib:$GRPC/lib:$LD_LIBRARY_PATH"' >> ~/.b
 
 echo 'export PKG_CONFIG_PATH="$GRPC/lib/pkgconfig:$PROTOBUF/lib/pkgconfig:$PKG_CONFIG_PATH"' >> ~/.bashrc
 
-echo 'export C_INCLUDE_PATH="$GRPC/include/:$C_INCLUDE_PATH"' >> ~/.bashrc
+echo 'export C_INCLUDE_PATH="$GRPC/include/:$PROTOBUF/include:$C_INCLUDE_PATH"' >> ~/.bashrc
 
-echo 'export CPLUS_INCLUDE_PATH="$GRPC/include/:$CPLUS_INCLUDE_PATH"' >> ~/.bashrc
+echo 'export CPLUS_INCLUDE_PATH="$GRPC/include/:$PROTOBUF/include:$CPLUS_INCLUDE_PATH"' >> ~/.bashrc
 
 echo 'export LIBRARY_PATH="$PROTOBUF/lib:$GRPC/lib:$LIBRARY_PATH"' >> ~/.bashrc
 

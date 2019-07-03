@@ -1,4 +1,4 @@
-
+/* 
 #include <iostream>
 #include <memory>
 #include <string>
@@ -8,18 +8,24 @@
 #include <stdio.h>
 #include "sqlite3.c"
 #include "test.grpc.pb.h"
+*/
 
+#include "sqlite3.c"
 
-//#include <iostream>
-
+//#include "remote_tool.h"
+//extern  client_test();
+/* 
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
 using test::Test;
+*/
+
+extern void client_test();
 
 int main()
 {
-  
+   
     #define UNIXVFS(VFSNAME, FINDER) {                        \
     3,                    /* iVersion */                    \
     sizeof(unixFile),     /* szOsFile */                    \
@@ -57,22 +63,6 @@ int main()
     UNIXVFS("unix",          posixIoFinder ),
   };
 
-  
-  //std::unique_ptr<Test::Stub> stub(Test::NewStub(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials())));
-
-  std::unique_ptr<Test::Stub> client_stub = Test::NewStub(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
-  ClientContext context;
-  OpenSend send;
-  OpenReply reply;
-  send.set_vfs_name("unix");
-  send.set_f_path("./test.client.c");
-  std::string infor = "";
-  send.set_file_infor("");
-  send.set_in_flags(0);
-  send.set_out_flags(0);
-
-  client_stub->TestOpen(&context,&send,&reply);
-
-  std::cout << reply.rc()<<std::endl;
+  client_test();
   return 0;
 }
