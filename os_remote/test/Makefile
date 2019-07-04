@@ -33,20 +33,17 @@ PROTOC = protoc
 GRPC_CPP_PLUGIN = grpc_cpp_plugin
 GRPC_CPP_PLUGIN_PATH ?= `which $(GRPC_CPP_PLUGIN)`
 
-PROTOS_PATH = ./protos
+PROTOS_PATH = ./
 
 CLIENT = test_client
 SERVER = test_server
 RPC_NAME = test
-REMOTE_TOOL = remote_tool
-CIENT_WRAP = client_wrap
+CLIENT_WRAP = client_wrap
 SERVER_WRAP = server_wrap
+#ARG_CONVERT = arg_convert
 
-CLIENT_PRE = $(RPC_NAME).pb.o $(RPC_NAME).grpc.pb.o $(CLIENT).o $(CLIENT_WRAP).o $(REMOTE_TOOL).o
-SERVER_PRE = $(RPC_NAME).pb.o $(RPC_NAME).grpc.pb.o $(SERVER).o $(SERVER_WRAP).o
-
-show:
-	echo "$(CLIENT_PRE)"
+CLIENT_PRE :=   $(RPC_NAME).pb.o $(RPC_NAME).grpc.pb.o $(CLIENT).o $(CLIENT_WRAP).o 
+SERVER_PRE = $(RPC_NAME).pb.o $(RPC_NAME).grpc.pb.o $(SERVER).o $(SERVER_WRAP).o 
 
 vpath %.proto $(PROTOS_PATH)
 

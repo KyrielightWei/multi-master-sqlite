@@ -1,5 +1,5 @@
 #include "server_wrap.h"
-#include "sqlite3.c"
+#include "arg_convert.c"
 
 
 #define UNIXVFS(VFSNAME, FINDER) {                        \
@@ -39,9 +39,14 @@
     UNIXVFS("unix",          posixIoFinder ),
   };
 
-int wrapOpen(char * vfs,const char * path,char * file,int in,int * out)
+void wrapOpen(const char * argin,char * argout)
 {
-    unixFile ifile;
-    int rc = unixOpen(&aVfs[0],path,(sqlite3_file *)&ifile,in,out);
-    return rc;
+  char path[512];
+  char file_infor[sizeof(unixFile)];
+  int in_flags;
+  int out_flags;
+  convertCharInToUnixOpen(&aVfs[0],path,(sqlite3_file *)file_infor,&in_flags,&out_flags,argin);
+  int rc = unixOpen(&aVfs[0],path,(sqlite3_file *)file_infor,in_flags,&out_flags);
+  convertUnixOpenToCharOut(argout,(sqlite3_file *)file_infor,&out_flags,&rc);
+  return;
 }

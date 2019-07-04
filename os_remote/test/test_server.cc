@@ -7,7 +7,13 @@ extern "C"
   #include "server_wrap.h"
 }
 #include "test.grpc.pb.h"
-#include <stdio.h>
+//#include <stdio.h>
+
+#include <iostream>
+#include <memory>
+#include <string>
+
+#include <grpcpp/grpcpp.h>
 
 
 using grpc::Server;
@@ -24,16 +30,12 @@ class TestServiceImpl : public Test::Service{
   Status TestOpen(ServerContext* context, const OpenSend* request, OpenReply* response) override
   {
     //ConvertStringToBytes(request->file_infor,*fi,sizeof(unixFile));
-    int out = request->out_flags();
-    std::string fpath = request->f_path();
-    //std::string finfor = 
-    int rc = wrapOpen(NULL,fpath.c_str(),NULL,request->in_flags(),&out);
+    int out_size = request->outlen();
+    const char * in = request->inarg().c_str();
+    char out_struct[out_size];
+    wrapOpen(in,out_struct);
 
-    response->set_rc(rc);
-    //string file_i;
-    //ConvertBytesToString(*fi,file_i,sizeof(unixFile));
-    response->set_file_infor_reply(NULL);
-    response->set_out_flags(out);
+    response->set_outarg(out_struct,out_size);
     return Status::OK;
   }
 };
