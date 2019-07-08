@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package os_remote;
+
+
+service OSRemote {
+  rpc Init (InitRequest) returns (InitReply) {
+  }
+  rpc Open(ArgRequest) returns (ArgReply){
+  }
+  rpc Delete(ArgRequest) returns (ArgReply){
+  }
+}
+
+message InitRequest {
+}
+message InitReply {
+  bytes rc = 1;
+}
+
+message ArgRequest{
+    bytes inarg = 1;
+    uint32 outlen = 2;
+}
+message ArgReply {
+  bytes outarg = 1;
+}
+//message OpenRequest {
+//  bytes inarg = 1;
+//  uint32 outlen = 2;
+//}
+//
+//message OpenReply {
+//  bytes outarg = 1;
+//}
+//message DeleteRequest {
+//  bytes inarg = 1;
+//  uint32 outlen = 2;
+//}
+//
+//message DeleteReply {
+//  bytes outarg = 1;
+//}
