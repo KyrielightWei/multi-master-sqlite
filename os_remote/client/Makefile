@@ -1,6 +1,4 @@
 CXXFLAGS += -std=c++11
-HOME = /home/rrzhang
-#LDFLAGS += -L$(HOME)/.local/protobuf/lib/ -lprotobuf -L$(HOME)/.local/grpc/lib -lprotobuf -lgrpc++ -lgrpc -lgrpc++_reflection -Wl,--as-needed -lpthread -ldl
 LDFLAGS += -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl
 
 
@@ -27,4 +25,4 @@ vpath %.proto ./
 	$(PROTOC) -I ./ --cpp_out=. $<
 
 clean:
-	rm -f *.o client *.pb.h *.pb.cc
+	rm -f *.o client *.pb.cc *.pb.h

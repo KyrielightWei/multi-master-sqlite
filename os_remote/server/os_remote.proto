@@ -4,18 +4,34 @@ package os_remote;
 
 
 service OSRemote {
-    rpc Init (InitRequest) returns (InitReply) {
-    }
-    rpc Open(ArgRequest) returns (ArgReply){
-    }
-    rpc Delete(ArgRequest) returns (ArgReply){
-    }
+  rpc Init (InitRequest) returns (InitReply) {
+  }
+  rpc Open(ArgRequest) returns (ArgReply){
+  }
+  rpc Delete(ArgRequest) returns (ArgReply){
+  }
+  rpc Access(ArgRequest) returns (ArgReply){
+  }
+  rpc FullPathname(ArgRequest) returns (ArgReply){
+  }
+  rpc Randomness(ArgRequest) returns (ArgReply){
+  }
+  rpc Sleep(ArgRequest) returns (ArgReply) {
+  }
+  rpc CurrentTime(ArgRequest) returns (ArgReply){
+  }
+  rpc GetLastError(ArgRequest) returns (ArgReply){
+  }
+  rpc CurrentTimeInt64(ArgRequest) returns (ArgReply){
+  }
+  rpc Write(ArgRequest) returns (ArgReply){
+  }
 }
 
 message InitRequest {
 }
 message InitReply {
-    bytes rc = 1;
+  bytes rc = 1;
 }
 
 message ArgRequest{
@@ -23,5 +39,21 @@ message ArgRequest{
     uint32 outlen = 2;
 }
 message ArgReply {
-    bytes outarg = 1;
+  bytes outarg = 1;
 }
+//message OpenRequest {
+//  bytes inarg = 1;
+//  uint32 outlen = 2;
+//}
+//
+//message OpenReply {
+//  bytes outarg = 1;
+//}
+//message DeleteRequest {
+//  bytes inarg = 1;
+//  uint32 outlen = 2;
+//}
+//
+//message DeleteReply {
+//  bytes outarg = 1;
+//}

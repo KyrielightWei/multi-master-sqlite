@@ -161,229 +161,348 @@ void unixDeleteConvertArgOutToChar(      //server
     memcpy(&arg_struct->rc, pRC, sizeof(int));
 }
 
-///************** funtion unixAccess *****************************************/
-//
-//struct ArgInUnixAccess {
-//    char path[512];
-//    int flags;
-//    int pResOut;
-//};
-//typedef struct ArgInUnixAccess ArgInUnixAccess;
-//struct ArgOutUnixAccess {
-//    int pResOut;
-//    int rc;
-//};
-//typedef struct ArgOutUnixAccess ArgOutUnixAccess;
-//
-//void unixAccessConvertArgInToChar(  // client
-//        sqlite3_vfs *NotUsed,   /* The VFS containing this xAccess method */
-//        const char *zPath,      /* Path of the file to examine */
-//        int flags,              /* What do we want to learn about the zPath file? */
-//        int *pResOut,
-//        char *arg
-//) {
-//    ArgInUnixAccess *arg_struct = (ArgInUnixAccess *) arg;
-//    strcpy(arg_struct->path, zPath);
-//    arg_struct->flags = flags;
-//    arg_struct->pResOut = *pResOut;
-//};
-//void unixAccessConvertCharToArgOut(        // client
-//        const char *arg,
-//        int *pResOut,
-//        int *pRc
-//) {
-//    ArgOutUnixAccess *arg_struct = (ArgOutUnixAccess *) arg;
-//    memcpy(pResOut, &arg_struct->pResOut, sizeof(int));
-//    memcpy(pRc, &arg_struct->rc, sizeof(int));
-//}
-//void unixAccessConvertCharToArgIn(         // server
-//        const char *arg,
-//        sqlite3_vfs *NotUsed,   /* The VFS containing this xAccess method */
-//        char *zPath,      /* Path of the file to examine */
-//        int *flags,              /* What do we want to learn about the zPath file? */
-//        int *pResOut
-//) {
-//    ArgInUnixAccess *arg_struct = (ArgInUnixAccess *) arg;
-//    strcpy(zPath, arg_struct->path);
-//    memcpy(flags, &arg_struct->flags, sizeof(int));
-//    memcpy(pResOut, &arg_struct->pResOut, sizeof(int));
-//}
-//void unixAccessConvertArgOutToChar(          // server
-//        int *pResOut,
-//        int *pRc,
-//        char *arg
-//) {
-//    ArgOutUnixAccess *arg_struct = (ArgOutUnixAccess *) arg;
-//    memcpy(&arg_struct->pResOut, pResOut, sizeof(int));
-//    memcpy(&arg_struct->rc, pRc, sizeof(int));
-//}
-//
-///************** funtion unixFullPathname *****************************************/
-////sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-////const char *zPath,            /* Possibly relative input path */
-////int nOut,                     /* Size of output buffer in bytes */
-////char *zOut
-//
-//struct ArgInUnixFullPathname {
-//    char path[512];
-//    int nOut;
-//    char zOut[512];
-//};
-//typedef struct ArgInUnixFullPathname ArgInUnixFullPathname;
-//struct ArgOutUnixFullPathname {
-//    char zOut[512];
-//    int rc;
-//};
-//typedef struct ArgOutUnixFullPathname ArgOutUnixFullPathname;
-//
-//void unixFullPathnameConvertArgInToChar(// client
-//        sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-//        const char *zPath,            /* Possibly relative input path */
-//        int nOut,                     /* Size of output buffer in bytes */
-//        char *zOut,
-//        char *arg
-//) {
-//    ArgInUnixFullPathname *arg_struct = (ArgInUnixFullPathname *) arg;
-//    strcpy(arg_struct->path, zPath);
-//    arg_struct->nOut = nOut;
-//    strcpy(arg_struct->zOut, zOut);
-//}
-//void unixFullPathnameConvertCharToArgOut( // client
-//        const char *arg,
-//        char *zOut,
-//        int *pRc,
-//) {
-//    ArgOutUnixFullPathname *arg_struct = (ArgOutUnixFullPathname *) arg;
-//    strcpy(zOut, arg_struct->zOut);
-//    memcpy(pRc, &arg_struct->rc);
-//}
-//void unixFullPathnameConvertCharToArgIn( // server
-//        const char *arg,
-//        sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-//        char *zPath,            /* Possibly relative input path */
-//        int *nOut,                     /* Size of output buffer in bytes */
-//        char *zOut
-//) {
-//    ArgInUnixFullPathname *arg_struct = (ArgInUnixFullPathname *) arg;
-//    strcpy(zPath, arg_struct->path);
-//    memcpy(nOut, &arg_struct->nOut, sizeof(int));
-//    memcpy(zOut, &arg_struct->zOut, sizeof(int));
-//}
-//void unixFullPathnameConvertArgOutToChar( //server
-//        char *zOut,
-//        int *pRc,
-//        char *arg
-//) {
-//    ArgOutUnixFullPathname *arg_struct = (ArgOutUnixFullPathname *) arg;
-//    strcpy(arg_struct->zOut, zOut);
-//    memcpy(&arg_struct->rc, pRc, sizeof(int));
-//}
-//
-///************** funtion unixRandomness *****************************************/
-////unixRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf)
-//
-//struct ArgInUnixRandomness {
-//    int nBuf;
-//    char zBuf[512];
-//};
-//typedef struct ArgInUnixRandomness ArgInUnixRandomness;
-//struct ArgOutUnixRandomness {
-//    char zBuf[512];
-//    int rc;
-//};
-//typedef struct ArgOutUnixRandomness ArgOutUnixRandomness;
-//
-//void nameConvertArgInToChar(sqlite3_vfs *NotUsed, int nBuf, char *zBuf, char *arg) {
-//    ArgInUnixRandomness *arg_struct = (ArgInUnixRandomness *) arg;
-//    arg_struct->nBuf = nBuf;
-//    strcpy(arg_struct->zBuf, zBuf);
-//}
-//void nameConvertCharToArgOut(const char *arg, char *zBuf, int *rc) {
-//    ArgOutUnixRandomness *arg_struct = (ArgInUnixRandomness *) arg;
-//    strcpy(zBuf, arg_struct->zBuf);
-//    memcpy(rc, &arg_struct->rc, sizeof(int));
-//}
-//void nameConvertCharToArgIn(const char *arg, sqlite3_vfs *NotUsed, int *nBuf, char *zBuf) {
-//    ArgInUnixRandomness *arg_struct = (ArgInUnixRandomness *) arg;
-//    memcpy(nBuf, &arg_struct->zBuf, sizeof(int));
-//    strcpy(zBuf, arg_struct->zBuf);
-//}
-//void nameConvertArgOutToChar(char *zBuf, int *rc, char *arg) {
-//    ArgOutUnixRandomness *arg_struct = (ArgInUnixRandomness *) arg;
-//    strcpy(arg_struct->zBuf, zBuf)
-//    memcpy(&arg_struct->rc, rc, sizeof(int));
-//}
-//
-///************** funtion unixSleep *****************************************/
-////int unixSleep(sqlite3_vfs *NotUsed, int microseconds)
-//struct ArgInUnixSleep {
-//    int microseconds;
-//};
-//typedef struct ArgInUnixSleep ArgInUnixSleep;
-//struct ArgOutUnixSleep {
-//    int rc;
-//};
-//typedef struct ArgOutUnixSleep ArgOutUnixSleep;
-//
-//void unixSleepConvertArgInToChar(sqlite3_vfs *NotUsed, int microseconds, char *arg) {
-//    ArgInUnixSleep *arg_struct = (ArgInUnixSleep *) arg;
-//    arg_struct->microseconds = microseconds;
-//
-//}
-//void unixSleepConvertCharToArgOut(const char *arg, int *pRc) {
-//    ArgOutUnixSleep *arg_struct = (ArgOutUnixSleep *) arg;
-//    memcpy(pRc, &arg_struct->rc, sizeof(int));
-//}
-//void unixSleepConvertCharToArgIn(const char *arg, sqlite3_vfs *NotUsed, int *microseconds) {
-//    ArgInUnixSleep *arg_struct = (ArgInUnixSleep *) arg;
-//    memcpy(microseconds, &arg_struct->microseconds, sizeof(int));
-//
-//}
-//void unixSleepConvertArgOutToChar(int *pRc, char *arg) {
-//    ArgOutUnixSleep *arg_struct = (ArgOutUnixSleep *) arg;
-//    memcpy(pRc, &arg_struct->rc, sizeof(int));
-//}
-//
-///************** funtion unixCurrentTime *****************************************/
-////int unixCurrentTime(sqlite3_vfs *NotUsed, double *prNow)
-//struct ArgInUnixCurrentTime {
-//    double prNow;
-//};
-//typedef struct ArgInUnixCurrentTime ArgInUnixCurrentTime;
-//struct ArgOutUnixCurrentTime {
-//    double prNow;
-//    int rc;
-//};
-//typedef struct ArgOutUnixCurrentTime ArgOutUnixCurrentTime;
-//
-//void nameConvertArgInToChar(sqlite3_vfs *NotUsed, double *prNow, char *arg) {
-//    ArgInUnixCurrentTime *arg_struct = (ArgInUnixCurrentTime *) arg;
-//    memcpy(&arg_struct->prNow, prNow, sizeof(int));
-//}
-//void nameConvertCharToArgOut(const char *arg, double *prNow, int *pRc) {
-//    ArgOutUnixCurrentTime *arg_struct = (struct ArgOutUnixCurrentTime *) arg;
-//    memcpy(prNow, &arg_struct->prNow, sizeof(double));
-//    memcpy(pRc, &arg_struct->rc, sizeof(int));
-//}
-//void nameConvertCharToArgIn(const char *arg, sqlite3_vfs *NotUsed, double *prNow) {
-//    ArgInUnixCurrentTime *arg_struct = (ArgInUnixCurrentTime *) arg;
-//    memcpy(prNow, &arg_struct->prNow, sizeof(double));
-//}
-//void nameConvertArgOutToChar(double *prNow, int *pRc, char *arg) {
-//    ArgOutUnixCurrentTime *arg_struct = (struct ArgOutUnixCurrentTime *) arg;
-//    memcpy(&arg_struct->prNow, prNow, sizeof(double));
-//    memcpy(&arg_struct->rc, pRc, sizeof(int));
-//}
-//
-///************** funtion unixGetLastError *****************************************/
-//struct ArgInUnixGetLastError {
-//
-//};
-//typedef struct ArgInUnixGetLastError ArgInUnixGetLastError;
-//struct ArgOutUnixGetLastError {
-//    int rc;
-//};
-//typedef struct ArgOutUnixGetLastError ArgOutUnixGetLastError;
+/************** funtion unixAccess *****************************************/
+struct ArgInUnixAccess {
+    char path[512];
+    int flags;
+    int pResOut;
+};
+typedef struct ArgInUnixAccess ArgInUnixAccess;
+struct ArgOutUnixAccess {
+    int pResOut;
+    int rc;
+};
+typedef struct ArgOutUnixAccess ArgOutUnixAccess;
+
+void unixAccessConvertArgInToChar(  // client
+        sqlite3_vfs *NotUsed,   /* The VFS containing this xAccess method */
+        const char *zPath,      /* Path of the file to examine */
+        int flags,              /* What do we want to learn about the zPath file? */
+        int *pResOut,
+        char *arg
+) {
+    ArgInUnixAccess *arg_struct = (ArgInUnixAccess *) arg;
+    strcpy(arg_struct->path, zPath);
+    arg_struct->flags = flags;
+    arg_struct->pResOut = *pResOut;
+};
+void unixAccessConvertCharToArgOut(        // client
+        const char *arg,
+        int *pResOut,
+        int *pRc
+) {
+    ArgOutUnixAccess *arg_struct = (ArgOutUnixAccess *) arg;
+    memcpy(pResOut, &arg_struct->pResOut, sizeof(int));
+    memcpy(pRc, &arg_struct->rc, sizeof(int));
+}
+void unixAccessConvertCharToArgIn(         // server
+        const char *arg,
+        sqlite3_vfs *NotUsed,   /* The VFS containing this xAccess method */
+        char *zPath,      /* Path of the file to examine */
+        int *flags,              /* What do we want to learn about the zPath file? */
+        int *pResOut
+) {
+    ArgInUnixAccess *arg_struct = (ArgInUnixAccess *) arg;
+    strcpy(zPath, arg_struct->path);
+    memcpy(flags, &arg_struct->flags, sizeof(int));
+    memcpy(pResOut, &arg_struct->pResOut, sizeof(int));
+}
+void unixAccessConvertArgOutToChar(          // server
+        int *pResOut,
+        int *pRc,
+        char *arg
+) {
+    ArgOutUnixAccess *arg_struct = (ArgOutUnixAccess *) arg;
+    memcpy(&arg_struct->pResOut, pResOut, sizeof(int));
+    memcpy(&arg_struct->rc, pRc, sizeof(int));
+}
+
+/************** funtion unixFullPathname *****************************************/
+//sqlite3_vfs *pVfs,            /* Pointer to vfs object */
+//const char *zPath,            /* Possibly relative input path */
+//int nOut,                     /* Size of output buffer in bytes */
+//char *zOut
+
+struct ArgInUnixFullPathname {
+    char path[512];
+    int nOut;
+    char zOut[512];
+};
+typedef struct ArgInUnixFullPathname ArgInUnixFullPathname;
+struct ArgOutUnixFullPathname {
+    char zOut[512];
+    int rc;
+};
+typedef struct ArgOutUnixFullPathname ArgOutUnixFullPathname;
+
+void unixFullPathnameConvertArgInToChar(// client
+        sqlite3_vfs *pVfs,            /* Pointer to vfs object */
+        const char *zPath,            /* Possibly relative input path */
+        int nOut,                     /* Size of output buffer in bytes */
+        char *zOut,
+        char *arg
+) {
+    ArgInUnixFullPathname *arg_struct = (ArgInUnixFullPathname *) arg;
+    strcpy(arg_struct->path, zPath);
+    arg_struct->nOut = nOut;
+    strcpy(arg_struct->zOut, zOut);
+}
+void unixFullPathnameConvertCharToArgOut( // client
+        const char *arg,
+        char *zOut,
+        int *pRc
+) {
+    ArgOutUnixFullPathname *arg_struct = (ArgOutUnixFullPathname *) arg;
+    strcpy(zOut, arg_struct->zOut);
+    memcpy(pRc, &arg_struct->rc, sizeof(int));
+}
+void unixFullPathnameConvertCharToArgIn( // server
+        const char *arg,
+        sqlite3_vfs *pVfs,            /* Pointer to vfs object */
+        char *zPath,            /* Possibly relative input path */
+        int *nOut,                     /* Size of output buffer in bytes */
+        char *zOut
+) {
+    ArgInUnixFullPathname *arg_struct = (ArgInUnixFullPathname *) arg;
+    strcpy(zPath, arg_struct->path);
+    memcpy(nOut, &arg_struct->nOut, sizeof(int));
+    strcpy(zOut, arg_struct->zOut);
+}
+void unixFullPathnameConvertArgOutToChar( //server
+        char *zOut,
+        int *pRc,
+        char *arg
+) {
+    ArgOutUnixFullPathname *arg_struct = (ArgOutUnixFullPathname *) arg;
+    strcpy(arg_struct->zOut, zOut);
+    memcpy(&arg_struct->rc, pRc, sizeof(int));
+}
+
+/************** funtion unixRandomness *****************************************/
+//unixRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf)
+
+struct ArgInUnixRandomness {
+    int nBuf;
+    char zBuf[256];
+};
+typedef struct ArgInUnixRandomness ArgInUnixRandomness;
+struct ArgOutUnixRandomness {
+    char zBuf[256];
+    int rc;
+};
+typedef struct ArgOutUnixRandomness ArgOutUnixRandomness;
+
+void unixRandomnessConvertArgInToChar(sqlite3_vfs *NotUsed, int nBuf, char *zBuf, char *arg) {
+    ArgInUnixRandomness *arg_struct = (ArgInUnixRandomness *) arg;
+    arg_struct->nBuf = nBuf;
+    strcpy(arg_struct->zBuf, zBuf);
+}
+void unixRandomnessConvertCharToArgOut(const char *arg, char *zBuf, int *rc) {
+    ArgOutUnixRandomness *arg_struct = (ArgOutUnixRandomness *) arg;
+    strcpy(zBuf, arg_struct->zBuf);
+    memcpy(rc, &arg_struct->rc, sizeof(int));
+}
+void unixRandomnessConvertCharToArgIn(const char *arg, sqlite3_vfs *NotUsed, int *nBuf, char *zBuf) {
+    ArgInUnixRandomness *arg_struct = (ArgInUnixRandomness *) arg;
+    memcpy(nBuf, &arg_struct->zBuf, sizeof(int));
+    strcpy(zBuf, arg_struct->zBuf);
+}
+void unixRandomnessConvertArgOutToChar(char *zBuf, int *rc, char *arg) {
+    ArgOutUnixRandomness *arg_struct = (ArgOutUnixRandomness *) arg;
+    strcpy(arg_struct->zBuf, zBuf);
+    memcpy(&arg_struct->rc, rc, sizeof(int));
+}
+
+/************** funtion unixSleep *****************************************/
+//int unixSleep(sqlite3_vfs *NotUsed, int microseconds)
+struct ArgInUnixSleep {
+    int microseconds;
+};
+typedef struct ArgInUnixSleep ArgInUnixSleep;
+struct ArgOutUnixSleep {
+    int rc;
+};
+typedef struct ArgOutUnixSleep ArgOutUnixSleep;
+
+void unixSleepConvertArgInToChar(sqlite3_vfs *NotUsed, int microseconds, char *arg) {
+    ArgInUnixSleep *arg_struct = (ArgInUnixSleep *) arg;
+    arg_struct->microseconds = microseconds;
+
+}
+void unixSleepConvertCharToArgOut(const char *arg, int *pRc) {
+    ArgOutUnixSleep *arg_struct = (ArgOutUnixSleep *) arg;
+    memcpy(pRc, &arg_struct->rc, sizeof(int));
+}
+void unixSleepConvertCharToArgIn(const char *arg, sqlite3_vfs *NotUsed, int *microseconds) {
+    ArgInUnixSleep *arg_struct = (ArgInUnixSleep *) arg;
+    memcpy(microseconds, &arg_struct->microseconds, sizeof(int));
+
+}
+void unixSleepConvertArgOutToChar(int *pRc, char *arg) {
+    ArgOutUnixSleep *arg_struct = (ArgOutUnixSleep *) arg;
+    memcpy(pRc, &arg_struct->rc, sizeof(int));
+}
+
+/************** funtion unixCurrentTime *****************************************/
+//int unixCurrentTime(sqlite3_vfs *NotUsed, double *prNow)
+struct ArgInUnixCurrentTime {
+    double prNow;
+};
+typedef struct ArgInUnixCurrentTime ArgInUnixCurrentTime;
+struct ArgOutUnixCurrentTime {
+    double prNow;
+    int rc;
+};
+typedef struct ArgOutUnixCurrentTime ArgOutUnixCurrentTime;
+
+void unixCurrentTimeConvertArgInToChar(sqlite3_vfs *NotUsed, double *prNow, char *arg) {
+    ArgInUnixCurrentTime *arg_struct = (ArgInUnixCurrentTime *) arg;
+    arg_struct->prNow = *prNow;
+}
+void unixCurrentTimeConvertCharToArgOut(const char *arg, double *prNow, int *pRc) {
+    ArgOutUnixCurrentTime *arg_struct = (ArgOutUnixCurrentTime *) arg;
+    memcpy(prNow, &arg_struct->prNow, sizeof(double));
+    memcpy(pRc, &arg_struct->rc, sizeof(int));
+}
+void unixCurrentTimeConvertCharToArgIn(const char *arg, sqlite3_vfs *NotUsed, double *prNow) {
+    ArgInUnixCurrentTime *arg_struct = (ArgInUnixCurrentTime *) arg;
+    memcpy(prNow, &arg_struct->prNow, sizeof(double));
+}
+void unixCurrentTimeConvertArgOutToChar(double *prNow, int *pRc, char *arg) {
+    ArgOutUnixCurrentTime *arg_struct = (ArgOutUnixCurrentTime *) arg;
+    memcpy(&arg_struct->prNow, prNow, sizeof(double));
+    memcpy(&arg_struct->rc, pRc, sizeof(int));
+}
+
+/************** funtion unixGetLastError *****************************************/
+//static int unixGetLastError(sqlite3_vfs *NotUsed, int NotUsed2, char *NotUsed3){
+struct ArgInUnixGetLastError {
+    int NotUsed2;
+    char NotUsed3[2];
+};
+typedef struct ArgInUnixGetLastError ArgInUnixGetLastError;
+struct ArgOutUnixGetLastError {
+    int rc_errno;
+};
+typedef struct ArgOutUnixGetLastError ArgOutUnixGetLastError;
+
+void unixGetLastErrorConvertArgInToChar(sqlite3_vfs *NotUsed, int NotUsed2, char *NotUsed3, char *arg) {
+    ArgInUnixGetLastError *arg_struct = (ArgInUnixGetLastError *) arg;
+    arg_struct->NotUsed2 = NotUsed2;
+    strcpy(arg_struct->NotUsed3, NotUsed3);
+}
+void unixGetLastErrorConvertCharToArgOut(const char *arg, int *pRc_errno) {
+    ArgOutUnixGetLastError *arg_struct = (ArgOutUnixGetLastError *) arg;
+    memcpy(pRc_errno, &arg_struct->rc_errno, sizeof(int));
+}
+void unixGetLastErrorConvertCharToArgIn(const char *arg, sqlite3_vfs *NotUsed, int *NotUsed2, char *NotUsed3) {
+    ArgInUnixGetLastError *arg_struct = (ArgInUnixGetLastError *) arg;
+    memcpy(NotUsed2, &arg_struct->NotUsed2, sizeof(int));
+    strcpy(NotUsed3, arg_struct->NotUsed3);
+}
+void unixGetLastErrorConvertArgOutToChar(int *pRc_errno, char *arg) {
+    ArgOutUnixGetLastError *arg_struct = (ArgOutUnixGetLastError *) arg;
+    memcpy(&arg_struct->rc_errno, pRc_errno, sizeof(int));
+}
 
 
+/************** funtion unixCurrentTimeInt64 *****************************************/
+//static int unixCurrentTimeInt64(sqlite3_vfs *NotUsed, sqlite3_int64 *piNow)
+struct ArgInCurrentTimeInt64 {
+    sqlite3_int64 piNow;
+};
+typedef struct ArgInCurrentTimeInt64 ArgInCurrentTimeInt64;
 
+struct ArgOutCurrentTimeInt64 {
+    sqlite3_int64 piNow;
+    int rc;
+};
+typedef struct ArgOutCurrentTimeInt64 ArgOutCurrentTimeInt64;
+
+void unixCurrentTimeInt64ConvertArgInToChar(sqlite3_vfs *NotUsed, sqlite3_int64 *piNow, char *arg) {
+    ArgInCurrentTimeInt64 *arg_struct = (ArgInCurrentTimeInt64 *) arg;
+    arg_struct->piNow = *piNow;
+}
+void unixCurrentTimeInt64ConvertCharToArgOut(const char *arg, sqlite3_int64 *piNow, int *pRc) {
+    ArgOutCurrentTimeInt64 *arg_struct = (ArgOutCurrentTimeInt64 *) arg;
+    memcpy(piNow, &arg_struct->piNow, sizeof(sqlite3_int64));
+    memcpy(pRc, &arg_struct->rc, sizeof(sqlite3_int64));
+}
+void unixCurrentTimeInt64ConvertCharToArgIn(const char *arg, sqlite3_vfs *NotUsed, sqlite3_int64 *piNow) {
+    ArgInCurrentTimeInt64 *arg_struct = (ArgInCurrentTimeInt64 *) arg;
+    memcpy(piNow, &arg_struct->piNow, sizeof(sqlite3_int64));
+}
+void unixCurrentTimeInt64ConvertArgOutToChar(sqlite3_int64 *piNow, int *pRc, char *arg) {
+    ArgOutCurrentTimeInt64 *arg_struct = (ArgOutCurrentTimeInt64 *) arg;
+    memcpy(&arg_struct->piNow, piNow, sizeof(sqlite3_int64));
+    memcpy(&arg_struct->rc, pRc, sizeof(int));
+}
+/************** funtion unixWrite *****************************************/
+//static int unixWrite(
+//        sqlite3_file *id,
+//        const void *pBuf,
+//        int amt,
+//        sqlite3_int64 offset
+//)
+struct ArgInWrite {
+    char file_infor[sizeof(unixFile)];
+    char pBuf[8192];
+    int amt;
+    sqlite3_int64 offset;
+};
+typedef struct ArgInWrite ArgInWrite;
+
+struct ArgOutWrite {
+    char file_infor[sizeof(unixFile)];
+    char pBuf[8192];
+    int rc;
+};
+typedef struct ArgOutWrite ArgOutWrite;
+
+void unixWriteConvertArgInToChar(
+        sqlite3_file *id,
+        char *pBuf,
+        int amt,
+        sqlite3_int64 offset,
+        char *arg) {
+    ArgInWrite *arg_struct = (ArgInWrite *) arg;
+    memcpy(arg_struct->file_infor, id, sizeof(unixFile));
+    strcpy(arg_struct->pBuf, pBuf);
+    arg_struct->amt = amt;
+    arg_struct->offset = offset;
+}
+void unixWriteConvertCharToArgOut(
+        const char *arg,
+        sqlite3_file *id,
+        char *pBuf,
+        int *pRc
+) {
+    ArgOutWrite *arg_struct = (ArgOutWrite *) arg;
+    memcpy(id, arg_struct->file_infor, sizeof(unixFile));
+    strcpy(pBuf, arg_struct->pBuf);
+    memcpy(pRc, &arg_struct->rc, sizeof(int));
+}
+void unixWriteConvertCharToArgIn(
+        const char *arg,
+        sqlite3_file *id,
+        char *pBuf,
+        int *amt,
+        sqlite3_int64 *offset
+) {
+    ArgInWrite *arg_struct = (ArgInWrite *) arg;
+    memcpy(id, arg_struct->file_infor, sizeof(unixFile));
+    strcpy(pBuf, arg_struct->pBuf);
+    memcpy(amt, &arg_struct->amt, sizeof(int));
+    memcpy(offset, &arg_struct->offset, sizeof(sqlite3_int64));
+}
+void unixWriteConvertArgOutToChar(
+        sqlite3_file *id,
+        char *pBuf,
+        int *pRc,
+        char *arg
+) {
+    ArgOutWrite *arg_struct = (ArgOutWrite *) arg;
+    memcpy(arg_struct->file_infor, id, sizeof(unixFile));
+    strcpy(arg_struct->pBuf, pBuf);
+    memcpy(&arg_struct->rc, pRc, sizeof(int));
+}

@@ -10,6 +10,22 @@ service OSRemote {
   }
   rpc Delete(ArgRequest) returns (ArgReply){
   }
+  rpc Access(ArgRequest) returns (ArgReply){
+  }
+  rpc FullPathname(ArgRequest) returns (ArgReply){
+  }
+  rpc Randomness(ArgRequest) returns (ArgReply){
+  }
+  rpc Sleep(ArgRequest) returns (ArgReply) {
+  }
+  rpc CurrentTime(ArgRequest) returns (ArgReply){
+  }
+  rpc GetLastError(ArgRequest) returns (ArgReply){
+  }
+  rpc CurrentTimeInt64(ArgRequest) returns (ArgReply){
+  }
+  rpc Write(ArgRequest) returns (ArgReply){
+  }
 }
 
 message InitRequest {
