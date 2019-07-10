@@ -6,6 +6,13 @@
 + 以os_remote_开头：正式的VFS代码文件，暂时只包含了代码格式注释，后续根据开发进度整合添加代码实现
 + test_example: open函数的测试样例 (转换函数命名不太好，正式编写参考——转换函数命名)
 
+## 不进行remote变更的函数
++ DL相关：用于加载共享库，直接使用本地版本，无需进行remote变更                 
+  + dlopen
+  + dlerror
+  + dlsym
+  + dlclose
+
 ## 注意
 
 ### Remote流程
