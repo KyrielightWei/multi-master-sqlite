@@ -1,30 +1,28 @@
 CXXFLAGS += -std=c++11
-HOME = /home/rrzhang
-#LDFLAGS += -L$(HOME)/.local/protobuf/lib/ -lprotobuf -L$(HOME)/.local/grpc/lib -lprotobuf -lgrpc++ -lgrpc -lgrpc++_reflection -Wl,--as-needed -lpthread -ldl
 LDFLAGS += -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl
 
+all : client server
+.PHONY : all
 
-client : os_remote.pb.o os_remote.grpc.pb.o os_remote_client.o os_client_wrap.o
+client : ../common/os_remote.pb.o ../common/os_remote.grpc.pb.o os_remote_client.o os_client_wrap.o
 	gcc $^ $(LDFLAGS) -lstdc++ -o $@
 
-os_remote_client.o : os_remote_client.c
-	gcc -c $^
-
-
-
+server : ../common/os_remote.pb.o ../common/os_remote.grpc.pb.o ../server/os_server_wrap.o ../server/os_remote_server.o
+	gcc $^ $(LDFLAGS) -lstdc++ -o ../server/server
 
 PROTOC = protoc
 GRPC_CPP_PLUGIN_PATH ?= `which grpc_cpp_plugin`
 
-vpath %.proto ./
+PROTOS_PATH = ../common
+vpath %.proto $(PROTOS_PATH)
 
 .PRECIOUS: %.grpc.pb.cc
 %.grpc.pb.cc: %.proto
-	$(PROTOC) -I ./ --grpc_out=. --plugin=protoc-gen-grpc=$(GRPC_CPP_PLUGIN_PATH) $<
+	$(PROTOC) -I $(PROTOS_PATH) --grpc_out=$(PROTOS_PATH) --plugin=protoc-gen-grpc=$(GRPC_CPP_PLUGIN_PATH) $<
 
 .PRECIOUS: %.pb.cc
 %.pb.cc: %.proto
-	$(PROTOC) -I ./ --cpp_out=. $<
+	$(PROTOC) -I $(PROTOS_PATH) --cpp_out=$(PROTOS_PATH) $<
 
 clean:
-	rm -f *.o client *.pb.h *.pb.cc
+	rm -f client *.o ../common/*.o  ../common/*.pb.cc ../common/*.pb.h ../server/server ../server/*.o
