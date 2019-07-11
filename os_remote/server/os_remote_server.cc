@@ -1,10 +1,9 @@
 #include <iostream>
 #include <memory>
 #include <string>
-
 #include <grpcpp/grpcpp.h>
 
-#include "os_remote.grpc.pb.h"
+#include "../common/os_remote.grpc.pb.h"
 
 extern "C" {
 #include "os_server_wrap.h"
@@ -15,7 +14,6 @@ using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
 using os_remote::OSRemote;
-
 
 class OSRemoteServiceImpl final : public OSRemote::Service {
     Status Init(ServerContext *context, const os_remote::InitRequest *request,
@@ -31,7 +29,7 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
     Status Open(ServerContext *context, const os_remote::ArgRequest *request,
                 os_remote::ArgReply *reply) override {
         int out_size = request->outlen();
-        const char *in = request->inarg().c_str();
+        const char *in = request->inarg().data();
         char out_struct[out_size];
         WrapOpen(in, out_struct);
 
@@ -42,7 +40,7 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
     Status Delete(ServerContext *context, const os_remote::ArgRequest *request,
                   os_remote::ArgReply *reply) override {
         int out_size = request->outlen();
-        const char *in = request->inarg().c_str();
+        const char *in = request->inarg().data();
         char out_struct[out_size];
         WrapDelete(in, out_struct);
 
@@ -53,7 +51,7 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
     Status Access(ServerContext *context, const os_remote::ArgRequest *request,
                   os_remote::ArgReply *reply) override {
         int out_size = request->outlen();
-        const char *in = request->inarg().c_str();
+        const char *in = request->inarg().data();
         char out_struct[out_size];
         WrapAccess(in, out_struct);
 
@@ -64,18 +62,26 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
     Status FullPathname(ServerContext *context, const os_remote::ArgRequest *request,
                         os_remote::ArgReply *reply) override {
         int out_size = request->outlen();
-        const char *in = request->inarg().c_str();
+        const char *in = request->inarg().data();
         char out_struct[out_size];
         WrapFullPathname(in, out_struct);
 
         reply->set_outarg(out_struct, out_size);
         return Status::OK;
     }
-
+    /*
+ * 以下几个函数直接调用客户端函数，不用调用remote：
+ *      unixRandomness
+ *      unixSleep
+ *      unixCurrentTime
+ *      unixCurrentTimeInt64
+ * 所以注释掉了
+ */
+/*
     Status Randomness(ServerContext *context, const os_remote::ArgRequest *request,
                       os_remote::ArgReply *reply) override {
         int out_size = request->outlen();
-        const char *in = request->inarg().c_str();
+        const char *in = request->inarg().data();
         char out_struct[out_size];
         WrapRandomness(in, out_struct);
 
@@ -86,7 +92,7 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
     Status Sleep(ServerContext *context, const os_remote::ArgRequest *request,
                  os_remote::ArgReply *reply) override {
         int out_size = request->outlen();
-        const char *in = request->inarg().c_str();
+        const char *in = request->inarg().data();
         char out_struct[out_size];
         WrapSleep(in, out_struct);
 
@@ -97,20 +103,9 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
     Status CurrentTime(ServerContext *context, const os_remote::ArgRequest *request,
                        os_remote::ArgReply *reply) override {
         int out_size = request->outlen();
-        const char *in = request->inarg().c_str();
+        const char *in = request->inarg().data();
         char out_struct[out_size];
         WrapCurrentTime(in, out_struct);
-
-        reply->set_outarg(out_struct, out_size);
-        return Status::OK;
-    }
-
-    Status GetLastError(ServerContext *context, const os_remote::ArgRequest *request,
-                        os_remote::ArgReply *reply) override {
-        int out_size = request->outlen();
-        const char *in = request->inarg().c_str();
-        char out_struct[out_size];
-        WrapGetLastError(in, out_struct);
 
         reply->set_outarg(out_struct, out_size);
         return Status::OK;
@@ -119,9 +114,21 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
     Status CurrentTimeInt64(ServerContext *context, const os_remote::ArgRequest *request,
                             os_remote::ArgReply *reply) override {
         int out_size = request->outlen();
-        const char *in = request->inarg().c_str();
+        const char *in = request->inarg().data();
         char out_struct[out_size];
         WrapCurrentTimeInt64(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+    */
+
+    Status GetLastError(ServerContext *context, const os_remote::ArgRequest *request,
+                        os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapGetLastError(in, out_struct);
 
         reply->set_outarg(out_struct, out_size);
         return Status::OK;
@@ -130,9 +137,20 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
     Status Write(ServerContext *context, const os_remote::ArgRequest *request,
                  os_remote::ArgReply *reply) override {
         int out_size = request->outlen();
-        const char *in = request->inarg().c_str();
+        const char *in = request->inarg().data();
         char out_struct[out_size];
         WrapWrite(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+
+    Status Read(ServerContext *context, const os_remote::ArgRequest *request,
+                 os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapRead(in, out_struct);
 
         reply->set_outarg(out_struct, out_size);
         return Status::OK;

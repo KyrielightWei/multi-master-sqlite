@@ -16,6 +16,7 @@ void WrapCurrentTime(const char *argIn, char *argOut);
 void WrapGetLastError(const char *argIn, char *argOut);
 void WrapCurrentTimeInt64(const char *argIn, char *argOut);
 void WrapWrite(const char *argIn, char *argOut);
+void WrapRead(const char *argIn, char *argOut);
 
 
 #endif //OS_REMOTE_OS_SERVER_WRAP_H
