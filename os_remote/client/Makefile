@@ -25,4 +25,4 @@ vpath %.proto $(PROTOS_PATH)
 	$(PROTOC) -I $(PROTOS_PATH) --cpp_out=$(PROTOS_PATH) $<
 
 clean:
-	rm -f client *.o ../common/*.o  ../common/*.pb.cc ../common/*.pb.h ../server/server ../server/*.o
+	rm -f client *.o  ../common/*.pb.cc ../common/*.pb.h ../server/server ../server/*.o ../common/*.o
