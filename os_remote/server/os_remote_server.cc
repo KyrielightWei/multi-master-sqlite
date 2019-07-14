@@ -16,12 +16,15 @@ using grpc::Status;
 using os_remote::OSRemote;
 
 class OSRemoteServiceImpl final : public OSRemote::Service {
-    Status Init(ServerContext *context, const os_remote::InitRequest *request,
-                os_remote::InitReply *reply) override {
+    Status Init(ServerContext *context, const os_remote::ArgRequest *request,
+                os_remote::ArgReply *reply) override {
 
-        char *rc = WrapInit();
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapInit(in, out_struct);
 
-        reply->set_rc(rc);
+        reply->set_outarg(out_struct, out_size);
         return Status::OK;
     }
 
@@ -146,7 +149,7 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
     }
 
     Status Read(ServerContext *context, const os_remote::ArgRequest *request,
-                 os_remote::ArgReply *reply) override {
+                os_remote::ArgReply *reply) override {
         int out_size = request->outlen();
         const char *in = request->inarg().data();
         char out_struct[out_size];
@@ -155,6 +158,118 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
         reply->set_outarg(out_struct, out_size);
         return Status::OK;
     }
+
+
+    Status Truncate(ServerContext *context, const os_remote::ArgRequest *request,
+                    os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapTruncate(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+
+    Status Sync(ServerContext *context, const os_remote::ArgRequest *request,
+                os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapSync(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+
+    Status FileSize(ServerContext *context, const os_remote::ArgRequest *request,
+                    os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapFileSize(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+
+    Status FileControl(ServerContext *context, const os_remote::ArgRequest *request,
+                       os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapFileControl(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+
+    Status SectorSize(ServerContext *context, const os_remote::ArgRequest *request,
+                      os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapSectorSize(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+
+    Status DeviceCharacteristics(ServerContext *context, const os_remote::ArgRequest *request,
+                                 os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapDeviceCharacteristics(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+
+    Status Close(ServerContext *context, const os_remote::ArgRequest *request,
+                 os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapClose(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+
+    Status Lock(ServerContext *context, const os_remote::ArgRequest *request,
+                 os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapLock(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+
+    Status Unlock(ServerContext *context, const os_remote::ArgRequest *request,
+                 os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapUnlock(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+
+    Status CheckReservedLock(ServerContext *context, const os_remote::ArgRequest *request,
+                  os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapCheckReservedLock(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+
 
 };
 
