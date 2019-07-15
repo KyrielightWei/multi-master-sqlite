@@ -2,9 +2,13 @@
 #include "util.c"
 
 extern const char *clientInit(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientOpen(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientDelete(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientAccess(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientFullPathname(char *argin, u32 inlen, u32 outlen);
 /*
  * 以下几个函数直接调用客户端函数，不用调用remote：
@@ -21,18 +25,35 @@ extern const char *clientCurrentTime(char *argin, u32 inlen, u32 outlen);
 extern const char *clientCurrentTimeInt64(char *argin, u32 inlen, u32 outlen);
  */
 extern const char *clientGetLastError(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientWrite(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientRead(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientTruncate(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientSync(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientFileSize(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientFileControl(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientSectorSize(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientDeviceCharacteristics(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientClose(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientLock(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientUnlock(char *argin, u32 inlen, u32 outlen);
+
 extern const char *clientCheckReservedLock(char *argin, u32 inlen, u32 outlen);
+
+extern const char *clientFetch(char *argin, u32 inlen, u32 outlen);
+
+extern const char *clientUnfetch(char *argin, u32 inlen, u32 outlen);
+
 
 #define UNIXVFS(VFSNAME, FINDER) {                        \
     3,                    /* iVersion */                    \
@@ -62,8 +83,9 @@ extern const char *clientCheckReservedLock(char *argin, u32 inlen, u32 outlen);
 static sqlite3_vfs aVfs[] = {
         UNIXVFS("unix", posixIoFinder),
 };
+
 //////////////// funtion unixOpen ///////////////////////////////////////////
-int remote_sqlite3_os_init(void){
+int remote_sqlite3_os_init(void) {
     DebugClient(sprintf(debugStr, "---start remote_sqlite3_os_init:\n"), debugStr);
     char argInChar[sizeof(ArgInInit)];
     int rc = SQLITE_OK;
@@ -92,6 +114,7 @@ static int remoteOpen(
     DebugClient(sprintf(debugStr, "---end remoteOpen:\n"), debugStr);
     return rc;
 }
+
 //////////////// funtion unixDelete ///////////////////////////////////////////
 static int remoteDelete(
         sqlite3_vfs *NotUsed,     /* VFS containing this as the xDelete method */
@@ -109,6 +132,7 @@ static int remoteDelete(
     DebugClient(sprintf(debugStr, "---end remoteDelete:\n"), debugStr);
     return rc;
 }
+
 //////////////// funtion unixAccess ///////////////////////////////////////////
 static int remoteAccess(
         sqlite3_vfs *NotUsed,   /* The VFS containing this xAccess method */
@@ -126,6 +150,7 @@ static int remoteAccess(
     DebugClient(sprintf(debugStr, "---end remoteAccess:\n"), debugStr);
     return rc;
 }
+
 //////////////// funtion unixFullPathname ///////////////////////////////////////////
 static int remoteFullPathname(
         sqlite3_vfs *pVfs,            /* Pointer to vfs object */
@@ -233,6 +258,7 @@ static int remoteWrite(
     DebugClient(sprintf(debugStr, "---end remoteWrite:\n"), debugStr);
     return rc;
 }
+
 static int remoteRead(sqlite3_file *id, void *pBuf, int amt, sqlite3_int64 offset
 ) {
     DebugClient(sprintf(debugStr, "---start remoteRead:\n"), debugStr);
@@ -248,6 +274,7 @@ static int remoteRead(sqlite3_file *id, void *pBuf, int amt, sqlite3_int64 offse
     DebugClient(sprintf(debugStr, "---end remoteRead:\n"), debugStr);
     return rc;
 }
+
 static int remoteTruncate(sqlite3_file *id, i64 nByte) {
     DebugClient(sprintf(debugStr, "---start remoteTruncate:\n"), debugStr);
     char argInChar[sizeof(ArgInTruncate)] = {'\0'};
@@ -259,6 +286,7 @@ static int remoteTruncate(sqlite3_file *id, i64 nByte) {
     DebugClient(sprintf(debugStr, "---end remoteTruncate:\n"), debugStr);
     return rc;
 }
+
 static int remoteSync(sqlite3_file *id, int flags) {
     DebugClient(sprintf(debugStr, "---start remoteSync:\n"), debugStr);
     char argInChar[sizeof(ArgInSync)] = {'\0'};
@@ -270,6 +298,7 @@ static int remoteSync(sqlite3_file *id, int flags) {
     DebugClient(sprintf(debugStr, "---end remoteSync:\n"), debugStr);
     return rc;
 }
+
 static int remoteFileSize(sqlite3_file *id, i64 *pSize) {
     DebugClient(sprintf(debugStr, "---start remoteFileSize:\n"), debugStr);
     char argInChar[sizeof(ArgInFileSize)] = {'\0'};
@@ -281,6 +310,7 @@ static int remoteFileSize(sqlite3_file *id, i64 *pSize) {
     DebugClient(sprintf(debugStr, "---end remoteFileSize:\n"), debugStr);
     return rc;
 }
+
 static int remoteFileControl(sqlite3_file *id, int op, void *pArg) {
     DebugClient(sprintf(debugStr, "---start remoteFileControl:\n"), debugStr);
     char argInChar[sizeof(ArgInFileControl)] = {'\0'};
@@ -292,6 +322,7 @@ static int remoteFileControl(sqlite3_file *id, int op, void *pArg) {
     DebugClient(sprintf(debugStr, "---end remoteDelete:\n"), debugStr);
     return rc;
 }
+
 static int remoteSectorSize(sqlite3_file *id) {
     DebugClient(sprintf(debugStr, "---start remoteFileControl:\n"), debugStr);
     char argInChar[sizeof(ArgInSectorSize)] = {'\0'};
@@ -328,6 +359,7 @@ static int remoteClose(sqlite3_file *id) {
     DebugClient(sprintf(debugStr, "---end remoteClose:\n"), debugStr);
     return rc;
 }
+
 static int remoteLock(sqlite3_file *id, int eFileLock) {
     DebugClient(sprintf(debugStr, "---start remoteLock:\n"), debugStr);
     char argInChar[sizeof(ArgInLock)] = {'\0'};
@@ -351,6 +383,7 @@ static int remoteUnlock(sqlite3_file *id, int eFileLock) {
     DebugClient(sprintf(debugStr, "---end remoteUnlock:\n"), debugStr);
     return rc;
 }
+
 static int remoteCheckReservedLock(sqlite3_file *id, int *pResOut) {
     DebugClient(sprintf(debugStr, "---start remoteCheckReservedLock:\n"), debugStr);
     char argInChar[sizeof(ArgInCheckReservedLock)] = {'\0'};
@@ -361,6 +394,35 @@ static int remoteCheckReservedLock(sqlite3_file *id, int *pResOut) {
                                                      sizeof(ReturnCheckReservedLock));
     unixCheckReservedLockConvertCharToReturn(argOutChar, id, pResOut, &rc);
     DebugClient(sprintf(debugStr, "---end remoteCheckReservedLock:\n"), debugStr);
+    return rc;
+}
+
+static int remoteFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp) {
+    DebugClient(sprintf(debugStr, "---start remoteFetch:\n"), debugStr);
+    char argInChar[sizeof(ArgInFetch)] = {'\0'};
+    int rc = SQLITE_OK;
+
+    unixFetchConvertArgInToChar(fd, iOff, nAmt, pp, argInChar);
+    const char *argOutChar = clientFetch(argInChar, sizeof(ArgInFetch), sizeof(struct ReturnFetch));
+
+    char str[nAmt];
+    unixFetchConvertCharToReturn(argOutChar, fd, str, nAmt, &rc);
+    *pp = str;
+    DebugClient(sprintf(debugStr, "---end remoteFetch:\n"), debugStr);
+    return rc;
+}
+
+static int remoteUnfetch(sqlite3_file *fd, i64 iOff, void *p) {
+    char argInChar[sizeof(ArgInUnfetch)] = {'\0'};
+    int rc = SQLITE_OK;
+
+    int p_flag; p_flag = (p == 0 ?  0 : 1);
+    printf("p_flag = %d\n", p_flag);
+    unixUnfetchConvertArgInToChar(fd, iOff, &p_flag, argInChar);
+    const char *argOutChar = clientUnfetch(argInChar, sizeof(ArgInUnfetch), sizeof(ReturnUnfetch));
+
+    unixUnfetchConvertCharToReturn(argOutChar, fd, &rc);
+
     return rc;
 }
 //static int remote ( ){
@@ -380,7 +442,7 @@ static int remoteCheckReservedLock(sqlite3_file *id, int *pResOut) {
  * 测试函数
  */
 
-void Test_Init(){
+void Test_Init() {
     int rc = remote_sqlite3_os_init();
 
     printf("%s\n", "---Test_Init:");
@@ -396,12 +458,14 @@ void Test_Open() {
     printf("   f.h = %d\n", fi.h);
     printf("   rc = %d\n", rc);
 }
+
 void Test_Delete() {
     int rc = remoteDelete(&aVfs[0], "./remote.db", 1);
 
     printf("%s\n", "---remoteDelete:");
     printf("   rc = %d\n", rc);
 }
+
 void Test_Access() {
     int res;
     int rc = remoteAccess(&aVfs[0], "./remote.db", 0, &res);
@@ -410,6 +474,7 @@ void Test_Access() {
     printf("   pResOut = %d\n", res);
     printf("   rc = %d\n", rc);
 }
+
 void Test_FullPathname() {
     char zOut[512];
     int rc = remoteFullPathname(&aVfs[0], "remote.db", 1, zOut);
@@ -418,45 +483,13 @@ void Test_FullPathname() {
     printf("   zOut:%s\n", zOut);
     printf("   rc = %d\n", rc);    // TODO: rc = 14, 可能传的参数 nOut不对
 }
-/*
-void Test_Randomness() {
-    char zBuf[256];
-    int rc = remoteRandomness(&aVfs[0], 256, zBuf);
 
-    printf("%s\n", "---remoteRandomness:");
-    printf("   zBuf:%s\n", zBuf);
-    printf("   rc = %d\n", rc);
-}
-
-void Test_Sleep() {
-    int rc = remoteSleep(&aVfs[0], 1000);
-
-    printf("%s\n", "---remoteSleep:");
-    printf("rc = %d\n", rc);
-}
-void Test_CurrentTime() {
-    double prNow;
-    int rc = remoteCurrentTime(&aVfs[0], &prNow);
-
-    printf("%s\n", "---remoteCurrentTime:");
-    printf("   prNow:%f\n", prNow);
-    printf("   rc = %d\n", rc);
-
-}
-void Test_CurrentTimeInt64() {
-    sqlite3_int64 piNow;
-    int rc = remoteCurrentTimeInt64(&aVfs[0], &piNow);
-
-    printf("%s\n", "---remoteCurrentTimeInt64:");
-    printf("   piNow = %d\n", piNow);
-    printf("   rc = %d\n", rc);
-}
- */
 void Test_GetLastError() {
     int rc_errno = remoteGetLastError(&aVfs[0], 0, "0");
     printf("%s\n", "---remoteGetLastError:");
     printf("   rc_errno = %d\n", rc_errno);   // TODO: 返回 errno = 11
 }
+
 void Test_Write() {
     unixFile fi;
     int outFlag = 2;
@@ -475,6 +508,7 @@ void Test_Write() {
     printf("   f.h = %d\n", fi.h);
     printf("   rc = %d\n", rc);   // TODO: 可以写进去，但是一直返回 rc = 4 或 10
 }
+
 void Test_Read() {
     unixFile fi;
     int outFlag = 2;
@@ -545,6 +579,7 @@ void Test_FileControl() {
     printf("   pArg = %d\n", pArg);
     printf("   rc = %d\n", rc);
 }
+
 void Test_SectorSize() {
     unixFile fi;
     int outFlag = 2;
@@ -598,6 +633,7 @@ void Test_Lock_And_Unlock() {
     printf("   f.h = %d\n", fi.h);
     printf("   rc = %d\n", rc);
 }
+
 void Test_CheckReservedLock() {
     printf("---remoteCheckReservedLock:\n");
     unixFile fi;
@@ -610,6 +646,35 @@ void Test_CheckReservedLock() {
 //    rc = remoteCheckReservedLock((sqlite3_file *) &fi, &locked);
 
     printf("   locked:%d\n", locked);
+    printf("   f.h = %d\n", fi.h);
+    printf("   rc = %d\n", rc);
+}
+
+void Test_Fetch() {
+    printf("---remoteFetch:\n");
+    unixFile fi;
+    fi.h = 9;
+    i64 ioff = 10;
+    int nAmt = 2;
+    void *pData;
+
+    int rc = remoteFetch((sqlite3_file *) &fi, ioff, nAmt, &pData);
+
+    printf("   f.h = %d\n", fi.h);
+    printf("   ioff = %ld\n", ioff);
+    printf("   nAmt = %d\n", nAmt);
+    printf("   pp = %s\n", (char *) pData);
+    printf("   rc = %d\n", rc);
+}
+
+void Test_Unfetch() {
+    printf("---remoteUnfetch:\n");
+    unixFile fi;
+    fi.h = 9;
+    void *pData = &fi;
+
+    int rc = remoteUnfetch((sqlite3_file *) &fi, 0, pData);
+
     printf("   f.h = %d\n", fi.h);
     printf("   rc = %d\n", rc);
 }
@@ -633,9 +698,11 @@ int main() {
 //    Test_FileControl();
 //    Test_SectorSize();
 //    Test_DeviceCharacteristics();
-    Test_Close();
+//    Test_Close();
 //    Test_Lock_And_Unlock();
 //    Test_CheckReservedLock();
+//    Test_Fetch();
 
+//    Test_Unfetch();
     return 0;
 }
