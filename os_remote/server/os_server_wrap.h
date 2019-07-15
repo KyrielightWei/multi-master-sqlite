@@ -27,6 +27,8 @@ void WrapClose(const char *argIn, char *argOut);
 void WrapLock(const char *argIn, char *argOut);
 void WrapUnlock(const char *argIn, char *argOut);
 void WrapCheckReservedLock(const char *argIn, char *argOut);
+void WrapFetch(const char *argIn, char *argOut);
+void WrapUnfetch(const char *argIn, char *argOut);
 
 
 

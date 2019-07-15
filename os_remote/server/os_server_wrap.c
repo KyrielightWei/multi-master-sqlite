@@ -30,7 +30,7 @@ static sqlite3_vfs aVfs[] = {
         UNIXVFS("unix", posixIoFinder),
 };
 
-void WrapInit(const char *argIn, char *argOut){
+void WrapInit(const char *argIn, char *argOut) {
     printf("---WrapInit:\n");
     int rc = sqlite3_os_init();
     sqlite3_os_initConvertReturnToChar(&rc, argOut);
@@ -124,6 +124,7 @@ void WrapGetLastError(const char *argIn, char *argOut) {
     int rc_errno = unixGetLastError(&aVfs[0], NotUsed2, NotUsed3);
     unixGetLastErrorConvertReturnToChar(&rc_errno, argOut);
 }
+
 void WrapWrite(const char *argIn, char *argOut) {
     unixFile id;
     char pBuf[8192];
@@ -153,6 +154,7 @@ void WrapTruncate(const char *argIn, char *argOut) {
     int rc = unixTruncate((sqlite3_file *) &id, nByte);
     unixTruncateConvertReturnToChar((sqlite3_file *) &id, &rc, argOut);
 }
+
 void WrapSync(const char *argIn, char *argOut) {
     unixFile id;
     int flags;
@@ -161,6 +163,7 @@ void WrapSync(const char *argIn, char *argOut) {
     int rc = unixSync((sqlite3_file *) &id, flags);
     unixSyncConvertReturnToChar((sqlite3_file *) &id, &rc, argOut);
 }
+
 void WrapFileSize(const char *argIn, char *argOut) {
     unixFile id;
     i64 pSize;
@@ -169,6 +172,7 @@ void WrapFileSize(const char *argIn, char *argOut) {
     int rc = unixFileSize((sqlite3_file *) &id, &pSize);
     unixFileSizeConvertReturnToChar((sqlite3_file *) &id, &pSize, &rc, argOut);
 }
+
 void WrapFileControl(const char *argIn, char *argOut) {
     unixFile id;
     int op;
@@ -178,6 +182,7 @@ void WrapFileControl(const char *argIn, char *argOut) {
     int rc = unixFileControl((sqlite3_file *) &id, op, &pArg);
     unixFileControlConvertReturnToChar((sqlite3_file *) &id, &pArg, &rc, argOut);
 }
+
 void WrapSectorSize(const char *argIn, char *argOut) {
     unixFile id;
 
@@ -185,6 +190,7 @@ void WrapSectorSize(const char *argIn, char *argOut) {
     int sectorSize = unixSectorSize((sqlite3_file *) &id);
     unixSectorSizeConvertReturnToChar((sqlite3_file *) &id, &sectorSize, argOut);
 }
+
 void WrapDeviceCharacteristics(const char *argIn, char *argOut) {
     unixFile id;
 
@@ -192,6 +198,7 @@ void WrapDeviceCharacteristics(const char *argIn, char *argOut) {
     int deviceCharacteristics = unixDeviceCharacteristics((sqlite3_file *) &id);
     unixDeviceCharacteristicsConvertReturnToChar((sqlite3_file *) &id, &deviceCharacteristics, argOut);
 }
+
 void WrapClose(const char *argIn, char *argOut) {
     printf("---WrapClose:\n");
     unixFile id;
@@ -202,6 +209,7 @@ void WrapClose(const char *argIn, char *argOut) {
     printf("   id.h = %d\n", id.h);
     unixCloseConvertReturnToChar((sqlite3_file *) &id, &rc, argOut);
 }
+
 void WrapLock(const char *argIn, char *argOut) {
     printf("---WrapLock:\n");
     unixFile id;
@@ -213,6 +221,7 @@ void WrapLock(const char *argIn, char *argOut) {
     printf("   id.h = %d\n", id.h);
     unixLockConvertReturnToChar((sqlite3_file *) &id, &rc, argOut);
 }
+
 void WrapUnlock(const char *argIn, char *argOut) {
     printf("---WrapUnlock:\n");
     unixFile id;
@@ -224,6 +233,7 @@ void WrapUnlock(const char *argIn, char *argOut) {
     printf("   id.h = %d\n", id.h);
     unixUnlockConvertReturnToChar((sqlite3_file *) &id, &rc, argOut);
 }
+
 void WrapCheckReservedLock(const char *argIn, char *argOut) {
     printf("---WrapCheckReservedLock:\n");
     unixFile id;
@@ -234,4 +244,28 @@ void WrapCheckReservedLock(const char *argIn, char *argOut) {
     int rc = unixCheckReservedLock((sqlite3_file *) &id, &pResOut);
     printf("   id.h = %d\n", id.h);
     unixCheckReservedLockConvertReturnToChar((sqlite3_file *) &id, &pResOut, &rc, argOut);
+}
+
+void WrapFetch(const char *argIn, char *argOut) {
+    printf("---WrapFetch:\n");
+    unixFile id;
+    i64 iOff;
+    int nAmt;
+    void *pData = 0;
+
+    unixFetchConvertCharToArgIn(argIn, (sqlite3_file *) &id, &iOff, &nAmt, &pData);
+    int rc = unixFetch((sqlite3_file *) &id, iOff, nAmt, &pData);
+    unixFetchsConvertReturnToChar((sqlite3_file *) &id, (char *) pData, nAmt, &rc, argOut);
+}
+
+void WrapUnfetch(const char *argIn, char *argOut) {
+    printf("---WrapUnfetch:\n");
+    unixFile id;
+    i64 iOff;
+    int p_flag;
+
+    unixUnfetchConvertCharToArgIn(argIn, (sqlite3_file *) &id, &iOff, &p_flag);
+    void *pData = (p_flag == 0 ? 0 : &id);
+    int rc = unixUnfetch((sqlite3_file *) &id, iOff, pData);
+    unixUnfetchConvertReturnToChar((sqlite3_file *) &id, &rc, argOut);
 }
