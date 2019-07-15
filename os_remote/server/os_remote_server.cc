@@ -270,6 +270,26 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
         return Status::OK;
     }
 
+    Status Fetch(ServerContext *context, const os_remote::ArgRequest *request,
+                             os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapFetch(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
+    Status Unfetch(ServerContext *context, const os_remote::ArgRequest *request,
+                             os_remote::ArgReply *reply) override {
+        int out_size = request->outlen();
+        const char *in = request->inarg().data();
+        char out_struct[out_size];
+        WrapUnfetch(in, out_struct);
+
+        reply->set_outarg(out_struct, out_size);
+        return Status::OK;
+    }
 
 };
 

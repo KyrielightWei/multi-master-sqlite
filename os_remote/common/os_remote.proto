@@ -48,6 +48,10 @@ service OSRemote {
     }
     rpc CheckReservedLock (ArgRequest) returns (ArgReply) {
     }
+    rpc Fetch (ArgRequest) returns (ArgReply) {
+    }
+    rpc Unfetch (ArgRequest) returns (ArgReply) {
+    }
 }
 
 message ArgRequest {
