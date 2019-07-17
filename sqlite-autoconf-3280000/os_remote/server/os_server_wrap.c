@@ -1,5 +1,7 @@
+#include "../common/sqlite3.c"
 #include "os_server_wrap.h"
 #include "../common/os_arg_convert.c"
+
 
 #define UNIXVFS(VFSNAME, FINDER) {                        \
     3,                    /* iVersion */                    \
