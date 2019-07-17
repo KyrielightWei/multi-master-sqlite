@@ -21,6 +21,7 @@ AC_SYS_LARGEFILE
 
 # Check for required programs.
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_LIBTOOL
 AC_PROG_MKDIR_P
 
@@ -196,7 +197,7 @@ AC_ARG_ENABLE(static-shell, [AS_HELP_STRING(
   [statically link libsqlite3 into shell tool [default=yes]])], 
   [], [enable_static_shell=yes])
 if test x"$enable_static_shell" = "xyes"; then
-  EXTRA_SHELL_OBJ=sqlite3-sqlite3.$OBJEXT
+  EXTRA_SHELL_OBJ=sqlite3-sqlite3.$OBJEXT 
 else
   EXTRA_SHELL_OBJ=libsqlite3.la
 fi
