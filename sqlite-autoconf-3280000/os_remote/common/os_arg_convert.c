@@ -31,7 +31,7 @@
 //void nameConvertReturnToChar()  //server
 
 
-#include "sqlite3.c"
+//#include "sqlite3.c"
 
 
 #define SIZE_UNIXFILE sizeof(unixFile)

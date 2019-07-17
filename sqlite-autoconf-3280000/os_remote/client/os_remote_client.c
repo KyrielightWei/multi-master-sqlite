@@ -55,34 +55,34 @@ extern const char *clientFetch(char *argin, u32 inlen, u32 outlen);
 extern const char *clientUnfetch(char *argin, u32 inlen, u32 outlen);
 
 
-#define UNIXVFS(VFSNAME, FINDER) {                        \
-    3,                    /* iVersion */                    \
-    sizeof(unixFile),     /* szOsFile */                    \
-    MAX_PATHNAME,         /* mxPathname */                  \
-    0,                    /* pNext */                       \
-    VFSNAME,              /* zName */                       \
-    (void*)&FINDER,       /* pAppData */                    \
-    unixOpen,             /* xOpen */                       \
-    unixDelete,           /* xDelete */                     \
-    unixAccess,           /* xAccess */                     \
-    unixFullPathname,     /* xFullPathname */               \
-    unixDlOpen,           /* xDlOpen */                     \
-    unixDlError,          /* xDlError */                    \
-    unixDlSym,            /* xDlSym */                      \
-    unixDlClose,          /* xDlClose */                    \
-    unixRandomness,       /* xRandomness */                 \
-    unixSleep,            /* xSleep */                      \
-    unixCurrentTime,      /* xCurrentTime */                \
-    unixGetLastError,     /* xGetLastError */               \
-    unixCurrentTimeInt64, /* xCurrentTimeInt64 */           \
-    unixSetSystemCall,    /* xSetSystemCall */              \
-    unixGetSystemCall,    /* xGetSystemCall */              \
-    unixNextSystemCall,   /* xNextSystemCall */             \
-  }
+// #define UNIXVFS(VFSNAME, FINDER) {                        \
+//     3,                    /* iVersion */                    \
+//     sizeof(unixFile),     /* szOsFile */                    \
+//     MAX_PATHNAME,         /* mxPathname */                  \
+//     0,                    /* pNext */                       \
+//     VFSNAME,              /* zName */                       \
+//     (void*)&FINDER,       /* pAppData */                    \
+//     unixOpen,             /* xOpen */                       \
+//     unixDelete,           /* xDelete */                     \
+//     unixAccess,           /* xAccess */                     \
+//     unixFullPathname,     /* xFullPathname */               \
+//     unixDlOpen,           /* xDlOpen */                     \
+//     unixDlError,          /* xDlError */                    \
+//     unixDlSym,            /* xDlSym */                      \
+//     unixDlClose,          /* xDlClose */                    \
+//     unixRandomness,       /* xRandomness */                 \
+//     unixSleep,            /* xSleep */                      \
+//     unixCurrentTime,      /* xCurrentTime */                \
+//     unixGetLastError,     /* xGetLastError */               \
+//     unixCurrentTimeInt64, /* xCurrentTimeInt64 */           \
+//     unixSetSystemCall,    /* xSetSystemCall */              \
+//     unixGetSystemCall,    /* xGetSystemCall */              \
+//     unixNextSystemCall,   /* xNextSystemCall */             \
+//   }
 
-static sqlite3_vfs aVfs[] = {
-        UNIXVFS("unix", posixIoFinder),
-};
+// static sqlite3_vfs aVfs[] = {
+//         UNIXVFS("unix", posixIoFinder),
+// };
 
 //////////////// funtion unixOpen ///////////////////////////////////////////
 int remote_sqlite3_os_init(void) {
@@ -438,271 +438,271 @@ static int remoteUnfetch(sqlite3_file *fd, i64 iOff, void *p) {
 
 
 
-/*
- * 测试函数
- */
+// /*
+//  * 测试函数
+//  */
 
-void Test_Init() {
-    int rc = remote_sqlite3_os_init();
+// void Test_Init() {
+//     int rc = remote_sqlite3_os_init();
 
-    printf("%s\n", "---Test_Init:");
-    printf("   rc = %d\n", rc);
-}
+//     printf("%s\n", "---Test_Init:");
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_Open() {
-    unixFile fi;
-    int outFlag = 2;
-    int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000004 & 0x87f7f, &outFlag);
+// void Test_Open() {
+//     unixFile fi;
+//     int outFlag = 2;
+//     int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000004 & 0x87f7f, &outFlag);
 
-    printf("%s\n", "---remoteOpen:");
-    printf("   f.h = %d\n", fi.h);
-    printf("   rc = %d\n", rc);
-}
+//     printf("%s\n", "---remoteOpen:");
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_Delete() {
-    int rc = remoteDelete(&aVfs[0], "./remote.db", 1);
+// void Test_Delete() {
+//     int rc = remoteDelete(&aVfs[0], "./remote.db", 1);
 
-    printf("%s\n", "---remoteDelete:");
-    printf("   rc = %d\n", rc);
-}
+//     printf("%s\n", "---remoteDelete:");
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_Access() {
-    int res;
-    int rc = remoteAccess(&aVfs[0], "./remote.db", 0, &res);
+// void Test_Access() {
+//     int res;
+//     int rc = remoteAccess(&aVfs[0], "./remote.db", 0, &res);
 
-    printf("%s\n", "---remoteAccess:");
-    printf("   pResOut = %d\n", res);
-    printf("   rc = %d\n", rc);
-}
+//     printf("%s\n", "---remoteAccess:");
+//     printf("   pResOut = %d\n", res);
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_FullPathname() {
-    char zOut[512];
-    int rc = remoteFullPathname(&aVfs[0], "remote.db", 1, zOut);
+// void Test_FullPathname() {
+//     char zOut[512];
+//     int rc = remoteFullPathname(&aVfs[0], "remote.db", 1, zOut);
 
-    printf("%s\n", "---remoteFullPathname:");
-    printf("   zOut:%s\n", zOut);
-    printf("   rc = %d\n", rc);    // TODO: rc = 14, 可能传的参数 nOut不对
-}
+//     printf("%s\n", "---remoteFullPathname:");
+//     printf("   zOut:%s\n", zOut);
+//     printf("   rc = %d\n", rc);    // TODO: rc = 14, 可能传的参数 nOut不对
+// }
 
-void Test_GetLastError() {
-    int rc_errno = remoteGetLastError(&aVfs[0], 0, "0");
-    printf("%s\n", "---remoteGetLastError:");
-    printf("   rc_errno = %d\n", rc_errno);   // TODO: 返回 errno = 11
-}
+// void Test_GetLastError() {
+//     int rc_errno = remoteGetLastError(&aVfs[0], 0, "0");
+//     printf("%s\n", "---remoteGetLastError:");
+//     printf("   rc_errno = %d\n", rc_errno);   // TODO: 返回 errno = 11
+// }
 
-void Test_Write() {
-    unixFile fi;
-    int outFlag = 2;
-    int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
+// void Test_Write() {
+//     unixFile fi;
+//     int outFlag = 2;
+//     int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
 
-    printf("%s\n", "---remoteWrite:");
-    printf("%s\n", "   open bofore Write:");
-    printf("   f.h = %d\n", fi.h);
-    printf("   rc = %d\n", rc);
+//     printf("%s\n", "---remoteWrite:");
+//     printf("%s\n", "   open bofore Write:");
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   rc = %d\n", rc);
 
-    fi;
-    char *pBuf = "adsfgdskajfdlajsldkjl";
-    rc = remoteWrite((sqlite3_file *) &fi, (void *) pBuf, 10, 0);
+//     fi;
+//     char *pBuf = "adsfgdskajfdlajsldkjl";
+//     rc = remoteWrite((sqlite3_file *) &fi, (void *) pBuf, 10, 0);
 
-    printf("%s\n", "---Write:");
-    printf("   f.h = %d\n", fi.h);
-    printf("   rc = %d\n", rc);   // TODO: 可以写进去，但是一直返回 rc = 4 或 10
-}
+//     printf("%s\n", "---Write:");
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   rc = %d\n", rc);   // TODO: 可以写进去，但是一直返回 rc = 4 或 10
+// }
 
-void Test_Read() {
-    unixFile fi;
-    int outFlag = 2;
-    int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
+// void Test_Read() {
+//     unixFile fi;
+//     int outFlag = 2;
+//     int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
 
-    printf("%s\n", "---remoteRead:");
-    printf("%s\n", "   open bofore Read:");
-    printf("   f.h = %d\n", fi.h);
-    printf("   rc = %d\n", rc);
+//     printf("%s\n", "---remoteRead:");
+//     printf("%s\n", "   open bofore Read:");
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   rc = %d\n", rc);
 
-    char pBuf[4] = {'\0'};
-    rc = remoteRead((sqlite3_file *) &fi, pBuf, 4, 2);
+//     char pBuf[4] = {'\0'};
+//     rc = remoteRead((sqlite3_file *) &fi, pBuf, 4, 2);
 
-    printf("%s\n", "---Read:");
-    printf("   f.h = %d\n", fi.h);
-    printf("   pBuf = %s\n", pBuf);
-    printf("   rc = %d\n", rc);
-}
+//     printf("%s\n", "---Read:");
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   pBuf = %s\n", pBuf);
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_Truncate() {
-    unixFile fi;
-    int outFlag = 2;
-    int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
+// void Test_Truncate() {
+//     unixFile fi;
+//     int outFlag = 2;
+//     int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
 
-    rc = remoteTruncate((sqlite3_file *) &fi, 10);
+//     rc = remoteTruncate((sqlite3_file *) &fi, 10);
 
-    printf("%s\n", "---remoteTruncate:");
-    printf("   f.h = %d\n", fi.h);
-    printf("   rc = %d\n", rc);
-}
+//     printf("%s\n", "---remoteTruncate:");
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_Sync() {
-    unixFile fi;
-    int outFlag = 2;
-    int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
+// void Test_Sync() {
+//     unixFile fi;
+//     int outFlag = 2;
+//     int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
 
-    rc = remoteSync((sqlite3_file *) &fi, 0);
+//     rc = remoteSync((sqlite3_file *) &fi, 0);
 
-    printf("%s\n", "---remoteSync:");
-    printf("   f.h = %d\n", fi.h);
-    printf("   rc = %d\n", rc);
-}
+//     printf("%s\n", "---remoteSync:");
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_FileSize() {
-    unixFile fi;
-    int outFlag = 2;
-    int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
+// void Test_FileSize() {
+//     unixFile fi;
+//     int outFlag = 2;
+//     int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
 
-    i64 pSize;
-    rc = remoteFileSize((sqlite3_file *) &fi, &pSize);
+//     i64 pSize;
+//     rc = remoteFileSize((sqlite3_file *) &fi, &pSize);
 
-    printf("%s\n", "---remoteSync:");
-    printf("   f.h = %d\n", fi.h);
-    printf("   pSize = %d\n", pSize);
-    printf("   rc = %d\n", rc);
-}
+//     printf("%s\n", "---remoteSync:");
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   pSize = %d\n", pSize);
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_FileControl() {
-    unixFile fi;
-    int outFlag = 2;
-    int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
+// void Test_FileControl() {
+//     unixFile fi;
+//     int outFlag = 2;
+//     int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
 
-    int pArg = 0;
-    rc = remoteFileControl((sqlite3_file *) &fi, SQLITE_FCNTL_SYNC, &pArg);
+//     int pArg = 0;
+//     rc = remoteFileControl((sqlite3_file *) &fi, SQLITE_FCNTL_SYNC, &pArg);
 
-    printf("%s\n", "---remoteFileControl:");
-    printf("   f.h = %d\n", fi.h);
-    printf("   pArg = %d\n", pArg);
-    printf("   rc = %d\n", rc);
-}
+//     printf("%s\n", "---remoteFileControl:");
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   pArg = %d\n", pArg);
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_SectorSize() {
-    unixFile fi;
-    int outFlag = 2;
-    int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
+// void Test_SectorSize() {
+//     unixFile fi;
+//     int outFlag = 2;
+//     int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
 
-    int sectorSize = remoteSectorSize((sqlite3_file *) &fi);
-    printf("%s\n", "---remoteSectorSize:");
-    printf("   sectorSize = %d\n", sectorSize);
-}
+//     int sectorSize = remoteSectorSize((sqlite3_file *) &fi);
+//     printf("%s\n", "---remoteSectorSize:");
+//     printf("   sectorSize = %d\n", sectorSize);
+// }
 
-void Test_DeviceCharacteristics() {
-    unixFile fi;
-    int outFlag = 2;
-    int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
+// void Test_DeviceCharacteristics() {
+//     unixFile fi;
+//     int outFlag = 2;
+//     int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
 
-    int deviceCharacteristics = remoteDeviceCharacteristics((sqlite3_file *) &fi);
-    printf("%s\n", "---remoteDeviceCharacteristics:");
-    printf("   deviceCharacteristics = %d\n", deviceCharacteristics);
-}
+//     int deviceCharacteristics = remoteDeviceCharacteristics((sqlite3_file *) &fi);
+//     printf("%s\n", "---remoteDeviceCharacteristics:");
+//     printf("   deviceCharacteristics = %d\n", deviceCharacteristics);
+// }
 
-void Test_Close() {
-    int rc = remote_sqlite3_os_init();
+// void Test_Close() {
+//     int rc = remote_sqlite3_os_init();
 
-    unixFile fi;
-    int outFlag = 2;
-    rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, SQLITE_OPEN_CREATE & 0x87f7f, &outFlag);
-    printf("   outFlag = %d\n", outFlag);
+//     unixFile fi;
+//     int outFlag = 2;
+//     rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, SQLITE_OPEN_CREATE & 0x87f7f, &outFlag);
+//     printf("   outFlag = %d\n", outFlag);
 
-    rc = remoteClose((sqlite3_file *) &fi);
+//     rc = remoteClose((sqlite3_file *) &fi);
 
-    printf("%s\n", "---remoteClose:");
-    printf("   f.h = %d\n", fi.h);
-    printf("   rc = %d\n", rc);
-}
+//     printf("%s\n", "---remoteClose:");
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_Lock_And_Unlock() {
-    printf("---Lock_And_Unlock:\n");
+// void Test_Lock_And_Unlock() {
+//     printf("---Lock_And_Unlock:\n");
 
-    unixFile fi;
-    int outFlag = 2;
-    int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
-    printf("    opened : fi.h = %d\n", "fi.h");
+//     unixFile fi;
+//     int outFlag = 2;
+//     int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000002 & 0x87f7f, &outFlag);
+//     printf("    opened : fi.h = %d\n", "fi.h");
 
-    rc = remoteLock((sqlite3_file *) &fi, EXCLUSIVE_LOCK);
-    printf("   lock:\n");
-    printf("   f.h = %d\n", fi.h);
-    printf("   rc = %d\n", rc);
+//     rc = remoteLock((sqlite3_file *) &fi, EXCLUSIVE_LOCK);
+//     printf("   lock:\n");
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   rc = %d\n", rc);
 
-    rc = remoteUnlock((sqlite3_file *) &fi, NO_LOCK);
-    printf("   unlock:\n");
-    printf("   f.h = %d\n", fi.h);
-    printf("   rc = %d\n", rc);
-}
+//     rc = remoteUnlock((sqlite3_file *) &fi, NO_LOCK);
+//     printf("   unlock:\n");
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_CheckReservedLock() {
-    printf("---remoteCheckReservedLock:\n");
-    unixFile fi;
-    int outFlag = 2;
-    int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000004 & 0x87f7f, &outFlag);
-    printf("    opened : fi.h = %d\n", fi.h);
-//    printf("    fi.h.Inode.nRef = %d\n", fi.pInode->nRef);
+// void Test_CheckReservedLock() {
+//     printf("---remoteCheckReservedLock:\n");
+//     unixFile fi;
+//     int outFlag = 2;
+//     int rc = remoteOpen(&aVfs[0], "./remote.db", (sqlite3_file *) &fi, 0x00000004 & 0x87f7f, &outFlag);
+//     printf("    opened : fi.h = %d\n", fi.h);
+// //    printf("    fi.h.Inode.nRef = %d\n", fi.pInode->nRef);
 
-    int locked = 0;
-//    rc = remoteCheckReservedLock((sqlite3_file *) &fi, &locked);
+//     int locked = 0;
+// //    rc = remoteCheckReservedLock((sqlite3_file *) &fi, &locked);
 
-    printf("   locked:%d\n", locked);
-    printf("   f.h = %d\n", fi.h);
-    printf("   rc = %d\n", rc);
-}
+//     printf("   locked:%d\n", locked);
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_Fetch() {
-    printf("---remoteFetch:\n");
-    unixFile fi;
-    fi.h = 9;
-    i64 ioff = 10;
-    int nAmt = 2;
-    void *pData;
+// void Test_Fetch() {
+//     printf("---remoteFetch:\n");
+//     unixFile fi;
+//     fi.h = 9;
+//     i64 ioff = 10;
+//     int nAmt = 2;
+//     void *pData;
 
-    int rc = remoteFetch((sqlite3_file *) &fi, ioff, nAmt, &pData);
+//     int rc = remoteFetch((sqlite3_file *) &fi, ioff, nAmt, &pData);
 
-    printf("   f.h = %d\n", fi.h);
-    printf("   ioff = %ld\n", ioff);
-    printf("   nAmt = %d\n", nAmt);
-    printf("   pp = %s\n", (char *) pData);
-    printf("   rc = %d\n", rc);
-}
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   ioff = %ld\n", ioff);
+//     printf("   nAmt = %d\n", nAmt);
+//     printf("   pp = %s\n", (char *) pData);
+//     printf("   rc = %d\n", rc);
+// }
 
-void Test_Unfetch() {
-    printf("---remoteUnfetch:\n");
-    unixFile fi;
-    fi.h = 9;
-    void *pData = &fi;
+// void Test_Unfetch() {
+//     printf("---remoteUnfetch:\n");
+//     unixFile fi;
+//     fi.h = 9;
+//     void *pData = &fi;
 
-    int rc = remoteUnfetch((sqlite3_file *) &fi, 0, pData);
+//     int rc = remoteUnfetch((sqlite3_file *) &fi, 0, pData);
 
-    printf("   f.h = %d\n", fi.h);
-    printf("   rc = %d\n", rc);
-}
+//     printf("   f.h = %d\n", fi.h);
+//     printf("   rc = %d\n", rc);
+// }
 
-int main() {
-//    Test_Init();
-//    Test_Open();
-//    Test_Delete();
-//    Test_Access();
-//    Test_FullPathname();
-//    Test_Randomness();
-//    Test_Sleep();
-//    Test_CurrentTime();
-//    Test_CurrentTimeInt64();
-//    Test_GetLastError();
-//    Test_Write();
-//    Test_Read();
-//    Test_Truncate();
-//    Test_Sync();
-//    Test_FileSize();
-//    Test_FileControl();
-//    Test_SectorSize();
-//    Test_DeviceCharacteristics();
-//    Test_Close();
-//    Test_Lock_And_Unlock();
-//    Test_CheckReservedLock();
-//    Test_Fetch();
+// int main() {
+// //    Test_Init();
+// //    Test_Open();
+// //    Test_Delete();
+// //    Test_Access();
+// //    Test_FullPathname();
+// //    Test_Randomness();
+// //    Test_Sleep();
+// //    Test_CurrentTime();
+// //    Test_CurrentTimeInt64();
+// //    Test_GetLastError();
+// //    Test_Write();
+// //    Test_Read();
+// //    Test_Truncate();
+// //    Test_Sync();
+// //    Test_FileSize();
+// //    Test_FileControl();
+// //    Test_SectorSize();
+// //    Test_DeviceCharacteristics();
+// //    Test_Close();
+// //    Test_Lock_And_Unlock();
+// //    Test_CheckReservedLock();
+// //    Test_Fetch();
 
-//    Test_Unfetch();
-    return 0;
-}
+// //    Test_Unfetch();
+//     return 0;
+// }
