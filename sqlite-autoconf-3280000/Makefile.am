@@ -1,6 +1,6 @@
 
-AM_CFLAGS = @BUILD_CFLAGS@ -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl
-AM_CXXFLAGS = -std=c++11 -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl
+AM_CFLAGS = @BUILD_CFLAGS@ -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl -g -ggdb
+AM_CXXFLAGS = -std=c++11 -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl -g -ggdb
 lib_LTLIBRARIES = libsqlite3.la
 libsqlite3_la_SOURCES = sqlite3.c ./os_remote/client/os_client_wrap.cc ./os_remote/common/os_remote.grpc.pb.cc ./os_remote/common/os_remote.pb.cc
 libsqlite3_la_LDFLAGS = -no-undefined -version-info 8:6:8 -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl

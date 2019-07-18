@@ -1,7 +1,12 @@
-#include "../common/sqlite3.c"
+#include "../common/common_sqlite3.c"
 #include "os_server_wrap.h"
 #include "../common/os_arg_convert.c"
 
+void setClientRemotePMethods(sqlite3_file * pf)   //recive on client: ->return
+{
+    char NotOnClient = 0;
+    assert(NotOnClient);
+}
 
 #define UNIXVFS(VFSNAME, FINDER) {                        \
     3,                    /* iVersion */                    \
