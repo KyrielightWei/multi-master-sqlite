@@ -83,10 +83,12 @@ extern const char *clientUnfetch(char *argin, u32 inlen, u32 outlen);
 // static sqlite3_vfs aVfs[] = {
 //         UNIXVFS("unix", posixIoFinder),
 // };
+static int remoteDeviceCharacteristics(sqlite3_file *id);
+
 
 //////////////// funtion unixOpen ///////////////////////////////////////////
 int remote_sqlite3_os_init(void) {
-    DebugClient(sprintf(debugStr, "---start remote_sqlite3_os_init:\n"), debugStr);
+    DebugClient(sprintf(debugStr, "---start remote_sqlite3_os_init: \n"), debugStr);
     char argInChar[sizeof(ArgInInit)];
     int rc = SQLITE_OK;
     const char *argOutChar = clientInit(argInChar, sizeof(ArgInInit), sizeof(struct ReturnInit));
@@ -337,7 +339,8 @@ static int remoteSectorSize(sqlite3_file *id) {
 
 static int remoteDeviceCharacteristics(sqlite3_file *id) {
     DebugClient(sprintf(debugStr, "---start remoteDeviceCharacteristics:\n"), debugStr);
-    char argInChar[sizeof(ArgInDeviceCharacteristics)] = {'\0'};
+    char argInChar[sizeof(ArgInDeviceCharacteristics)];
+    memset(argInChar,0,sizeof(ArgInDeviceCharacteristics));
     int deviceCharacteristics = 0;
 
     unixDeviceCharacteristicsConvertArgInToChar(id, argInChar);

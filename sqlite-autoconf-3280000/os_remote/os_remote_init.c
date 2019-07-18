@@ -5,12 +5,15 @@
 #include "client/os_remote_client.c"
 
 #define OS_REMOTE_DEBUG 0
+
 #define OS_REMOTE_NO_IMPL 1
+
 #if  OS_REMOTE_DEBUG
 
-#include "../sqlite3.c"
+#include "common/common_sqlite3.c"
 
-#endif 
+#endif
+
 
 #if OS_REMOTE_NO_IMPL
 
@@ -74,6 +77,8 @@ static const char *remoteNextSystemCall(sqlite3_vfs *p, const char *zName)
 
 #endif
 
+
+
 /*
  *sqlite file 方法定义
  *
@@ -122,6 +127,14 @@ REMOTE_IOMTETHODS(
   remoteCheckReservedLock,    /* xCheckReservedLock method */
   remoteShmMap                /* xShmMap method */
 )
+
+/**
+ * remoteFile <-> unixFile  #pMethods
+ */
+void setClientRemotePMethods(sqlite3_file * pf)   //recive on client: ->return
+{
+    pf->pMethods = &remote_posixIoMethods;
+}
 
 
 SQLITE_API int sqlite3_os_init(void){ 
