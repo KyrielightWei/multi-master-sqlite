@@ -1,13 +1,13 @@
-
+OS_REMOTE_DIR = ../os_remote
 AM_CFLAGS = @BUILD_CFLAGS@ -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl -g -ggdb
 AM_CXXFLAGS = -std=c++11 -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl -g -ggdb
 lib_LTLIBRARIES = libsqlite3.la
-libsqlite3_la_SOURCES = sqlite3.c ./os_remote/client/os_client_wrap.cc ./os_remote/common/os_remote.grpc.pb.cc ./os_remote/common/os_remote.pb.cc
+libsqlite3_la_SOURCES = sqlite3.c ./$(OS_REMOTE_DIR)/client/os_client_wrap.cc ./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc ./$(OS_REMOTE_DIR)/common/os_remote.pb.cc
 libsqlite3_la_LDFLAGS = -no-undefined -version-info 8:6:8 -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl
 
 
 bin_PROGRAMS = sqlite3
-sqlite3_SOURCES = shell.c sqlite3.h ./os_remote/client/os_client_wrap.cc  ./os_remote/common/os_remote.grpc.pb.cc ./os_remote/common/os_remote.pb.cc
+sqlite3_SOURCES = shell.c sqlite3.h ./$(OS_REMOTE_DIR)/client/os_client_wrap.cc  ./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc ./$(OS_REMOTE_DIR)/common/os_remote.pb.cc
 EXTRA_sqlite3_SOURCES = sqlite3.c 
 sqlite3_LDADD = @EXTRA_SHELL_OBJ@ @READLINE_LIBS@
 sqlite3_DEPENDENCIES = @EXTRA_SHELL_OBJ@

@@ -9,8 +9,16 @@
 #include <time.h>
 
 
-static char debugStr[500] = {'\0'};
-static char localTime[] = {'\0'};
+static char debugStr[500];
+
+static char localTime[100];
+
+
+void clearStr()
+{
+    memset(debugStr,0,sizeof(char)*500);
+    memset(localTime,0,sizeof(char)*100);
+}
 
 char *GetTime(){
 
@@ -33,14 +41,26 @@ int OpenFile() {
 }
 
 int DebugClient(int i, const char *info) {
+   // clearStr();
     int fd = open("LOG", O_APPEND | O_WRONLY | O_CREAT, 0644);
     if (fd < 0) {
         return -1;
     }
 
     GetTime();
-    write(fd,localTime, strlen(localTime));
-    write(fd, info, strlen(info));
+    int wr_rc = 0;
+    //char rc_str[20];
+    //char n = '\n';
+    wr_rc = write(fd,localTime, strlen(localTime));
+   // write(fd,&n, sizeof(char));
+    //sprintf(rc_str,"%d",wr_rc);
+   // write(fd,rc_str,sizeof(int));
+    wr_rc = write(fd, info, strlen(info));
+    //write(fd,&n, sizeof(char));
+    //sprintf(rc_str,"%d",wr_rc);
+    //write(fd,rc_str,sizeof(int));
+    //write(fd,&n, sizeof(char));
+    //write(fd,&n, sizeof(char));
 
 //    size_t value_len = strlen(info);
 //    while (value_len > 0) {
@@ -63,10 +83,18 @@ int CloseFile() {
 }
 
 int TEST_DebugClient() {
-    DebugClient(sprintf(debugStr, "---start remoteOpen:\n"), debugStr);
+    int i = sprintf(debugStr, "---start remoteOpen:\n");
+    printf("%s",debugStr);
+    DebugClient(i, debugStr);
+    
+
     DebugClient(sprintf(debugStr, "number : %d\n", 3), debugStr);
     DebugClient(sprintf(debugStr, "string : %s\n", "adfgshf"), debugStr);
 
     return 0;
 }
 
+// int main() {
+//     TEST_DebugClient();
+//     return 0;
+// }

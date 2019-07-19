@@ -376,12 +376,13 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+OS_REMOTE_DIR = ../os_remote
 AM_CFLAGS = @BUILD_CFLAGS@ -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl -g -ggdb
 AM_CXXFLAGS = -std=c++11 -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl -g -ggdb
 lib_LTLIBRARIES = libsqlite3.la
-libsqlite3_la_SOURCES = sqlite3.c ./os_remote/client/os_client_wrap.cc ./os_remote/common/os_remote.grpc.pb.cc ./os_remote/common/os_remote.pb.cc
+libsqlite3_la_SOURCES = sqlite3.c ./$(OS_REMOTE_DIR)/client/os_client_wrap.cc ./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc ./$(OS_REMOTE_DIR)/common/os_remote.pb.cc
 libsqlite3_la_LDFLAGS = -no-undefined -version-info 8:6:8 -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl
-sqlite3_SOURCES = shell.c sqlite3.h ./os_remote/client/os_client_wrap.cc  ./os_remote/common/os_remote.grpc.pb.cc ./os_remote/common/os_remote.pb.cc
+sqlite3_SOURCES = shell.c sqlite3.h ./$(OS_REMOTE_DIR)/client/os_client_wrap.cc  ./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc ./$(OS_REMOTE_DIR)/common/os_remote.pb.cc
 EXTRA_sqlite3_SOURCES = sqlite3.c 
 sqlite3_LDADD = @EXTRA_SHELL_OBJ@ @READLINE_LIBS@
 sqlite3_DEPENDENCIES = @EXTRA_SHELL_OBJ@
@@ -610,68 +611,68 @@ sqlite3-sqlite3.obj: sqlite3.c
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-os_client_wrap.lo: ./os_remote/client/os_client_wrap.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT os_client_wrap.lo -MD -MP -MF $(DEPDIR)/os_client_wrap.Tpo -c -o os_client_wrap.lo `test -f './os_remote/client/os_client_wrap.cc' || echo '$(srcdir)/'`./os_remote/client/os_client_wrap.cc
+os_client_wrap.lo: ./$(OS_REMOTE_DIR)/client/os_client_wrap.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT os_client_wrap.lo -MD -MP -MF $(DEPDIR)/os_client_wrap.Tpo -c -o os_client_wrap.lo `test -f './$(OS_REMOTE_DIR)/client/os_client_wrap.cc' || echo '$(srcdir)/'`./$(OS_REMOTE_DIR)/client/os_client_wrap.cc
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/os_client_wrap.Tpo $(DEPDIR)/os_client_wrap.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./os_remote/client/os_client_wrap.cc' object='os_client_wrap.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./$(OS_REMOTE_DIR)/client/os_client_wrap.cc' object='os_client_wrap.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o os_client_wrap.lo `test -f './os_remote/client/os_client_wrap.cc' || echo '$(srcdir)/'`./os_remote/client/os_client_wrap.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o os_client_wrap.lo `test -f './$(OS_REMOTE_DIR)/client/os_client_wrap.cc' || echo '$(srcdir)/'`./$(OS_REMOTE_DIR)/client/os_client_wrap.cc
 
-os_remote.grpc.pb.lo: ./os_remote/common/os_remote.grpc.pb.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT os_remote.grpc.pb.lo -MD -MP -MF $(DEPDIR)/os_remote.grpc.pb.Tpo -c -o os_remote.grpc.pb.lo `test -f './os_remote/common/os_remote.grpc.pb.cc' || echo '$(srcdir)/'`./os_remote/common/os_remote.grpc.pb.cc
+os_remote.grpc.pb.lo: ./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT os_remote.grpc.pb.lo -MD -MP -MF $(DEPDIR)/os_remote.grpc.pb.Tpo -c -o os_remote.grpc.pb.lo `test -f './$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc' || echo '$(srcdir)/'`./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/os_remote.grpc.pb.Tpo $(DEPDIR)/os_remote.grpc.pb.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./os_remote/common/os_remote.grpc.pb.cc' object='os_remote.grpc.pb.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc' object='os_remote.grpc.pb.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o os_remote.grpc.pb.lo `test -f './os_remote/common/os_remote.grpc.pb.cc' || echo '$(srcdir)/'`./os_remote/common/os_remote.grpc.pb.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o os_remote.grpc.pb.lo `test -f './$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc' || echo '$(srcdir)/'`./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc
 
-os_remote.pb.lo: ./os_remote/common/os_remote.pb.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT os_remote.pb.lo -MD -MP -MF $(DEPDIR)/os_remote.pb.Tpo -c -o os_remote.pb.lo `test -f './os_remote/common/os_remote.pb.cc' || echo '$(srcdir)/'`./os_remote/common/os_remote.pb.cc
+os_remote.pb.lo: ./$(OS_REMOTE_DIR)/common/os_remote.pb.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT os_remote.pb.lo -MD -MP -MF $(DEPDIR)/os_remote.pb.Tpo -c -o os_remote.pb.lo `test -f './$(OS_REMOTE_DIR)/common/os_remote.pb.cc' || echo '$(srcdir)/'`./$(OS_REMOTE_DIR)/common/os_remote.pb.cc
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/os_remote.pb.Tpo $(DEPDIR)/os_remote.pb.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./os_remote/common/os_remote.pb.cc' object='os_remote.pb.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./$(OS_REMOTE_DIR)/common/os_remote.pb.cc' object='os_remote.pb.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o os_remote.pb.lo `test -f './os_remote/common/os_remote.pb.cc' || echo '$(srcdir)/'`./os_remote/common/os_remote.pb.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o os_remote.pb.lo `test -f './$(OS_REMOTE_DIR)/common/os_remote.pb.cc' || echo '$(srcdir)/'`./$(OS_REMOTE_DIR)/common/os_remote.pb.cc
 
-sqlite3-os_client_wrap.o: ./os_remote/client/os_client_wrap.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -MT sqlite3-os_client_wrap.o -MD -MP -MF $(DEPDIR)/sqlite3-os_client_wrap.Tpo -c -o sqlite3-os_client_wrap.o `test -f './os_remote/client/os_client_wrap.cc' || echo '$(srcdir)/'`./os_remote/client/os_client_wrap.cc
+sqlite3-os_client_wrap.o: ./$(OS_REMOTE_DIR)/client/os_client_wrap.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -MT sqlite3-os_client_wrap.o -MD -MP -MF $(DEPDIR)/sqlite3-os_client_wrap.Tpo -c -o sqlite3-os_client_wrap.o `test -f './$(OS_REMOTE_DIR)/client/os_client_wrap.cc' || echo '$(srcdir)/'`./$(OS_REMOTE_DIR)/client/os_client_wrap.cc
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/sqlite3-os_client_wrap.Tpo $(DEPDIR)/sqlite3-os_client_wrap.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./os_remote/client/os_client_wrap.cc' object='sqlite3-os_client_wrap.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./$(OS_REMOTE_DIR)/client/os_client_wrap.cc' object='sqlite3-os_client_wrap.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -c -o sqlite3-os_client_wrap.o `test -f './os_remote/client/os_client_wrap.cc' || echo '$(srcdir)/'`./os_remote/client/os_client_wrap.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -c -o sqlite3-os_client_wrap.o `test -f './$(OS_REMOTE_DIR)/client/os_client_wrap.cc' || echo '$(srcdir)/'`./$(OS_REMOTE_DIR)/client/os_client_wrap.cc
 
-sqlite3-os_client_wrap.obj: ./os_remote/client/os_client_wrap.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -MT sqlite3-os_client_wrap.obj -MD -MP -MF $(DEPDIR)/sqlite3-os_client_wrap.Tpo -c -o sqlite3-os_client_wrap.obj `if test -f './os_remote/client/os_client_wrap.cc'; then $(CYGPATH_W) './os_remote/client/os_client_wrap.cc'; else $(CYGPATH_W) '$(srcdir)/./os_remote/client/os_client_wrap.cc'; fi`
+sqlite3-os_client_wrap.obj: ./$(OS_REMOTE_DIR)/client/os_client_wrap.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -MT sqlite3-os_client_wrap.obj -MD -MP -MF $(DEPDIR)/sqlite3-os_client_wrap.Tpo -c -o sqlite3-os_client_wrap.obj `if test -f './$(OS_REMOTE_DIR)/client/os_client_wrap.cc'; then $(CYGPATH_W) './$(OS_REMOTE_DIR)/client/os_client_wrap.cc'; else $(CYGPATH_W) '$(srcdir)/./$(OS_REMOTE_DIR)/client/os_client_wrap.cc'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/sqlite3-os_client_wrap.Tpo $(DEPDIR)/sqlite3-os_client_wrap.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./os_remote/client/os_client_wrap.cc' object='sqlite3-os_client_wrap.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./$(OS_REMOTE_DIR)/client/os_client_wrap.cc' object='sqlite3-os_client_wrap.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -c -o sqlite3-os_client_wrap.obj `if test -f './os_remote/client/os_client_wrap.cc'; then $(CYGPATH_W) './os_remote/client/os_client_wrap.cc'; else $(CYGPATH_W) '$(srcdir)/./os_remote/client/os_client_wrap.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -c -o sqlite3-os_client_wrap.obj `if test -f './$(OS_REMOTE_DIR)/client/os_client_wrap.cc'; then $(CYGPATH_W) './$(OS_REMOTE_DIR)/client/os_client_wrap.cc'; else $(CYGPATH_W) '$(srcdir)/./$(OS_REMOTE_DIR)/client/os_client_wrap.cc'; fi`
 
-sqlite3-os_remote.grpc.pb.o: ./os_remote/common/os_remote.grpc.pb.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -MT sqlite3-os_remote.grpc.pb.o -MD -MP -MF $(DEPDIR)/sqlite3-os_remote.grpc.pb.Tpo -c -o sqlite3-os_remote.grpc.pb.o `test -f './os_remote/common/os_remote.grpc.pb.cc' || echo '$(srcdir)/'`./os_remote/common/os_remote.grpc.pb.cc
+sqlite3-os_remote.grpc.pb.o: ./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -MT sqlite3-os_remote.grpc.pb.o -MD -MP -MF $(DEPDIR)/sqlite3-os_remote.grpc.pb.Tpo -c -o sqlite3-os_remote.grpc.pb.o `test -f './$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc' || echo '$(srcdir)/'`./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/sqlite3-os_remote.grpc.pb.Tpo $(DEPDIR)/sqlite3-os_remote.grpc.pb.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./os_remote/common/os_remote.grpc.pb.cc' object='sqlite3-os_remote.grpc.pb.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc' object='sqlite3-os_remote.grpc.pb.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -c -o sqlite3-os_remote.grpc.pb.o `test -f './os_remote/common/os_remote.grpc.pb.cc' || echo '$(srcdir)/'`./os_remote/common/os_remote.grpc.pb.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -c -o sqlite3-os_remote.grpc.pb.o `test -f './$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc' || echo '$(srcdir)/'`./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc
 
-sqlite3-os_remote.grpc.pb.obj: ./os_remote/common/os_remote.grpc.pb.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -MT sqlite3-os_remote.grpc.pb.obj -MD -MP -MF $(DEPDIR)/sqlite3-os_remote.grpc.pb.Tpo -c -o sqlite3-os_remote.grpc.pb.obj `if test -f './os_remote/common/os_remote.grpc.pb.cc'; then $(CYGPATH_W) './os_remote/common/os_remote.grpc.pb.cc'; else $(CYGPATH_W) '$(srcdir)/./os_remote/common/os_remote.grpc.pb.cc'; fi`
+sqlite3-os_remote.grpc.pb.obj: ./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -MT sqlite3-os_remote.grpc.pb.obj -MD -MP -MF $(DEPDIR)/sqlite3-os_remote.grpc.pb.Tpo -c -o sqlite3-os_remote.grpc.pb.obj `if test -f './$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc'; then $(CYGPATH_W) './$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc'; else $(CYGPATH_W) '$(srcdir)/./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/sqlite3-os_remote.grpc.pb.Tpo $(DEPDIR)/sqlite3-os_remote.grpc.pb.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./os_remote/common/os_remote.grpc.pb.cc' object='sqlite3-os_remote.grpc.pb.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc' object='sqlite3-os_remote.grpc.pb.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -c -o sqlite3-os_remote.grpc.pb.obj `if test -f './os_remote/common/os_remote.grpc.pb.cc'; then $(CYGPATH_W) './os_remote/common/os_remote.grpc.pb.cc'; else $(CYGPATH_W) '$(srcdir)/./os_remote/common/os_remote.grpc.pb.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -c -o sqlite3-os_remote.grpc.pb.obj `if test -f './$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc'; then $(CYGPATH_W) './$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc'; else $(CYGPATH_W) '$(srcdir)/./$(OS_REMOTE_DIR)/common/os_remote.grpc.pb.cc'; fi`
 
-sqlite3-os_remote.pb.o: ./os_remote/common/os_remote.pb.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -MT sqlite3-os_remote.pb.o -MD -MP -MF $(DEPDIR)/sqlite3-os_remote.pb.Tpo -c -o sqlite3-os_remote.pb.o `test -f './os_remote/common/os_remote.pb.cc' || echo '$(srcdir)/'`./os_remote/common/os_remote.pb.cc
+sqlite3-os_remote.pb.o: ./$(OS_REMOTE_DIR)/common/os_remote.pb.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -MT sqlite3-os_remote.pb.o -MD -MP -MF $(DEPDIR)/sqlite3-os_remote.pb.Tpo -c -o sqlite3-os_remote.pb.o `test -f './$(OS_REMOTE_DIR)/common/os_remote.pb.cc' || echo '$(srcdir)/'`./$(OS_REMOTE_DIR)/common/os_remote.pb.cc
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/sqlite3-os_remote.pb.Tpo $(DEPDIR)/sqlite3-os_remote.pb.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./os_remote/common/os_remote.pb.cc' object='sqlite3-os_remote.pb.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./$(OS_REMOTE_DIR)/common/os_remote.pb.cc' object='sqlite3-os_remote.pb.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -c -o sqlite3-os_remote.pb.o `test -f './os_remote/common/os_remote.pb.cc' || echo '$(srcdir)/'`./os_remote/common/os_remote.pb.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -c -o sqlite3-os_remote.pb.o `test -f './$(OS_REMOTE_DIR)/common/os_remote.pb.cc' || echo '$(srcdir)/'`./$(OS_REMOTE_DIR)/common/os_remote.pb.cc
 
-sqlite3-os_remote.pb.obj: ./os_remote/common/os_remote.pb.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -MT sqlite3-os_remote.pb.obj -MD -MP -MF $(DEPDIR)/sqlite3-os_remote.pb.Tpo -c -o sqlite3-os_remote.pb.obj `if test -f './os_remote/common/os_remote.pb.cc'; then $(CYGPATH_W) './os_remote/common/os_remote.pb.cc'; else $(CYGPATH_W) '$(srcdir)/./os_remote/common/os_remote.pb.cc'; fi`
+sqlite3-os_remote.pb.obj: ./$(OS_REMOTE_DIR)/common/os_remote.pb.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -MT sqlite3-os_remote.pb.obj -MD -MP -MF $(DEPDIR)/sqlite3-os_remote.pb.Tpo -c -o sqlite3-os_remote.pb.obj `if test -f './$(OS_REMOTE_DIR)/common/os_remote.pb.cc'; then $(CYGPATH_W) './$(OS_REMOTE_DIR)/common/os_remote.pb.cc'; else $(CYGPATH_W) '$(srcdir)/./$(OS_REMOTE_DIR)/common/os_remote.pb.cc'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/sqlite3-os_remote.pb.Tpo $(DEPDIR)/sqlite3-os_remote.pb.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./os_remote/common/os_remote.pb.cc' object='sqlite3-os_remote.pb.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='./$(OS_REMOTE_DIR)/common/os_remote.pb.cc' object='sqlite3-os_remote.pb.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -c -o sqlite3-os_remote.pb.obj `if test -f './os_remote/common/os_remote.pb.cc'; then $(CYGPATH_W) './os_remote/common/os_remote.pb.cc'; else $(CYGPATH_W) '$(srcdir)/./os_remote/common/os_remote.pb.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sqlite3_CXXFLAGS) $(CXXFLAGS) -c -o sqlite3-os_remote.pb.obj `if test -f './$(OS_REMOTE_DIR)/common/os_remote.pb.cc'; then $(CYGPATH_W) './$(OS_REMOTE_DIR)/common/os_remote.pb.cc'; else $(CYGPATH_W) '$(srcdir)/./$(OS_REMOTE_DIR)/common/os_remote.pb.cc'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
