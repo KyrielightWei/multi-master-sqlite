@@ -1,9 +1,11 @@
-# OS_REMOTE_VFS
+# OS REMOTE
 
 > 远程文件访问VFS
 
 ## 文件夹结构
-+ 以os_remote_开头：正式的VFS代码文件，暂时只包含了代码格式注释，后续根据开发进度整合添加代码实现
++ client：client端源码，嵌入sqlite.c文件中，执行make命令可编译生成所需的grpc(c++)源码文件
++ server：server端源码，独立运行，执行make命令可编译生成server可执行文件，用于响应sqlite的服务
++ common: server端和clien端公用的一些源码文件，执行make命令可编译生成所需的grpc(c++)源码文件
 + test_example: open函数的测试样例 (转换函数命名不太好，正式编写参考——转换函数命名)
 
 ## 不进行remote变更的函数

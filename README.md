@@ -16,9 +16,10 @@ A prototype of multi-master share-storage database
 + Google开源项目风格指南-命名约定 <https://zh-google-styleguide.readthedocs.io/en/latest/google-cpp-styleguide/naming/>
 
 ### Folder
-
-+ sqlite-src-3280000 分文件版源码（参考用）
-+ sqlite-autoconf-3280000 单文件编译版
++ os_remote ：remote vfs 源码
++ sqlite-src-3280000 ：分文件版源码（参考用）
++ sqlite-autoconf-3280000 ：单文件编译版
++ sqlite-jdbc-3.28.0 : sqlite3.28 JDBC ( <https://github.com/xerial/sqlite-jdbc> )
 
 ### Comment Format
 #### Sqlite-autoconf
@@ -27,28 +28,9 @@ A prototype of multi-master share-storage database
 修改代码
 //===============修改编号+结束
 ```
-#### Sqlite-src
-##### modify
-```
-/*
-* 摘要：
-* 修改人：
-* 修改时间：
-*/
-```
-##### note
-```
-/*
-* 注释：
-*/
-```
 
 ### Autoconf Modify Index
 | 修改编号 | 修改人 | 修改时间 | 修改简述 |
 | ------ | ------ | ------ | ------ |
-| id  | name | date | brief |
+| 001  | wei | 2019/7/17 | `#include "../os_remote/os_remote_init.c"` |
 
-### Src Modify Index
-| 修改文件 | 修改人 | 修改时间 | 修改简述 |
-| ------ | ------ | ------ | ------ |
-| file_path  | name | date | brief |

@@ -1,14 +1,15 @@
 CXXFLAGS += -std=c++11
 LDFLAGS += -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl
 
-all : client server
-.PHONY : all
+# all : client server
+# .PHONY : all
 
-client : ../common/os_remote.pb.o ../common/os_remote.grpc.pb.o os_remote_client.o os_client_wrap.o
-	gcc $^ $(LDFLAGS) -lstdc++ -o $@
+# client : ../common/os_remote.pb.o ../common/os_remote.grpc.pb.o os_remote_client.o os_client_wrap.o
+# 	gcc $^ $(LDFLAGS) -lstdc++ -o $@
 
-server : ../common/os_remote.pb.o ../common/os_remote.grpc.pb.o ../server/os_server_wrap.o ../server/os_remote_server.o
-	gcc $^ $(LDFLAGS) -lstdc++ -o ../server/server
+# server : ../common/os_remote.pb.o ../common/os_remote.grpc.pb.o ../server/os_server_wrap.o ../server/os_remote_server.o
+# 	gcc $^ $(LDFLAGS) -lstdc++ -o ../server/server
+all : ../common/os_remote.pb.cc ../common/os_remote.grpc.pb.cc
 
 PROTOC = protoc
 GRPC_CPP_PLUGIN_PATH ?= `which grpc_cpp_plugin`
