@@ -127,7 +127,16 @@ REMOTE_IOMTETHODS(
   remoteCheckReservedLock,    /* xCheckReservedLock method */
   remoteShmMap                /* xShmMap method */
 )
-
+//REMOTE_IOMETHODS(
+//        remote_nolockIoFinder,           /* Finder function name */
+//        remote_nolockIoMethods,          /* sqlite3_io_methods object name */
+//3,                        /* shared memory and mmap are enabled */
+//remoteNolockClose,              /* xClose method */
+//remoteNolockLock,               /* xLock method */
+//remoteNolockUnlock,             /* xUnlock method */
+//remoteNolockCheckReservedLock,  /* xCheckReservedLock method */
+//0                         /* xShmMap method */
+//)
 /**
  * remoteFile <-> unixFile  #pMethods
  */
@@ -137,7 +146,7 @@ void setClientRemotePMethods(sqlite3_file * pf)   //recive on client: ->return
 }
 
 
-SQLITE_API int sqlite3_os_init(void){ 
+SQLITE_API int sqlite3_os_init(void){
  #define UNIXVFS(VFSNAME, FINDER) {                        \
     3,                    /* iVersion */                    \
     sizeof(unixFile),     /* szOsFile */                    \
@@ -162,13 +171,14 @@ SQLITE_API int sqlite3_os_init(void){
     remoteGetSystemCall,    /* xGetSystemCall */              \
     remoteNextSystemCall,   /* xNextSystemCall */             \
   }
-  
+
   /*
    * posixIoFinder指向unixFile的函数指针，可能需要定义自己的指向remote函数的版本
    *
    * */
   static sqlite3_vfs aVfs[] = {
     UNIXVFS("remote_unix",          remote_posixIoFinder ),
+//    UNIXVFS("remote_unix-none",     remote_nolockIoFinder ),
   };
   unsigned int i;          /* Loop counter */
 
@@ -182,12 +192,12 @@ SQLITE_API int sqlite3_os_init(void){
 
   remote_sqlite3_os_init();
   //unixBigLock = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS1);
-  return SQLITE_OK; 
+  return SQLITE_OK;
 }
 
-int sqlite3_os_end(void){ 
+int sqlite3_os_end(void){
   //unixBigLock = 0;
-  return SQLITE_OK; 
+  return SQLITE_OK;
 }
  
 

@@ -36,7 +36,7 @@
 
 #include "common_sqlite3.c"
 
-#endif 
+#endif
 
 extern void setClientRemotePMethods(sqlite3_file * pf);
 
@@ -109,6 +109,11 @@ void unixOpenConvertArgInToChar(        //Client
     strcpy(arg, zPath);
     memcpy(arg + 512, pFile, SIZE_UNIXFILE);
     memcpy(arg + 512 + SIZE_UNIXFILE, &flags, sizeof(int));
+
+    int f =-1;
+    if(!pOutFlags){
+        pOutFlags = &f;
+    }
     memcpy(arg + 512 + SIZE_UNIXFILE + sizeof(int), pOutFlags, sizeof(int));
 }
 
@@ -119,9 +124,17 @@ void unixOpenConvertCharToReturn(         // Client
         int *pRc
 ) {
     memcpy(pFile, arg, SIZE_UNIXFILE);
-    memcpy(pOutFlags, arg + SIZE_UNIXFILE, sizeof(int));
+    int temp = 0;
+    memcpy(&temp, arg + SIZE_UNIXFILE, sizeof(int));
     memcpy(pRc, arg + SIZE_UNIXFILE + sizeof(int), sizeof(int));
-    
+//    printf("%d", temp);
+    if(-1 == temp){
+        // pOutFlags = 0;
+    }
+    else{
+        memcpy(pOutFlags, arg + SIZE_UNIXFILE, sizeof(int));
+    }
+
     setClientRemotePMethods(pFile);
 }
 
@@ -137,7 +150,7 @@ void unixOpenConvertCharToArgIn(    //server
     memcpy(pFile, arg + 512, SIZE_UNIXFILE);
     memcpy(flags, arg + 512 + SIZE_UNIXFILE, sizeof(int));
     memcpy(pOutFlags, arg + 512 + SIZE_UNIXFILE + sizeof(int), sizeof(int));
-    
+
     setServerUnixPMethods(pFile);
 }
 
@@ -147,9 +160,13 @@ void unixOpenConvertReturnToChar(         // server
         int *pRc,
         char *arg
 ) {
+
     memcpy(arg, pFile, SIZE_UNIXFILE);
     memcpy(arg + SIZE_UNIXFILE, pOutFlags, sizeof(int));
+    // printf("pOutflags2 = %d\n", *pOutFlags);
     memcpy(arg + SIZE_UNIXFILE + sizeof(int), pRc, sizeof(int));
+
+//    printf("%d\n", *(int *)(arg + SIZE_UNIXFILE));
 }
 
 
@@ -512,7 +529,7 @@ void unixReadConvertCharToReturn(    // client
     memcpy(id, arg, SIZE_UNIXFILE);
     memcpy(pBuf, arg + SIZE_UNIXFILE, *amt);
     memcpy(pRc, arg + SIZE_UNIXFILE + MAX_SIZE, sizeof(int));
-    
+
     setClientRemotePMethods(id);
 }
 
@@ -528,7 +545,7 @@ void unixReadConvertCharToArgIn(
     memcpy(amt, arg + SIZE_UNIXFILE + MAX_SIZE, sizeof(int));
     memcpy(pBuf, arg + SIZE_UNIXFILE, *amt);
     memcpy(offset, arg + SIZE_UNIXFILE + MAX_SIZE + sizeof(int), sizeof(sqlite3_int64));
-    
+
     setServerUnixPMethods(id);
 }
 
@@ -642,7 +659,7 @@ void unixTruncateConvertCharToReturn(const char *arg, sqlite3_file *id, int *pRc
 void unixTruncateConvertCharToArgIn(const char *arg, sqlite3_file *id, i64 *nByte) {
     memcpy(id, arg, SIZE_UNIXFILE);
     memcpy(nByte, arg + SIZE_UNIXFILE, sizeof(i64));
-    
+
     setServerUnixPMethods(id);
 }
 

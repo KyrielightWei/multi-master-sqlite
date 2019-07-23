@@ -34,7 +34,30 @@ void setClientRemotePMethods(sqlite3_file * pf)   //recive on client: ->return
   }
 
 static sqlite3_vfs aVfs[] = {
-        UNIXVFS("unix", posixIoFinder),
+#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+        UNIXVFS("unix",          autolockIoFinder ),
+#elif OS_VXWORKS
+        UNIXVFS("unix",          vxworksIoFinder ),
+#else
+        UNIXVFS("unix",          posixIoFinder ),
+#endif
+        UNIXVFS("unix-none",     nolockIoFinder ),
+        UNIXVFS("unix-dotfile",  dotlockIoFinder ),
+        UNIXVFS("unix-excl",     posixIoFinder ),
+#if OS_VXWORKS
+        UNIXVFS("unix-namedsem", semIoFinder ),
+#endif
+#if SQLITE_ENABLE_LOCKING_STYLE || OS_VXWORKS
+        UNIXVFS("unix-posix",    posixIoFinder ),
+#endif
+#if SQLITE_ENABLE_LOCKING_STYLE
+        UNIXVFS("unix-flock",    flockIoFinder ),
+#endif
+#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+UNIXVFS("unix-afp",      afpIoFinder ),
+    UNIXVFS("unix-nfs",      nfsIoFinder ),
+    UNIXVFS("unix-proxy",    proxyIoFinder ),
+#endif
 };
 
 void WrapInit(const char *argIn, char *argOut) {
@@ -45,16 +68,30 @@ void WrapInit(const char *argIn, char *argOut) {
 
 void WrapOpen(const char *argIn, char *argOut) {
     printf("---WrapOpen:\n");
+    printf("&posixIoMethods = %d\n", &posixIoMethods);
+    printf("&nolockIoMethods = %d\n", &nolockIoMethods);
     char path[512];
     unixFile file_infor;
+    sqlite3_file *pId = (sqlite3_file *)&file_infor;
     int in_flags;
     int out_flags;
+    int rc = 0;
 
-    unixOpenConvertCharToArgIn(argIn, &aVfs[0], path, (sqlite3_file *) &file_infor, &in_flags, &out_flags);
+    unixOpenConvertCharToArgIn(argIn, &aVfs[0], path, pId, &in_flags, &out_flags);
+    printf("pMethods = %s\n", pId->pMethods == &posixIoMethods ? "posixIoMethods" : "nolockIoMethods");
     printf("   id.h = %d\n", file_infor.h);
-    int rc = unixOpen(&aVfs[0], path, (sqlite3_file *) &file_infor, in_flags, &out_flags);
+    printf("   path = %s\n", path);
+    if(-1 == out_flags){
+        rc = aVfs[1].xOpen(&aVfs[1], path, pId, in_flags & 0x87f7f, NULL);
+//        rc = unixOpen(&aVfs[0], path, pId, in_flags, NULL);
+    }else {
+        rc = aVfs[0].xOpen(&aVfs[0], path, pId, in_flags & 0x87f7f, &out_flags);
+    }
     printf("   id.h = %d\n", file_infor.h);
-    unixOpenConvertReturnToChar((sqlite3_file *) &file_infor, &out_flags, &rc, argOut);
+    unixOpenConvertReturnToChar(pId, &out_flags, &rc, argOut);
+
+    printf("pMethods = %s\n", pId->pMethods == &posixIoMethods ? "posixIoMethods" : "nolockIoMethods");
+
 }
 
 void WrapDelete(const char *argIn, char *argOut) {
@@ -208,13 +245,26 @@ void WrapDeviceCharacteristics(const char *argIn, char *argOut) {
 
 void WrapClose(const char *argIn, char *argOut) {
     printf("---WrapClose:\n");
+    printf("&posixIoMethods = %d\n", &posixIoMethods);
+    printf("&nolockIoMethods = %d\n", &nolockIoMethods);
     unixFile id;
+    sqlite3_file *pId = (sqlite3_file *)&id;
 
-    unixCloseConvertCharToArgIn(argIn, (sqlite3_file *) &id);
+    unixCloseConvertCharToArgIn(argIn, pId);
     printf("   id.h = %d\n", id.h);
-    int rc = unixClose((sqlite3_file *) &id);   // TODO: 上面一个能输出，下面一个输出不了，出现了段错误
+//    int rc = unixClose((sqlite3_file *) &id);   // TODO: 上面一个能输出，下面一个输出不了，出现了段错误
+    int rc;
+    printf("pMethods = %s\n", pId->pMethods == &posixIoMethods ? "posixIoMethods" : "nolockIoMethods");
+
+    if( pId->pMethods ){
+
+        rc = pId->pMethods->xClose(pId);
+        pId->pMethods = 0;
+    }
     printf("   id.h = %d\n", id.h);
     unixCloseConvertReturnToChar((sqlite3_file *) &id, &rc, argOut);
+
+
 }
 
 void WrapLock(const char *argIn, char *argOut) {

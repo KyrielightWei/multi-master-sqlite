@@ -106,6 +106,8 @@ static int remoteOpen(
         int *pOutFlags               /* Output flags returned to SQLite core */
 ) {
     DebugClient(sprintf(debugStr, "---start remoteOpen:\n"), debugStr);
+    printf("pMethods = %s\n", (pFile->pMethods == &posixIoMethods) ? "posixIoMethods" : "nolockIoMethods");
+
     char argInChar[sizeof(ArgInOpen)] = {'\0'};
     int rc = SQLITE_OK;
 
@@ -340,7 +342,7 @@ static int remoteSectorSize(sqlite3_file *id) {
 static int remoteDeviceCharacteristics(sqlite3_file *id) {
     DebugClient(sprintf(debugStr, "---start remoteDeviceCharacteristics:\n"), debugStr);
     char argInChar[sizeof(ArgInDeviceCharacteristics)];
-    memset(argInChar,0,sizeof(ArgInDeviceCharacteristics));
+    memset(argInChar, 0, sizeof(ArgInDeviceCharacteristics));
     int deviceCharacteristics = 0;
 
     unixDeviceCharacteristicsConvertArgInToChar(id, argInChar);
@@ -419,7 +421,8 @@ static int remoteUnfetch(sqlite3_file *fd, i64 iOff, void *p) {
     char argInChar[sizeof(ArgInUnfetch)] = {'\0'};
     int rc = SQLITE_OK;
 
-    int p_flag; p_flag = (p == 0 ?  0 : 1);
+    int p_flag;
+    p_flag = (p == 0 ? 0 : 1);
     printf("p_flag = %d\n", p_flag);
     unixUnfetchConvertArgInToChar(fd, iOff, &p_flag, argInChar);
     const char *argOutChar = clientUnfetch(argInChar, sizeof(ArgInUnfetch), sizeof(ReturnUnfetch));
