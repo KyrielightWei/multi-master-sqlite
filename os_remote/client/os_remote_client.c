@@ -454,8 +454,8 @@ static int remoteUnfetch(sqlite3_file *fd, i64 iOff, void *p) {
 }
 //static int remote ( ){
 //    char argInChar[sizeof( )];
-    memset(argInChar, 0, sizeof());
-//    int rc = SQLITE_OK;
+//    memset(argInChar, 0, sizeof());
+//    int rc = SQLITE_OK;ll
 //
 //    unix
 //    const char* argOutChar = client (argInChar, sizeof( ), sizeof( ));
@@ -548,7 +548,7 @@ static int remoteUnfetch(sqlite3_file *fd, i64 iOff, void *p) {
 //     printf("   rc = %d\n", rc);
 
 //     char pBuf[4];
-    memset(argInChar, 0, sizeof());
+//    memset(argInChar, 0, sizeof());
 //     rc = remoteRead((sqlite3_file *) &fi, pBuf, 4, 2);
 
 //     printf("%s\n", "---Read:");

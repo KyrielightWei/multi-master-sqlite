@@ -76,7 +76,7 @@ void WrapOpen(const char *argIn, char *argOut) {
     int rc = 0;
 
     unixOpenConvertCharToArgIn(argIn, &aVfs[0], path, pId, &in_flags, &out_flags);
-    get(file_infor.h, pId);
+    getServerUnixPMethods(file_infor.h, pId);
     printf("   id.h = %d,  method = %s\n", file_infor.h,
            &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
     printf("   path = %s\n", path);
@@ -85,7 +85,7 @@ void WrapOpen(const char *argIn, char *argOut) {
     } else {
         rc = aVfs[0].xOpen(&aVfs[0], path, pId, in_flags & 0x87f7f, &out_flags);
     }
-    set(file_infor.h, pId);
+    setServerUnixPMethods(file_infor.h, pId);
     printf("   id.h = %d,  method = %s\n", file_infor.h,
            &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
     unixOpenConvertReturnToChar(pId, &out_flags, &rc, argOut);
@@ -174,9 +174,9 @@ void WrapWrite(const char *argIn, char *argOut) {
     int amt;
     sqlite3_int64 offset;
     unixWriteConvertCharToArgIn(argIn, pId, pBuf, &amt, &offset);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     int rc = unixWrite(pId, pBuf, amt, offset);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     unixWriteConvertReturnToChar(pId, pBuf, &amt, &rc, argOut);
 }
 
@@ -188,9 +188,9 @@ void WrapRead(const char *argIn, char *argOut) {
     sqlite3_int64 offset;
 
     unixReadConvertCharToArgIn(argIn, pId, pBuf, &amt, &offset);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     int rc = unixRead(pId, pBuf, amt, offset);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     unixReadConvertReturnToChar(pId, pBuf, &amt, &rc, argOut);
 }
 
@@ -200,9 +200,9 @@ void WrapTruncate(const char *argIn, char *argOut) {
     i64 nByte;
 
     unixTruncateConvertCharToArgIn(argIn, pId, &nByte);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     int rc = unixTruncate(pId, nByte);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     unixTruncateConvertReturnToChar(pId, &rc, argOut);
 }
 
@@ -212,9 +212,9 @@ void WrapSync(const char *argIn, char *argOut) {
     int flags;
 
     unixSyncConvertCharToArgIn(argIn, pId, &flags);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     int rc = unixSync(pId, flags);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     unixSyncConvertReturnToChar(pId, &rc, argOut);
 }
 
@@ -224,9 +224,9 @@ void WrapFileSize(const char *argIn, char *argOut) {
     i64 pSize;
 
     unixFileSizeConvertCharToArgIn(argIn, pId, &pSize);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     int rc = unixFileSize(pId, &pSize);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     unixFileSizeConvertReturnToChar(pId, &pSize, &rc, argOut);
 }
 
@@ -237,9 +237,9 @@ void WrapFileControl(const char *argIn, char *argOut) {
     int pArg;
 
     unixFileControlConvertCharToArgIn(argIn, pId, &op, &pArg);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     int rc = unixFileControl(pId, op, &pArg);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     unixFileControlConvertReturnToChar(pId, &pArg, &rc, argOut);
 }
 
@@ -248,9 +248,9 @@ void WrapSectorSize(const char *argIn, char *argOut) {
     sqlite3_file *pId = (sqlite3_file *) &id;
 
     unixSectorSizeConvertCharToArgIn(argIn, pId);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     int sectorSize = unixSectorSize(pId);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     unixSectorSizeConvertReturnToChar(pId, &sectorSize, argOut);
 }
 
@@ -259,9 +259,9 @@ void WrapDeviceCharacteristics(const char *argIn, char *argOut) {
     sqlite3_file *pId = (sqlite3_file *) &id;
 
     unixDeviceCharacteristicsConvertCharToArgIn(argIn, pId);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     int deviceCharacteristics = unixDeviceCharacteristics(pId);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     unixDeviceCharacteristicsConvertReturnToChar(pId, &deviceCharacteristics, argOut);
 }
 
@@ -272,14 +272,14 @@ void WrapClose(const char *argIn, char *argOut) {
     int rc;
 
     unixCloseConvertCharToArgIn(argIn, pId);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     printf("   id.h = %d,  method = %s\n", id.h,
            &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
     if (pId->pMethods) {
         rc = pId->pMethods->xClose(pId);
         pId->pMethods = 0;
     }
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     printf("   id.h = %d,  method = %s\n", id.h,
            &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
     unixCloseConvertReturnToChar(pId, &rc, argOut);
@@ -292,10 +292,10 @@ void WrapLock(const char *argIn, char *argOut) {
     int eFileLock;
 
     unixLockConvertCharToArgIn(argIn, pId, &eFileLock);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     printf("   id.h = %d\n", id.h);
     int rc = unixLock(pId, eFileLock);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     printf("   id.h = %d\n", id.h);
     unixLockConvertReturnToChar(pId, &rc, argOut);
 }
@@ -307,10 +307,10 @@ void WrapUnlock(const char *argIn, char *argOut) {
     int eFileLock;
 
     unixUnlockConvertCharToArgIn(argIn, pId, &eFileLock);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     printf("   id.h = %d\n", id.h);
     int rc = unixUnlock(pId, eFileLock);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     printf("   id.h = %d\n", id.h);
     unixUnlockConvertReturnToChar(pId, &rc, argOut);
 }
@@ -322,10 +322,10 @@ void WrapCheckReservedLock(const char *argIn, char *argOut) {
     int pResOut = 0;
 
     unixCheckReservedLockConvertCharToArgIn(argIn, pId, &pResOut);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     printf("   id.h = %d\n", id.h);
     int rc = unixCheckReservedLock(pId, &pResOut);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     printf("   id.h = %d\n", id.h);
     unixCheckReservedLockConvertReturnToChar(pId, &pResOut, &rc, argOut);
 }
@@ -339,9 +339,9 @@ void WrapFetch(const char *argIn, char *argOut) {
     void *pData = 0;
 
     unixFetchConvertCharToArgIn(argIn, pId, &iOff, &nAmt, &pData);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     int rc = unixFetch(pId, iOff, nAmt, &pData);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     unixFetchsConvertReturnToChar(pId, (char *) pData, nAmt, &rc, argOut);
 }
 
@@ -353,9 +353,9 @@ void WrapUnfetch(const char *argIn, char *argOut) {
     int p_flag;
 
     unixUnfetchConvertCharToArgIn(argIn, pId, &iOff, &p_flag);
-    get(id.h, pId);
+    getServerUnixPMethods(id.h, pId);
     void *pData = (p_flag == 0 ? 0 : &id);
     int rc = unixUnfetch(pId, iOff, pData);
-    set(id.h, pId);
+    setServerUnixPMethods(id.h, pId);
     unixUnfetchConvertReturnToChar(pId, &rc, argOut);
 }

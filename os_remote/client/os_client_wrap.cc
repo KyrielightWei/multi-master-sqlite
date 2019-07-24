@@ -442,21 +442,3 @@ extern "C" const char *clientUnfetch(char *argin, u32 inlen, u32 outlen) {
         return "RPC failed";
     }
 }
-
-extern "C" const char *clientNolockClose(char *argin, u32 inlen, u32 outlen) {
-    os_remote::ArgRequest request;
-    os_remote::ArgReply reply;
-    ClientContext context;
-
-    request.set_inarg(argin, inlen);
-    request.set_outlen(outlen);
-
-    Status status = stub_->NolockClose(&context, request, &reply);
-
-    if (status.ok()) {
-        return reply.outarg().data();
-    } else {
-        std::cout << status.error_code() << ": " << status.error_message() << std::endl;
-        return "RPC failed";
-    }
-}
