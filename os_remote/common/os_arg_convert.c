@@ -33,18 +33,86 @@
 #define OS_REMOTE_DEBUG 0
 
 #if  OS_REMOTE_DEBUG
-
 #include "common_sqlite3.c"
+#endif
 
-#endif 
+struct MethodAndFD {
+    int fd;
+    sqlite3_io_methods *method;
+    struct MethodAndFD *next;
+};
+typedef struct MethodAndFD MethodAndFD;
 
-extern void setClientRemotePMethods(sqlite3_file * pf);
+MethodAndFD *listHead = NULL;
 
-void setServerUnixPMethods(sqlite3_file * pf);
+void InitList() {
+    listHead = (MethodAndFD *) malloc(sizeof(MethodAndFD));
+    listHead->next = NULL;
+}
 
-void setServerUnixPMethods(sqlite3_file * pf)   //recive on server: ->arg
-{
-    pf->pMethods = &posixIoMethods;
+void PrintList(){
+    printf("   ---PrintList:\n");
+    if (NULL == listHead) { InitList(); }
+    MethodAndFD *temp = listHead->next;
+    while(NULL != temp){
+        printf("      fd : %d, method : %d\n", temp->fd, temp->method);
+        temp = temp->next;
+    }
+}
+
+MethodAndFD *FindNode(int fd, MethodAndFD **pre) {
+    if (NULL == listHead) { InitList(); }
+    MethodAndFD *temp = listHead->next;
+    while (temp != NULL) {
+        if (fd == temp->fd) {
+            return temp;
+        }
+        *pre = temp;
+        temp = temp->next;
+    }
+    return temp;
+}
+
+void AddNode(int fd, sqlite3_io_methods *method) {
+    if (NULL == listHead) { InitList(); }
+    MethodAndFD *prev = listHead;
+    MethodAndFD *node = FindNode(fd, &prev);
+
+    if (NULL == node) {
+        MethodAndFD *temp = (MethodAndFD *) malloc(sizeof(MethodAndFD));
+        temp->fd = fd;
+        temp->method = method;
+        temp->next = node;
+        prev->next = temp;
+    } else {
+        node->method = method;
+    }
+}
+
+void DeleteNode(int fd) {
+    if (NULL == listHead) { InitList(); }
+    MethodAndFD *prev = listHead;
+    MethodAndFD *node = FindNode(fd, &prev);
+    if (NULL != node) {
+        prev->next = prev->next->next;
+        free(node);
+    }
+}
+
+extern void setClientRemotePMethods(sqlite3_file *pf);
+
+void setServerUnixPMethods(int h, sqlite3_file *pf) {
+    AddNode(h, (sqlite3_io_methods *) pf->pMethods);
+}
+
+void getServerUnixPMethods(int fd, sqlite3_file *pf) {
+    MethodAndFD *prev = listHead;
+    MethodAndFD *node = FindNode(fd, &prev);
+    if (NULL == node || NULL == node->method) {
+        pf->pMethods = &posixIoMethods;
+    } else {
+        pf->pMethods = node->method;
+    }
 }
 
 #define SIZE_UNIXFILE sizeof(unixFile)
@@ -109,6 +177,11 @@ void unixOpenConvertArgInToChar(        //Client
     strcpy(arg, zPath);
     memcpy(arg + 512, pFile, SIZE_UNIXFILE);
     memcpy(arg + 512 + SIZE_UNIXFILE, &flags, sizeof(int));
+
+    int f = -1;
+    if (!pOutFlags) {
+        pOutFlags = &f;
+    }
     memcpy(arg + 512 + SIZE_UNIXFILE + sizeof(int), pOutFlags, sizeof(int));
 }
 
@@ -119,9 +192,16 @@ void unixOpenConvertCharToReturn(         // Client
         int *pRc
 ) {
     memcpy(pFile, arg, SIZE_UNIXFILE);
-    memcpy(pOutFlags, arg + SIZE_UNIXFILE, sizeof(int));
+    int temp = 0;
+    memcpy(&temp, arg + SIZE_UNIXFILE, sizeof(int));
     memcpy(pRc, arg + SIZE_UNIXFILE + sizeof(int), sizeof(int));
-    
+
+    if (-1 == temp) {
+        // pOutFlags = 0;
+    } else {
+        memcpy(pOutFlags, arg + SIZE_UNIXFILE, sizeof(int));
+    }
+
     setClientRemotePMethods(pFile);
 }
 
@@ -137,8 +217,8 @@ void unixOpenConvertCharToArgIn(    //server
     memcpy(pFile, arg + 512, SIZE_UNIXFILE);
     memcpy(flags, arg + 512 + SIZE_UNIXFILE, sizeof(int));
     memcpy(pOutFlags, arg + 512 + SIZE_UNIXFILE + sizeof(int), sizeof(int));
-    
-    setServerUnixPMethods(pFile);
+
+
 }
 
 void unixOpenConvertReturnToChar(         // server
@@ -147,9 +227,13 @@ void unixOpenConvertReturnToChar(         // server
         int *pRc,
         char *arg
 ) {
+
     memcpy(arg, pFile, SIZE_UNIXFILE);
     memcpy(arg + SIZE_UNIXFILE, pOutFlags, sizeof(int));
+    // printf("pOutflags2 = %d\n", *pOutFlags);
     memcpy(arg + SIZE_UNIXFILE + sizeof(int), pRc, sizeof(int));
+
+//    printf("%d\n", *(int *)(arg + SIZE_UNIXFILE));
 }
 
 
@@ -512,7 +596,7 @@ void unixReadConvertCharToReturn(    // client
     memcpy(id, arg, SIZE_UNIXFILE);
     memcpy(pBuf, arg + SIZE_UNIXFILE, *amt);
     memcpy(pRc, arg + SIZE_UNIXFILE + MAX_SIZE, sizeof(int));
-    
+
     setClientRemotePMethods(id);
 }
 
@@ -528,8 +612,6 @@ void unixReadConvertCharToArgIn(
     memcpy(amt, arg + SIZE_UNIXFILE + MAX_SIZE, sizeof(int));
     memcpy(pBuf, arg + SIZE_UNIXFILE, *amt);
     memcpy(offset, arg + SIZE_UNIXFILE + MAX_SIZE + sizeof(int), sizeof(sqlite3_int64));
-    
-    setServerUnixPMethods(id);
 }
 
 void unixReadConvertReturnToChar(
@@ -598,8 +680,6 @@ void unixWriteConvertCharToArgIn(
     memcpy(amt, arg + SIZE_UNIXFILE + MAX_SIZE, sizeof(int));
     memcpy(pBuf, arg + SIZE_UNIXFILE, *amt);
     memcpy(offset, arg + SIZE_UNIXFILE + MAX_SIZE + sizeof(int), sizeof(sqlite3_int64));
-
-    setServerUnixPMethods(id);
 }
 
 void unixWriteConvertReturnToChar(
@@ -642,8 +722,6 @@ void unixTruncateConvertCharToReturn(const char *arg, sqlite3_file *id, int *pRc
 void unixTruncateConvertCharToArgIn(const char *arg, sqlite3_file *id, i64 *nByte) {
     memcpy(id, arg, SIZE_UNIXFILE);
     memcpy(nByte, arg + SIZE_UNIXFILE, sizeof(i64));
-    
-    setServerUnixPMethods(id);
 }
 
 void unixTruncateConvertReturnToChar(sqlite3_file *id, int *pRc, char *arg) {
@@ -679,8 +757,6 @@ void unixSyncConvertCharToReturn(const char *arg, sqlite3_file *id, int *pRc) {
 void unixSyncConvertCharToArgIn(const char *arg, sqlite3_file *id, int *flags) {
     memcpy(id, arg, SIZE_UNIXFILE);
     memcpy(flags, arg + SIZE_UNIXFILE, sizeof(int));
-
-    setServerUnixPMethods(id);
 }
 
 void unixSyncConvertReturnToChar(sqlite3_file *id, int *pRc, char *arg) {
@@ -718,8 +794,6 @@ void unixFileSizeConvertCharToReturn(const char *arg, sqlite3_file *id, i64 *pSi
 void unixFileSizeConvertCharToArgIn(const char *arg, sqlite3_file *id, i64 *pSize) {
     memcpy(id, arg, SIZE_UNIXFILE);
 //    memcpy(pSize, arg + SIZE_UNIXFILE, sizeof(i64));
-
-    setServerUnixPMethods(id);
 }
 
 void unixFileSizeConvertReturnToChar(sqlite3_file *id, i64 *pSize, int *rc, char *arg) {
@@ -761,7 +835,7 @@ void unixFileControlConvertCharToArgIn(const char *arg, sqlite3_file *id, int *o
     memcpy(op, arg + SIZE_UNIXFILE, sizeof(int));
     memcpy(pArg, arg + SIZE_UNIXFILE + sizeof(int), sizeof(int));
 
-    setServerUnixPMethods(id);
+    
 }
 
 void unixFileControlConvertReturnToChar(sqlite3_file *id, int *pArg, int *pRc, char *arg) {
@@ -797,7 +871,7 @@ void unixSectorSizeConvertCharToReturn(const char *arg, sqlite3_file *id, int *s
 void unixSectorSizeConvertCharToArgIn(const char *arg, sqlite3_file *id) {
     memcpy(id, arg, SIZE_UNIXFILE);
 
-    setServerUnixPMethods(id);
+    
 }
 
 void unixSectorSizeConvertReturnToChar(sqlite3_file *id, int *sectorSize, char *arg) {
@@ -831,7 +905,7 @@ void unixDeviceCharacteristicsConvertCharToReturn(const char *arg, sqlite3_file 
 void unixDeviceCharacteristicsConvertCharToArgIn(const char *arg, sqlite3_file *id) {
     memcpy(id, arg, SIZE_UNIXFILE);
 
-    setServerUnixPMethods(id);
+    
 }
 
 void unixDeviceCharacteristicsConvertReturnToChar(sqlite3_file *id, int *deviceCharacteristics, char *arg) {
@@ -865,7 +939,7 @@ void unixCloseConvertCharToReturn(const char *arg, sqlite3_file *id, int *rc) {
 void unixCloseConvertCharToArgIn(const char *arg, sqlite3_file *id) {
     memcpy(id, arg, SIZE_UNIXFILE);
 
-    setServerUnixPMethods(id);
+    
 }
 
 void unixCloseConvertReturnToChar(sqlite3_file *id, int *rc, char *arg) {
@@ -901,8 +975,6 @@ void unixLockConvertCharToReturn(const char *arg, sqlite3_file *id, int *pRc) {
 void unixLockConvertCharToArgIn(const char *arg, sqlite3_file *id, int *eFileLock) {
     memcpy(id, arg, SIZE_UNIXFILE);
     memcpy(eFileLock, arg + SIZE_UNIXFILE, sizeof(int));
-
-    setServerUnixPMethods(id);
 }
 
 void unixLockConvertReturnToChar(sqlite3_file *id, int *pRc, char *arg) {
@@ -938,8 +1010,6 @@ void unixUnlockConvertCharToReturn(const char *arg, sqlite3_file *id, int *pRc) 
 void unixUnlockConvertCharToArgIn(const char *arg, sqlite3_file *id, int *eFileLock) {
     memcpy(id, arg, SIZE_UNIXFILE);
     memcpy(eFileLock, arg + SIZE_UNIXFILE, sizeof(int));
-
-    setServerUnixPMethods(id);
 }
 
 void unixUnlockConvertReturnToChar(sqlite3_file *id, int *pRc, char *arg) {
@@ -978,8 +1048,6 @@ void unixCheckReservedLockConvertCharToReturn(const char *arg, sqlite3_file *id,
 void unixCheckReservedLockConvertCharToArgIn(const char *arg, sqlite3_file *id, int *pResOut) {
     memcpy(id, arg, SIZE_UNIXFILE);
     memcpy(pResOut, arg + SIZE_UNIXFILE, sizeof(int));
-
-    setServerUnixPMethods(id);
 }
 
 void unixCheckReservedLockConvertReturnToChar(sqlite3_file *id, int *pResOut, int *pRc, char *arg) {
@@ -1022,9 +1090,6 @@ void unixFetchConvertCharToArgIn(const char *arg, sqlite3_file *fd, i64 *iOff, i
     memcpy(fd, arg, SIZE_UNIXFILE);
     memcpy(iOff, arg + SIZE_UNIXFILE, sizeof(i64));
     memcpy(nAmt, arg + SIZE_UNIXFILE + sizeof(i64), sizeof(int));
-//    memcpy();
-
-    setServerUnixPMethods(fd);
 }
 
 void unixFetchsConvertReturnToChar(sqlite3_file *fd, char *pp, int nAmt, int *rc, char *arg) {
@@ -1064,8 +1129,6 @@ void unixUnfetchConvertCharToArgIn(const char *arg, sqlite3_file *fd, i64 *iOff,
     memcpy(fd, arg, SIZE_UNIXFILE);
     memcpy(iOff, arg + SIZE_UNIXFILE, sizeof(i64));
     memcpy(p_flag, arg + SIZE_UNIXFILE + sizeof(i64), sizeof(int));
-
-    setServerUnixPMethods(fd);
 }
 
 void unixUnfetchConvertReturnToChar(sqlite3_file *fd, int *rc, char *arg) {
