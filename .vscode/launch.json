@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) sqlite_server",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/os_remote/server/server",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/os_remote/server/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+           // "preLaunchTask": "make server",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(gdb) sqlite_client",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/sqlite-autoconf-3280000/build/sqlite3",
+            "args": ["./test.db"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/sqlite-autoconf-3280000/build/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+           // "preLaunchTask": "make sqlite3",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}
