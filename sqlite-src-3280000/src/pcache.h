@@ -22,6 +22,9 @@ typedef struct PCache PCache;
 ** Every page in the cache is controlled by an instance of the following
 ** structure.
 */
+/**
+ * sqlite3_pcache_page的结构体子类？
+ */
 struct PgHdr {
   sqlite3_pcache_page *pPage;    /* Pcache object page handle */
   void *pData;                   /* Page data */
