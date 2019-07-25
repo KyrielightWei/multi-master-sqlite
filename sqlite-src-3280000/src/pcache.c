@@ -38,6 +38,10 @@
 **   (so that the right page to eject can be found by following pDirtyPrev
 **   pointers).
 */
+/**
+ * LRU顺序的双向链表：pDirty指向最新的页（首元素），pDirtyTail指向最旧的页（尾元素）；新-->旧
+ * pSynced指向将要驱逐的脏页，pSynced指向最老的有PGHDR_NEED_SYNC标记的页，或是链表中更老一点的页
+ */
 struct PCache {
   PgHdr *pDirty, *pDirtyTail;         /* List of dirty pages in LRU order */
   PgHdr *pSynced;                     /* Last synced page in dirty page list */
@@ -50,7 +54,7 @@ struct PCache {
   u8 eCreate;                         /* eCreate value for for xFetch() */
   int (*xStress)(void*,PgHdr*);       /* Call to try make a page clean */
   void *pStress;                      /* Argument to xStress */
-  sqlite3_pcache *pCache;             /* Pluggable cache module */
+  sqlite3_pcache *pCache;             /* Pluggable cache module */ //？
 };
 
 /********************************** Test and Debug Logic **********************/
@@ -160,8 +164,9 @@ static void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove){
 
   pcacheTrace(("%p.DIRTYLIST.%s %d\n", p,
                 addRemove==1 ? "REMOVE" : addRemove==2 ? "ADD" : "FRONT",
-                pPage->pgno));
+                pPage->pgno));  //debug时输出pcache操作的记录
   if( addRemove & PCACHE_DIRTYLIST_REMOVE ){
+    //删除链表元素前,验证双向链表的长度 >= 1
     assert( pPage->pDirtyNext || pPage==p->pDirtyTail );
     assert( pPage->pDirtyPrev || pPage==p->pDirty );
   
@@ -169,7 +174,7 @@ static void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove){
     if( p->pSynced==pPage ){
       p->pSynced = pPage->pDirtyPrev;
     }
-  
+    //从链表中删除pPage,双向链表的基本操作  
     if( pPage->pDirtyNext ){
       pPage->pDirtyNext->pDirtyPrev = pPage->pDirtyPrev;
     }else{
@@ -183,10 +188,10 @@ static void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove){
       ** This is an optimization that allows sqlite3PcacheFetch() to skip
       ** searching for a dirty page to eject from the cache when it might
       ** otherwise have to.  */
-      assert( pPage==p->pDirty );
+      assert( pPage==p->pDirty ); //当前要删除的page位于链表的首位
       p->pDirty = pPage->pDirtyNext;
       assert( p->bPurgeable || p->eCreate==2 );
-      if( p->pDirty==0 ){         /*OPTIMIZATION-IF-TRUE*/
+      if( p->pDirty==0 ){         /*OPTIMIZATION-IF-TRUE*/  //删除后，链表为空
         assert( p->bPurgeable==0 || p->eCreate==1 );
         p->eCreate = 2;
       }
@@ -194,11 +199,11 @@ static void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove){
   }
   if( addRemove & PCACHE_DIRTYLIST_ADD ){
     pPage->pDirtyPrev = 0;
-    pPage->pDirtyNext = p->pDirty;
-    if( pPage->pDirtyNext ){
+    pPage->pDirtyNext = p->pDirty; //默认添加的是最新的，初始化链表指针，插入到链表头
+    if( pPage->pDirtyNext ){ //链表元素大于1
       assert( pPage->pDirtyNext->pDirtyPrev==0 );
       pPage->pDirtyNext->pDirtyPrev = pPage;
-    }else{
+    }else{ //链表原本为空
       p->pDirtyTail = pPage;
       if( p->bPurgeable ){
         assert( p->eCreate==2 );

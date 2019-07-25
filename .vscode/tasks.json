@@ -1,0 +1,88 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "make server",
+            "type": "shell",
+            "command": "make",
+            "options": {
+                "cwd": "${workspaceFolder}/os_remote/server/"
+            },
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "dependsOn":[
+                "clean server"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "label": "make sqlite3",
+            "type": "shell",
+            "command": "make",
+            "options": {
+                "cwd": "${workspaceFolder}/sqlite-autoconf-3280000/build/"
+            },
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "dependsOn":[
+                "clean sqlite3",
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "label": "configure sqlite3",
+            "type": "shell",
+            "command": "../configure",
+            "options": {
+                "cwd": "${workspaceFolder}/sqlite-autoconf-3280000/build/"
+            },
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "distclean sqlite3",
+            "type": "shell",
+            "command": "make distclean",
+            "options": {
+                "cwd": "${workspaceFolder}/sqlite-autoconf-3280000/build/"
+            },
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+        ,
+        {
+            "label": "clean server",
+            "type": "shell",
+            "command": "make clean",
+            "options": {
+                "cwd": "${workspaceFolder}/os_remote/server/"
+            },
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "clean sqlite3",
+            "type": "shell",
+            "command": "make clean",
+            "options": {
+                "cwd": "${workspaceFolder}/sqlite-autoconf-3280000/build/"
+            },
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ]
+}
