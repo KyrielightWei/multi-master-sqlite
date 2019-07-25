@@ -178,6 +178,17 @@ void WrapWrite(const char *argIn, char *argOut) {
     int rc = unixWrite(pId, pBuf, amt, offset);
     setServerUnixPMethods(id.h, pId);
     unixWriteConvertReturnToChar(pId, pBuf, &amt, &rc, argOut);
+    printf("--WrapWrite:\n");
+    printf("id.h = %d\n",id.h);
+    printf("amt = %d\n",amt);
+    int i=0;
+    for(i=0;i<amt;i++)
+    {
+        printf("%d ",pBuf[i]);
+    }
+    printf("\n");
+    printf("rc = %d\n",rc);
+    printf("offset = %ld\n",offset);
 }
 
 void WrapRead(const char *argIn, char *argOut) {
