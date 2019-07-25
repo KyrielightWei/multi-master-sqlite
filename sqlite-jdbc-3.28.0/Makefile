@@ -1,4 +1,5 @@
-
+#  makefile中符号含义：http://www.ruanyifeng.com/blog/2015/02/make.html
+#
 include Makefile.common
 
 RESOURCE_DIR = src/main/resources
@@ -20,19 +21,32 @@ ifneq ($(SQLITE_SOURCE),$(TARGET)/$(SQLITE_AMAL_PREFIX))
 	created := $(shell touch $(SQLITE_UNPACKED))
 endif
 
+SQLITE_AUTOCONF:=../sqlite-autoconf-3280000
+OS_REMOTE_DIR:=../os_remote
+REMOTE_SOURCR:=$(TARGET)/os_remote
+GRPC_LDFLAGS += -lstdc++ -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl
+
 CCFLAGS:= -I$(SQLITE_OUT) -I$(SQLITE_SOURCE) $(CCFLAGS)
 
-$(SQLITE_ARCHIVE):
+## 下载sqlite3源码
+$(SQLITE_ARCHIVE):  
 	@mkdir -p $(@D)
-	curl -L --max-redirs 0 -f -o$@ https://www.sqlite.org/2019/$(SQLITE_AMAL_PREFIX).zip || \
-	curl -L --max-redirs 0 -f -o$@ https://www.sqlite.org/$(SQLITE_AMAL_PREFIX).zip || \
-	curl -L --max-redirs 0 -f -o$@ https://www.sqlite.org/$(SQLITE_OLD_AMAL_PREFIX).zip
-
-$(SQLITE_UNPACKED): $(SQLITE_ARCHIVE)
-	unzip -qo $< -d $(TARGET)/tmp.$(version)
-	(mv $(TARGET)/tmp.$(version)/$(SQLITE_AMAL_PREFIX) $(TARGET) && rmdir $(TARGET)/tmp.$(version)) || mv $(TARGET)/tmp.$(version)/ $(TARGET)/$(SQLITE_AMAL_PREFIX)
 	touch $@
+	# curl -L --max-redirs 0 -f -o$@ https://www.sqlite.org/2019/$(SQLITE_AMAL_PREFIX).zip || \
+	# curl -L --max-redirs 0 -f -o$@ https://www.sqlite.org/$(SQLITE_AMAL_PREFIX).zip || \
+	# curl -L --max-redirs 0 -f -o$@ https://www.sqlite.org/$(SQLITE_OLD_AMAL_PREFIX).zip
 
+## 解压sqlite源码压缩包,解压的源码文件存在于$(TARGET)/$(SQLITE_AMAL_PREFIX),创建一个文件表示完成解压
+$(SQLITE_UNPACKED): $(SQLITE_ARCHIVE) 
+	mkdir -p $(TARGET)/tmp.$(version)/$(SQLITE_AMAL_PREFIX)/
+	cp $(SQLITE_AUTOCONF)/shell.c $(TARGET)/tmp.$(version)/$(SQLITE_AMAL_PREFIX)/
+	cp $(SQLITE_AUTOCONF)/sqlite3.c $(TARGET)/tmp.$(version)/$(SQLITE_AMAL_PREFIX)/
+	cp $(SQLITE_AUTOCONF)/sqlite3.h $(TARGET)/tmp.$(version)/$(SQLITE_AMAL_PREFIX)/
+	cp $(SQLITE_AUTOCONF)/sqlite3ext.h $(TARGET)/tmp.$(version)/$(SQLITE_AMAL_PREFIX)/
+	#unzip -qo $< -d $(TARGET)/tmp.$(version)
+	(mv $(TARGET)/tmp.$(version)/$(SQLITE_AMAL_PREFIX) $(TARGET) && rmdir $(TARGET)/tmp.$(version)) || mv $(TARGET)/tmp.$(version)/ $(TARGET)/$(SQLITE_AMAL_PREFIX)
+	cp -r $(OS_REMOTE_DIR) $(TARGET)
+	touch $@
 
 $(TARGET)/common-lib/org/sqlite/%.class: src/main/java/org/sqlite/%.java
 	@mkdir -p $(@D)
@@ -46,7 +60,7 @@ $(TARGET)/common-lib/NativeDB.h: $(TARGET)/common-lib/org/sqlite/core/NativeDB.c
 test:
 	mvn test
 
-clean: clean-native clean-java clean-tests
+clean: clean-native clean-java clean-tests clean-os_remote
 
 
 $(SQLITE_OUT)/sqlite3.o : $(SQLITE_UNPACKED)
@@ -78,10 +92,13 @@ $(SQLITE_OUT)/sqlite3.o : $(SQLITE_UNPACKED)
 	    $(SQLITE_FLAGS) \
 	    $(SQLITE_OUT)/sqlite3.c
 
-$(SQLITE_OUT)/$(LIBNAME): $(SQLITE_OUT)/sqlite3.o $(SRC)/org/sqlite/core/NativeDB.c
+$(SQLITE_OUT)/$(LIBNAME): $(SQLITE_OUT)/sqlite3.o $(SRC)/org/sqlite/core/NativeDB.c 
 	@mkdir -p $(@D)
 	$(CC) $(CCFLAGS) -I $(TARGET)/common-lib -c -o $(SQLITE_OUT)/NativeDB.o $(SRC)/org/sqlite/core/NativeDB.c
-	$(CC) $(CCFLAGS) -o $@ $(SQLITE_OUT)/*.o $(LINKFLAGS)
+	$(CXX)  -std=c++11  -fPIC -c -o $(SQLITE_OUT)/os_client_wrap.o $(REMOTE_SOURCR)/client/os_client_wrap.cc
+	$(CXX)  -std=c++11  -fPIC -c -o $(SQLITE_OUT)/os_remote.grpc.pb.o $(REMOTE_SOURCR)/common/os_remote.grpc.pb.cc
+	$(CXX)  -std=c++11  -fPIC -c -o $(SQLITE_OUT)/os_remote.pb.o $(REMOTE_SOURCR)/common/os_remote.pb.cc
+	$(CC) $(CCFLAGS) -o $@ $(SQLITE_OUT)/*.o $(LINKFLAGS) $(GRPC_LDFLAGS)
 # Workaround for strip Protocol error when using VirtualBox on Mac
 	cp $@ /tmp/$(@F)
 	$(STRIP) /tmp/$(@F)
@@ -93,7 +110,7 @@ NATIVE_DLL:=$(NATIVE_DIR)/$(LIBNAME)
 
 # For cross-compilation, install docker. See also https://github.com/dockcross/dockcross
 # Disabled linux-armv6 build because of this issue; https://github.com/dockcross/dockcross/issues/190
-native-all: native win32 win64 mac64 linux32 linux64 linux-arm linux-armv7 linux-arm64 linux-android-arm linux-ppc64
+native-all: native # win32 win64 mac64 linux32 linux64 linux-arm linux-armv7 linux-arm64 linux-android-arm linux-ppc64
 
 native: $(SQLITE_UNPACKED) $(NATIVE_DLL)
 
@@ -154,6 +171,14 @@ package: native-all
 
 clean-native:
 	rm -rf $(SQLITE_OUT)
+
+clean-os_remote:
+	rm -rf $(REMOTE_SOURCR)
+	rm -rf $(TARGET)/$(SQLITE_AMAL_PREFIX)
+	rm -rf $(SQLITE_ARCHIVE)
+	rm -rf $(SQLITE_UNPACKED)
+	rm LOG
+	
 
 clean-java:
 	rm -rf $(TARGET)/*classes
