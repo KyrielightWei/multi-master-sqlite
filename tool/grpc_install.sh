@@ -1,13 +1,14 @@
 # ! /bin/bash
 
-#sudo yum install gflags-devel gtest-devel
-#sudo yum install libcxx-devel
+#sudo yum -y install gflags-devel gtest-devel
+#sudo yum -y install libcxx-devel
 
 git clone -b $(curl -L https://grpc.io/release) https://github.com/grpc/grpc
 cd grpc
 git submodule update --init
 
 cd ./third_party/protobuf/
+./autogen.sh
  ./configure --prefix=$HOME/software/protobuf-install
 make clean 
 make
