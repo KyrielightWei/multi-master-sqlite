@@ -1,4 +1,7 @@
 
+#ignore LOG
+LOG
+
 # VSCode Counter
 .VSCodeCounter/*
 .VSCodeCounter
