@@ -54,8 +54,13 @@ struct PCache {
   u8 eCreate;                         /* eCreate value for for xFetch() */
   int (*xStress)(void*,PgHdr*);       /* Call to try make a page clean */
   void *pStress;                      /* Argument to xStress */
-  sqlite3_pcache *pCache;             /* Pluggable cache module */ //？
+  sqlite3_pcache *pCache;             /* Pluggable cache module */ //神奇的命名，成员与结构体同名
 };
+/**
+ * 在sqlite3.h中定义的pcache2的类型是
+ *          sqlite3_pcache_methods2 包含了一系列方法
+ *  具体内容见README 的 pache注释部分
+ */
 
 /********************************** Test and Debug Logic **********************/
 /*
@@ -270,7 +275,7 @@ int sqlite3PcacheInitialize(void){
   return sqlite3GlobalConfig.pcache2.xInit(sqlite3GlobalConfig.pcache2.pArg);
 }
 void sqlite3PcacheShutdown(void){
-  if( sqlite3GlobalConfig.pcache2.xShutdown ){
+  if( sqlite3GlobalConfig.pcache2.xShutdown ){                 //默认的page cache不需要关闭吗？
     /* IMPLEMENTATION-OF: R-26000-56589 The xShutdown() method may be NULL. */
     sqlite3GlobalConfig.pcache2.xShutdown(sqlite3GlobalConfig.pcache2.pArg);
   }
@@ -279,7 +284,7 @@ void sqlite3PcacheShutdown(void){
 /*
 ** Return the size in bytes of a PCache object.
 */
-int sqlite3PcacheSize(void){ return sizeof(PCache); }
+int sqlite3PcacheSize(void){ return sizeof(PCache); }    //获得PCache结构的大小，用于提前分配结构需要的内存空间
 
 /*
 ** Create a new PCache object. Storage space to hold the object
@@ -293,6 +298,7 @@ int sqlite3PcacheSize(void){ return sizeof(PCache); }
 ** to this module, the extra space really ends up being the MemPage
 ** structure in the pager.
 */
+//创建新的Pcache结构体对象
 int sqlite3PcacheOpen(
   int szPage,                  /* Size of every page */
   int szExtra,                 /* Extra space associated with each page */
@@ -319,12 +325,14 @@ int sqlite3PcacheOpen(
 ** Change the page size for PCache object. The caller must ensure that there
 ** are no outstanding page references when this function is called.
 */
+//在确保没有页引用没有脏页的情况下，改变Pcache中的page大小
+//新建新的sqlite3_pcache，替换原本的
 int sqlite3PcacheSetPageSize(PCache *pCache, int szPage){
   assert( pCache->nRefSum==0 && pCache->pDirty==0 );
   if( pCache->szPage ){
     sqlite3_pcache *pNew;
     pNew = sqlite3GlobalConfig.pcache2.xCreate(
-                szPage, pCache->szExtra + ROUND8(sizeof(PgHdr)),
+                szPage, pCache->szExtra + ROUND8(sizeof(PgHdr)),  //8字节对齐
                 pCache->bPurgeable
     );
     if( pNew==0 ) return SQLITE_NOMEM_BKPT;
@@ -363,6 +371,8 @@ int sqlite3PcacheSetPageSize(PCache *pCache, int szPage){
 ** the stack on entry and pop them back off on exit, which saves a
 ** lot of pushing and popping.
 */
+//传入0则仅检查页是否存在
+//传入3则尝试新建一个页
 sqlite3_pcache_page *sqlite3PcacheFetch(
   PCache *pCache,       /* Obtain the page from this cache */
   Pgno pgno,            /* Page number to obtain */
@@ -404,6 +414,13 @@ sqlite3_pcache_page *sqlite3PcacheFetch(
 **
 ** This routine should be invoked only after sqlite3PcacheFetch() fails.
 */
+//在sqlite3PcacheFetch() 失败时调用，失败的原因是没有可重用的clean页或者达到了cache大小限制
+/**
+ * 工作方式：（最后一个 = 最老）
+ * 1. 找到最后一个未被引用且无PGHDR_NEED_SYNC标志的脏页（在脏页链表中），更新pSynced，避免引起错误
+ * 2. 若1找到了，则使用该页作为目标；若未找到，则找到最后一个无引用的脏页作为目标
+ * 3. 将目标页变成clean状态，然后重新调用fetch，尽最大努力获得一个页
+ */
 int sqlite3PcacheFetchStress(
   PCache *pCache,                 /* Obtain the page from this cache */
   Pgno pgno,                      /* Page number to obtain */
@@ -460,6 +477,7 @@ int sqlite3PcacheFetchStress(
 ** requires extra stack manipulation that can be avoided in the common
 ** case.
 */
+//非正常情况下初始化已经fetch的页
 static SQLITE_NOINLINE PgHdr *pcacheFetchFinishWithInit(
   PCache *pCache,             /* Obtain the page from this cache */
   Pgno pgno,                  /* Page number obtained */
@@ -467,7 +485,7 @@ static SQLITE_NOINLINE PgHdr *pcacheFetchFinishWithInit(
 ){
   PgHdr *pPgHdr;
   assert( pPage!=0 );
-  pPgHdr = (PgHdr*)pPage->pExtra;
+  pPgHdr = (PgHdr*)pPage->pExtra;  
   assert( pPgHdr->pPage==0 );
   memset(&pPgHdr->pDirty, 0, sizeof(PgHdr) - offsetof(PgHdr,pDirty));
   pPgHdr->pPage = pPage;
