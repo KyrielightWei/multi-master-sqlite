@@ -179,6 +179,7 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
         WrapSync(in, out_struct);
 
         reply->set_outarg(out_struct, out_size);
+
         return Status::OK;
     }
 
