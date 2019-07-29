@@ -164,6 +164,10 @@ int sqlite3PcachePageSanity(PgHdr *pPg){
 ** remove pPage from the dirty list.  The 0x02 means add pPage back to
 ** the dirty list.  Doing both moves pPage to the front of the dirty list.
 */
+/**
+ * 管理脏页链表
+ * addremove参数：1表示删除页，2表示在链表末尾加入页，3表示将页移动到链表头
+ */
 static void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove){
   PCache *p = pPage->pCache;
 
@@ -504,6 +508,11 @@ static SQLITE_NOINLINE PgHdr *pcacheFetchFinishWithInit(
 ** must be called after sqlite3PcacheFetch() in order to get a usable
 ** result.
 */
+/**
+ * 在fetch之后获得的sqlite3_pcache_page转换成PgHdr对象
+ * 若PgHdr未初始化，在调用pcacheFetchFinishWithInit后返回PgHdr
+ * 增加Pcache和PgHdr的引用计数
+ */
 PgHdr *sqlite3PcacheFetchFinish(
   PCache *pCache,             /* Obtain the page from this cache */
   Pgno pgno,                  /* Page number obtained */
@@ -527,6 +536,9 @@ PgHdr *sqlite3PcacheFetchFinish(
 ** Decrement the reference count on a page. If the page is clean and the
 ** reference count drops to 0, then it is made eligible for recycling.
 */
+/**
+ * 减少页的引用计数，若计数减少到0，则将其Unpin(非脏页)，或，将页移动到链表头（脏页）
+ */
 void SQLITE_NOINLINE sqlite3PcacheRelease(PgHdr *p){
   assert( p->nRef>0 );
   p->pCache->nRefSum--;
@@ -542,6 +554,9 @@ void SQLITE_NOINLINE sqlite3PcacheRelease(PgHdr *p){
 /*
 ** Increase the reference count of a supplied page by 1.
 */
+/**
+ * 增加Pcache和PgHdr引用计数
+ */ 
 void sqlite3PcacheRef(PgHdr *p){
   assert(p->nRef>0);
   assert( sqlite3PcachePageSanity(p) );
@@ -554,6 +569,9 @@ void sqlite3PcacheRef(PgHdr *p){
 ** page. This function deletes that reference, so after it returns the
 ** page pointed to by p is invalid.
 */
+/**
+ * 将一个页从cache中驱逐，调用前必须保证该页的引用计数为1
+ */
 void sqlite3PcacheDrop(PgHdr *p){
   assert( p->nRef==1 );
   assert( sqlite3PcachePageSanity(p) );
@@ -568,13 +586,16 @@ void sqlite3PcacheDrop(PgHdr *p){
 ** Make sure the page is marked as dirty. If it isn't dirty already,
 ** make it so.
 */
+/**
+ * 将一个页标志为脏页
+ */
 void sqlite3PcacheMakeDirty(PgHdr *p){
   assert( p->nRef>0 );
   assert( sqlite3PcachePageSanity(p) );
   if( p->flags & (PGHDR_CLEAN|PGHDR_DONT_WRITE) ){    /*OPTIMIZATION-IF-FALSE*/
     p->flags &= ~PGHDR_DONT_WRITE;
     if( p->flags & PGHDR_CLEAN ){
-      p->flags ^= (PGHDR_DIRTY|PGHDR_CLEAN);
+      p->flags ^= (PGHDR_DIRTY|PGHDR_CLEAN); //异或，去除CLEAN标志，增加DIRTY标志
       pcacheTrace(("%p.DIRTY %d\n",p->pCache,p->pgno));
       assert( (p->flags & (PGHDR_DIRTY|PGHDR_CLEAN))==PGHDR_DIRTY );
       pcacheManageDirtyList(p, PCACHE_DIRTYLIST_ADD);
@@ -587,16 +608,19 @@ void sqlite3PcacheMakeDirty(PgHdr *p){
 ** Make sure the page is marked as clean. If it isn't clean already,
 ** make it so.
 */
+/**
+ * 将一个页标志为Clean
+ */
 void sqlite3PcacheMakeClean(PgHdr *p){
   assert( sqlite3PcachePageSanity(p) );
   assert( (p->flags & PGHDR_DIRTY)!=0 );
   assert( (p->flags & PGHDR_CLEAN)==0 );
   pcacheManageDirtyList(p, PCACHE_DIRTYLIST_REMOVE);
-  p->flags &= ~(PGHDR_DIRTY|PGHDR_NEED_SYNC|PGHDR_WRITEABLE);
-  p->flags |= PGHDR_CLEAN;
+  p->flags &= ~(PGHDR_DIRTY|PGHDR_NEED_SYNC|PGHDR_WRITEABLE); //清除几种标志
+  p->flags |= PGHDR_CLEAN; //增加clean标志
   pcacheTrace(("%p.CLEAN %d\n",p->pCache,p->pgno));
   assert( sqlite3PcachePageSanity(p) );
-  if( p->nRef==0 ){
+  if( p->nRef==0 ){ //clean后引用计数为0，则执行Unpin
     pcacheUnpin(p);
   }
 }
@@ -604,6 +628,9 @@ void sqlite3PcacheMakeClean(PgHdr *p){
 /*
 ** Make every page in the cache clean.
 */
+/**
+ * 将pcache中的所有页标志为clean
+ */
 void sqlite3PcacheCleanAll(PCache *pCache){
   PgHdr *p;
   pcacheTrace(("%p.CLEAN-ALL\n",pCache));
@@ -615,6 +642,9 @@ void sqlite3PcacheCleanAll(PCache *pCache){
 /*
 ** Clear the PGHDR_NEED_SYNC and PGHDR_WRITEABLE flag from all dirty pages.
 */
+/**
+ * 清除所有页的PGHDR_NEED_SYNC和PGHDR_WRITEABLE标志
+ */
 void sqlite3PcacheClearWritable(PCache *pCache){
   PgHdr *p;
   pcacheTrace(("%p.CLEAR-WRITEABLE\n",pCache));
@@ -627,6 +657,9 @@ void sqlite3PcacheClearWritable(PCache *pCache){
 /*
 ** Clear the PGHDR_NEED_SYNC flag from all dirty pages.
 */
+/**
+ * 清除所有页的PGHDR_NEED_SYNC标志
+ */
 void sqlite3PcacheClearSyncFlags(PCache *pCache){
   PgHdr *p;
   for(p=pCache->pDirty; p; p=p->pDirtyNext){
@@ -638,6 +671,9 @@ void sqlite3PcacheClearSyncFlags(PCache *pCache){
 /*
 ** Change the page number of page p to newPgno. 
 */
+/**
+ * 改变一个页的页号
+ */
 void sqlite3PcacheMove(PgHdr *p, Pgno newPgno){
   PCache *pCache = p->pCache;
   assert( p->nRef>0 );
@@ -660,12 +696,16 @@ void sqlite3PcacheMove(PgHdr *p, Pgno newPgno){
 ** function is 0, then the data area associated with page 1 is zeroed, but
 ** the page object is not dropped.
 */
+/**
+ * 使cache中页号大于传入参数pgno的页全部失效
+ * 其中包含对于page1（页号为1）的页的特殊处理，函数中看不出意义何在
+ */
 void sqlite3PcacheTruncate(PCache *pCache, Pgno pgno){
   if( pCache->pCache ){
     PgHdr *p;
     PgHdr *pNext;
     pcacheTrace(("%p.TRUNCATE %d\n",pCache,pgno));
-    for(p=pCache->pDirty; p; p=pNext){
+    for(p=pCache->pDirty; p; p=pNext){  //将脏页列表中大于参数的页标志为Clean
       pNext = p->pDirtyNext;
       /* This routine never gets call with a positive pgno except right
       ** after sqlite3PcacheCleanAll().  So if there are dirty pages,
@@ -693,6 +733,9 @@ void sqlite3PcacheTruncate(PCache *pCache, Pgno pgno){
 /*
 ** Close a cache.
 */
+/**
+ * 关闭一个cache，释放资源
+ */
 void sqlite3PcacheClose(PCache *pCache){
   assert( pCache->pCache!=0 );
   pcacheTrace(("%p.CLOSE\n",pCache));
@@ -702,6 +745,9 @@ void sqlite3PcacheClose(PCache *pCache){
 /* 
 ** Discard the contents of the cache.
 */
+/**
+ * 丢弃一个cache中缓存的全部内容
+ */
 void sqlite3PcacheClear(PCache *pCache){
   sqlite3PcacheTruncate(pCache, 0);
 }
@@ -710,16 +756,19 @@ void sqlite3PcacheClear(PCache *pCache){
 ** Merge two lists of pages connected by pDirty and in pgno order.
 ** Do not bother fixing the pDirtyPrev pointers.
 */
+/**
+ * 两个脏页列表按照页号顺序合并，使用pDirty进行单链表排序，本身的LRU双向链表不受影响
+ */
 static PgHdr *pcacheMergeDirtyList(PgHdr *pA, PgHdr *pB){
   PgHdr result, *pTail;
   pTail = &result;
   assert( pA!=0 && pB!=0 );
   for(;;){
-    if( pA->pgno<pB->pgno ){
+    if( pA->pgno<pB->pgno ){  //将页号较小的页追加的结果链表中
       pTail->pDirty = pA;
       pTail = pA;
       pA = pA->pDirty;
-      if( pA==0 ){
+      if( pA==0 ){  //若PA链表全部加入新链表，则PB链表的剩余元素可以全部追加到新链表的最后，完成合并
         pTail->pDirty = pB;
         break;
       }
@@ -746,6 +795,16 @@ static PgHdr *pcacheMergeDirtyList(PgHdr *pA, PgHdr *pB){
 ** One extra bucket is added to catch overflow in case something
 ** ever changes to make the previous sentence incorrect.
 */
+/**
+ * 将页链表按页号升序排序，使用pDirty进行单链表排序，本身的LRU双向链表不受影响
+ * 
+ * * * 排序方法很有意思，形式上有些像归并排序和桶排序的结合，效率不好简单估计
+ * 排序的工作方式有些像二进制加法，每次输入一个元素，将其放在最低位上（最低位+1），
+ * 若+1后需要进位，则合并（传入的元素和当前位上的有序列表后）向更高位进位，
+ * 更高位+1后继续判断是否需要进位，执行上述过程直到进位工作完成为止
+ * 全部元素输入完成后，再执行一次从最低位到最高位的逐次合并，获得最终的排序结果
+ * 最多能排序2^N_SORT_BUCKET-1个元素
+ */
 #define N_SORT_BUCKET  32
 static PgHdr *pcacheSortDirtyList(PgHdr *pIn){
   PgHdr *a[N_SORT_BUCKET], *p;
@@ -782,9 +841,12 @@ static PgHdr *pcacheSortDirtyList(PgHdr *pIn){
 /*
 ** Return a list of all dirty pages in the cache, sorted by page number.
 */
+/**
+ * 返回一个按页号排序的所有脏页的链表
+ */
 PgHdr *sqlite3PcacheDirtyList(PCache *pCache){
   PgHdr *p;
-  for(p=pCache->pDirty; p; p=p->pDirtyNext){
+  for(p=pCache->pDirty; p; p=p->pDirtyNext){ //预处理，函数使用pDirty排序
     p->pDirty = p->pDirtyNext;
   }
   return pcacheSortDirtyList(pCache->pDirty);
@@ -796,6 +858,9 @@ PgHdr *sqlite3PcacheDirtyList(PCache *pCache){
 ** This is not the total number of pages referenced, but the sum of the
 ** reference count for all pages.
 */
+/**
+ * 返回一个cache总的引用计数
+ */
 int sqlite3PcacheRefCount(PCache *pCache){
   return pCache->nRefSum;
 }
@@ -803,6 +868,9 @@ int sqlite3PcacheRefCount(PCache *pCache){
 /*
 ** Return the number of references to the page supplied as an argument.
 */
+/**
+ * 返回一个页的引用计数
+ */
 int sqlite3PcachePageRefcount(PgHdr *p){
   return p->nRef;
 }
@@ -810,6 +878,9 @@ int sqlite3PcachePageRefcount(PgHdr *p){
 /* 
 ** Return the total number of pages in the cache.
 */
+/**
+ * 返回一个cache中页的数量
+ */
 int sqlite3PcachePagecount(PCache *pCache){
   assert( pCache->pCache!=0 );
   return sqlite3GlobalConfig.pcache2.xPagecount(pCache->pCache);
@@ -827,6 +898,9 @@ int sqlite3PcacheGetCachesize(PCache *pCache){
 /*
 ** Set the suggested cache-size value.
 */
+/**
+ * 设置cache的最大大小
+ */
 void sqlite3PcacheSetCachesize(PCache *pCache, int mxPage){
   assert( pCache->pCache!=0 );
   pCache->szCache = mxPage;
@@ -856,6 +930,9 @@ int sqlite3PcacheSetSpillsize(PCache *p, int mxPage){
 /*
 ** Free up as much memory as possible from the page cache.
 */
+/**
+ * 释放尽可能多的内存
+ */
 void sqlite3PcacheShrink(PCache *pCache){
   assert( pCache->pCache!=0 );
   sqlite3GlobalConfig.pcache2.xShrink(pCache->pCache);
@@ -865,12 +942,18 @@ void sqlite3PcacheShrink(PCache *pCache){
 ** Return the size of the header added by this middleware layer
 ** in the page-cache hierarchy.
 */
+/**
+ * 返回PgHdr结构体按8字节对齐后的大小
+ */
 int sqlite3HeaderSizePcache(void){ return ROUND8(sizeof(PgHdr)); }
 
 /*
 ** Return the number of dirty pages currently in the cache, as a percentage
 ** of the configured cache size.
 */
+/**
+ * 返回脏页占整个cache的百分比
+ */
 int sqlite3PCachePercentDirty(PCache *pCache){
   PgHdr *pDirty;
   int nDirty = 0;
