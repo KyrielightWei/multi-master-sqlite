@@ -188,6 +188,7 @@ typedef struct ArgInInit ArgInInit;
 struct ReturnInit {
     int rc;
 };
+typedef struct ReturnInit ReturnInit;
 
 void sqlite3_os_initConvertCharToReturn(const char *arg, int *rc) {
     memcpy(rc, arg, sizeof(int));
@@ -402,19 +403,16 @@ void unixAccessConvertReturnToChar(          // server
 // };                           
 // typedef struct ReturnFullPathname ReturnFullPathname;
 
-int getFullPathname_ARG_LEN(int nOut)
-{
-    return sizeof(int)+nOut;
+int getFullPathname_ARG_LEN(int nOut) {
+    return sizeof(int) + nOut;
 }
 
-int getFullPathname_RETURN_LEN(int nOut)
-{
-    return sizeof(int)+nOut;
+int getFullPathname_RETURN_LEN(int nOut) {
+    return sizeof(int) + nOut;
 }
 
-int getFullPathname_OUT_LEN(const char * arg)
-{    
-    return *((const int *)arg);
+int getFullPathname_OUT_LEN(const char *arg) {
+    return *((const int *) arg);
 }
 
 void unixFullPathnameConvertArgInToChar(// client
@@ -425,8 +423,8 @@ void unixFullPathnameConvertArgInToChar(// client
         char *arg
 ) {
     memcpy(arg, &nOut, sizeof(int));
-    memcpy(arg+sizeof(int), zPath,nOut);
-    
+    memcpy(arg + sizeof(int), zPath, nOut);
+
 //    memcpy(arg + 512 + sizeof(int), zOut, 512);
 }
 
@@ -437,20 +435,20 @@ void unixFullPathnameConvertCharToReturn( // client
         int *pRc
 ) {
     //strcpy(zOut, arg);
-    memcpy(zOut,arg,nOut);
+    memcpy(zOut, arg, nOut);
     memcpy(pRc, arg + nOut, sizeof(int));
-     //printf("CONVERT CHAR TO RETURN  Zout = %s\n",zOut);
+    //printf("CONVERT CHAR TO RETURN  Zout = %s\n",zOut);
 }
 
 void unixFullPathnameConvertCharToArgIn( // server
         const char *arg,
         sqlite3_vfs *pVfs,
         char *zPath,
-        int * nOut,
+        int *nOut,
         char *zOut
 ) {
     *nOut = getFullPathname_OUT_LEN(arg);
-    strcpy(zPath, arg+sizeof(int));
+    strcpy(zPath, arg + sizeof(int));
     //memcpy(nOut, arg + 512, sizeof(int));
 //    strcpy(zOut, arg + 512 + sizeof(int));
 }
@@ -461,10 +459,10 @@ void unixFullPathnameConvertReturnToChar( //server
         int *pRc,
         char *arg
 ) {
-    printf("CONVERT RETURN TO CHAR Zout = %s\n",zOut);
+    printf("CONVERT RETURN TO CHAR Zout = %s\n", zOut);
     strcpy(arg, zOut);
     memcpy(arg + nOut, pRc, sizeof(int));
-    printf("CONVERT RETURN TO CHAR char = %s\n",(char*)arg);
+    printf("CONVERT RETURN TO CHAR char = %s\n", (char *) arg);
 }
 
 
@@ -853,7 +851,7 @@ typedef struct ReturnFileSize ReturnFileSize;
 
 void unixFileSizeConvertArgInToChar(sqlite3_file *id, i64 *pSize, char *arg) {
     memcpy(arg, id, SIZE_UNIXFILE);
-//    memcpy(arg + SIZE_UNIXFILE, pSize, sizeof(i64));
+    memcpy(arg + SIZE_UNIXFILE, pSize, sizeof(i64));
 }
 
 void unixFileSizeConvertCharToReturn(const char *arg, sqlite3_file *id, i64 *pSize, int *rc) {
@@ -866,7 +864,7 @@ void unixFileSizeConvertCharToReturn(const char *arg, sqlite3_file *id, i64 *pSi
 
 void unixFileSizeConvertCharToArgIn(const char *arg, sqlite3_file *id, i64 *pSize) {
     memcpy(id, arg, SIZE_UNIXFILE);
-//    memcpy(pSize, arg + SIZE_UNIXFILE, sizeof(i64));
+    memcpy(pSize, arg + SIZE_UNIXFILE, sizeof(i64));
 }
 
 void unixFileSizeConvertReturnToChar(sqlite3_file *id, i64 *pSize, int *rc, char *arg) {
@@ -922,7 +920,8 @@ unixFileControlConvertCharToArgIn(const char *arg, sqlite3_file *id, int *op, vo
     }
 }
 
-void unixFileControlConvertReturnToChar(sqlite3_file *id, char *pArg, int *pRc, char *arg, int op, int *size) {    //  server
+void
+unixFileControlConvertReturnToChar(sqlite3_file *id, char *pArg, int *pRc, char *arg, int op, int *size) {    //  server
     memcpy(arg + SIZE_UNIXFILE + 512 + sizeof(int), size, sizeof(int));
     memcpy(arg, id, SIZE_UNIXFILE);
     if (*size > 0) {
@@ -1158,6 +1157,7 @@ struct ReturnFetch {
     char pData[MAX_SIZE];
     int rc;
 };
+typedef struct ReturnFetch ReturnFetch;
 
 void unixFetchConvertArgInToChar(sqlite3_file *fd, i64 iOff, int nAmt, void **pp, char *arg) {
     memcpy(arg, fd, SIZE_UNIXFILE);
