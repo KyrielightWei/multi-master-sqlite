@@ -126,6 +126,9 @@ void WrapFullPathname(const char *argIn, char *argOut) {
     printf("FULL zOut = %s \n\n",zOut);
     unixFullPathnameConvertReturnToChar(nOut,zOut, &rc, argOut);
     printf("FULL argOut = %s \n\n",argOut);
+
+    free(path);
+    free(zOut);
 }
 /*
  * 以下几个函数直接调用客户端函数，不用调用remote：

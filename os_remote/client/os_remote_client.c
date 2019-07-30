@@ -9,7 +9,7 @@ extern const char *clientDelete(char *argin, u32 inlen, u32 outlen);
 
 extern const char *clientAccess(char *argin, u32 inlen, u32 outlen);
 
-extern const char *clientFullPathname(char *argin, u32 inlen, u32 outlen ,int * outl);
+extern const char *clientFullPathname(char *argin, u32 inlen, u32 outlen ,char * p);
 /*
  * 以下几个函数直接调用客户端函数，不用调用remote：
  *      unixRandomness
@@ -182,10 +182,17 @@ static int remoteFullPathname(
 
     unixFullPathnameConvertArgInToChar(pVfs, zPath, nOut, zOut, argInChar);
     int outl = 0;
-    const char *argOutChar = clientFullPathname(argInChar,arg_len,
-                                                return_len,&outl);
-    DebugClient(sprintf(debugStr, "---Middle remoteFullPathname: zOut=%s ;zout_len = %d,arg_len = %d,return_len = %d ,outl = %d \n",argOutChar,strlen(argOutChar),arg_len,return_len,outl), debugStr);
-    unixFullPathnameConvertCharToReturn(argOutChar,nOut, zOut, &rc);
+    char tempc = -1;
+    //const char *argOutChar =NULL;
+    char outarg[return_len];
+    clientFullPathname(argInChar,arg_len,return_len,outarg);
+    // DebugClient(sprintf(debugStr, "---Middle remoteFullPathname: zOut=%s ;zout_len = %d,arg_len = %d,return_len = %d ,outl = %d,tempc= %c \n",argOutChar,strlen(argOutChar),arg_len,return_len,outl,tempc), debugStr);
+    // int i=0;
+    // for (i = 0; i < outl; i++)
+    // {
+    //    DebugClient(sprintf(debugStr, "---Middle remoteFullPathname:argOut[%d] = %d  , %d \n",i,argOutChar[i],outarg[i]), debugStr);
+    // }
+    unixFullPathnameConvertCharToReturn(outarg,nOut, zOut, &rc);
 
     DebugClient(sprintf(debugStr, "---ended remoteFullPathname: rc=%d ; zOut=%s ;zout_len = %d\n", rc,zOut,strlen(zOut)), debugStr);
     return rc;

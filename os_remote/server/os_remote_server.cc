@@ -70,7 +70,12 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
         WrapFullPathname(in, out_struct);
 
         reply->set_outarg(out_struct, out_size);
-      //  std::cout << reply->outarg().data() << std::endl;
+        // const char * temp = reply->outarg().data();
+        // for (int i = 0; i < reply->outarg().size(); i++)
+        // {
+        //     std::cout << "OutArg[" << i << "] = " << temp[i] << std::endl;
+        // }
+        
         return Status::OK;
     }
     /*
