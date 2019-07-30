@@ -68,6 +68,7 @@ void WrapInit(const char *argIn, char *argOut) {
 
 void WrapOpen(const char *argIn, char *argOut) {
     printf("---WrapOpen:\n");
+
     char path[512];
     unixFile file_infor;
     sqlite3_file *pId = (sqlite3_file *) &file_infor;
@@ -77,22 +78,21 @@ void WrapOpen(const char *argIn, char *argOut) {
 
     unixOpenConvertCharToArgIn(argIn, &aVfs[0], path, pId, &in_flags, &out_flags);
     getServerUnixPMethods(file_infor.h, pId);
-    printf("   id.h = %d,  method = %s\n", file_infor.h,
-           &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
+//    printf("   id.h = %d,  method = %s\n", file_infor.h,
+//           &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
     printf("   path = %s\n", path);
-    if (-1 == out_flags) {
-        rc = aVfs[0].xOpen(&aVfs[0], path, pId, in_flags & 0x87f7f, NULL);
-    } else {
-        rc = aVfs[0].xOpen(&aVfs[0], path, pId, in_flags & 0x87f7f, &out_flags);
-    }
+    if (-1 == out_flags) { rc = aVfs[0].xOpen(&aVfs[0], path, pId, in_flags & 0x87f7f, NULL); }
+    else { rc = aVfs[0].xOpen(&aVfs[0], path, pId, in_flags & 0x87f7f, &out_flags); }
     setServerUnixPMethods(file_infor.h, pId);
-    printf("   id.h = %d,  method = %s\n", file_infor.h,
-           &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
+//    printf("   id.h = %d,  method = %s\n", file_infor.h,
+//           &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
     unixOpenConvertReturnToChar(pId, &out_flags, &rc, argOut);
 
 }
 
 void WrapDelete(const char *argIn, char *argOut) {
+    printf("--WrapFileControl:\n");
+
     char path[512];
     int dirSync;
     unixDeleteConvertCharToArgIn(argIn, &aVfs[0], path, &dirSync);
@@ -101,6 +101,8 @@ void WrapDelete(const char *argIn, char *argOut) {
 }
 
 void WrapAccess(const char *argIn, char *argOut) {
+    printf("--WrapFileControl:\n");
+
     char path[512];
     int flags;
     int res;
@@ -111,6 +113,8 @@ void WrapAccess(const char *argIn, char *argOut) {
 }
 
 void WrapFullPathname(const char *argIn, char *argOut) {
+    printf("--WrapFileControl:\n");
+
     char path[512];
     int nOut;
     char zOut[512];
@@ -160,6 +164,8 @@ void WrapCurrentTimeInt64(const char *argIn, char *argOut) {
 */
 
 void WrapGetLastError(const char *argIn, char *argOut) {
+    printf("--WrapFileControl:\n");
+
     int NotUsed2;
     char NotUsed3[2];
     unixGetLastErrorConvertCharToArgIn(argIn, &aVfs[0], &NotUsed2, NotUsed3);
@@ -168,30 +174,26 @@ void WrapGetLastError(const char *argIn, char *argOut) {
 }
 
 void WrapWrite(const char *argIn, char *argOut) {
+    printf("--WrapFileControl:\n");
+
     unixFile id;
     sqlite3_file *pId = (sqlite3_file *) &id;
     char pBuf[8192];
     int amt;
     sqlite3_int64 offset;
+
     unixWriteConvertCharToArgIn(argIn, pId, pBuf, &amt, &offset);
     getServerUnixPMethods(id.h, pId);
     int rc = unixWrite(pId, pBuf, amt, offset);
     setServerUnixPMethods(id.h, pId);
     unixWriteConvertReturnToChar(pId, pBuf, &amt, &rc, argOut);
-    printf("--WrapWrite:\n");
-    printf("id.h = %d\n",id.h);
-    printf("amt = %d\n",amt);
-    int i=0;
-    for(i=0;i<amt;i++)
-    {
-        printf("%d ",pBuf[i]);
-    }
-    printf("\n");
-    printf("rc = %d\n",rc);
-    printf("offset = %ld\n",offset);
+
+
 }
 
 void WrapRead(const char *argIn, char *argOut) {
+    printf("--WrapFileControl:\n");
+
     unixFile id;
     sqlite3_file *pId = (sqlite3_file *) &id;
     char pBuf[8192];
@@ -206,6 +208,8 @@ void WrapRead(const char *argIn, char *argOut) {
 }
 
 void WrapTruncate(const char *argIn, char *argOut) {
+    printf("--WrapFileControl:\n");
+
     unixFile id;
     sqlite3_file *pId = (sqlite3_file *) &id;
     i64 nByte;
@@ -218,6 +222,8 @@ void WrapTruncate(const char *argIn, char *argOut) {
 }
 
 void WrapSync(const char *argIn, char *argOut) {
+    printf("--WrapFileControl:\n");
+
     unixFile id;
     sqlite3_file *pId = (sqlite3_file *) &id;
     int flags;
@@ -230,6 +236,8 @@ void WrapSync(const char *argIn, char *argOut) {
 }
 
 void WrapFileSize(const char *argIn, char *argOut) {
+    printf("--WrapFileControl:\n");
+
     unixFile id;
     sqlite3_file *pId = (sqlite3_file *) &id;
     i64 pSize;
@@ -241,20 +249,29 @@ void WrapFileSize(const char *argIn, char *argOut) {
     unixFileSizeConvertReturnToChar(pId, &pSize, &rc, argOut);
 }
 
+// TODO: when op == SQLITE_FCNTL_HAS_MOVED, change common_sqlite3.c funtion unixFileControl pArg = 0;
 void WrapFileControl(const char *argIn, char *argOut) {
+    printf("--WrapFileControl:\n");
+
     unixFile id;
     sqlite3_file *pId = (sqlite3_file *) &id;
     int op;
-    int pArg;
+    char pArg[512];
+    int size;
+    int rc;
 
-    unixFileControlConvertCharToArgIn(argIn, pId, &op, &pArg);
+    unixFileControlConvertCharToArgIn(argIn, pId, &op, pArg, &size);
     getServerUnixPMethods(id.h, pId);
-    int rc = unixFileControl(pId, op, &pArg);
+    if (size > 0) { rc = unixFileControl(pId, op, &pArg); }
+    else { rc = unixFileControl(pId, op, 0); }
     setServerUnixPMethods(id.h, pId);
-    unixFileControlConvertReturnToChar(pId, &pArg, &rc, argOut);
+    size = LenFileControlPArg(op, pArg);
+    unixFileControlConvertReturnToChar(pId, pArg, &rc, argOut, op, &size);
 }
 
 void WrapSectorSize(const char *argIn, char *argOut) {
+    printf("---WrapOpen:\n");
+
     unixFile id;
     sqlite3_file *pId = (sqlite3_file *) &id;
 
@@ -266,6 +283,8 @@ void WrapSectorSize(const char *argIn, char *argOut) {
 }
 
 void WrapDeviceCharacteristics(const char *argIn, char *argOut) {
+    printf("---WrapOpen:\n");
+
     unixFile id;
     sqlite3_file *pId = (sqlite3_file *) &id;
 
@@ -284,15 +303,11 @@ void WrapClose(const char *argIn, char *argOut) {
 
     unixCloseConvertCharToArgIn(argIn, pId);
     getServerUnixPMethods(id.h, pId);
-    printf("   id.h = %d,  method = %s\n", id.h,
-           &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
     if (pId->pMethods) {
         rc = pId->pMethods->xClose(pId);
         pId->pMethods = 0;
     }
     setServerUnixPMethods(id.h, pId);
-    printf("   id.h = %d,  method = %s\n", id.h,
-           &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
     unixCloseConvertReturnToChar(pId, &rc, argOut);
 }
 
@@ -304,10 +319,8 @@ void WrapLock(const char *argIn, char *argOut) {
 
     unixLockConvertCharToArgIn(argIn, pId, &eFileLock);
     getServerUnixPMethods(id.h, pId);
-    printf("   id.h = %d\n", id.h);
     int rc = unixLock(pId, eFileLock);
     setServerUnixPMethods(id.h, pId);
-    printf("   id.h = %d\n", id.h);
     unixLockConvertReturnToChar(pId, &rc, argOut);
 }
 
@@ -319,30 +332,28 @@ void WrapUnlock(const char *argIn, char *argOut) {
 
     unixUnlockConvertCharToArgIn(argIn, pId, &eFileLock);
     getServerUnixPMethods(id.h, pId);
-    printf("   id.h = %d\n", id.h);
     int rc = unixUnlock(pId, eFileLock);
     setServerUnixPMethods(id.h, pId);
-    printf("   id.h = %d\n", id.h);
     unixUnlockConvertReturnToChar(pId, &rc, argOut);
 }
 
 void WrapCheckReservedLock(const char *argIn, char *argOut) {
     printf("---WrapCheckReservedLock:\n");
+
     unixFile id;
     sqlite3_file *pId = (sqlite3_file *) &id;
     int pResOut = 0;
 
     unixCheckReservedLockConvertCharToArgIn(argIn, pId, &pResOut);
     getServerUnixPMethods(id.h, pId);
-    printf("   id.h = %d\n", id.h);
     int rc = unixCheckReservedLock(pId, &pResOut);
     setServerUnixPMethods(id.h, pId);
-    printf("   id.h = %d\n", id.h);
     unixCheckReservedLockConvertReturnToChar(pId, &pResOut, &rc, argOut);
 }
 
 void WrapFetch(const char *argIn, char *argOut) {
     printf("---WrapFetch:\n");
+
     unixFile id;
     sqlite3_file *pId = (sqlite3_file *) &id;
     i64 iOff;
@@ -358,6 +369,7 @@ void WrapFetch(const char *argIn, char *argOut) {
 
 void WrapUnfetch(const char *argIn, char *argOut) {
     printf("---WrapUnfetch:\n");
+
     unixFile id;
     sqlite3_file *pId = (sqlite3_file *) &id;
     i64 iOff;

@@ -1,6 +1,10 @@
 //
 // Created by rrzhang on 19-7-12.
 //
+
+#ifndef UTIL_C
+#define UTIL_C
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -77,9 +81,39 @@ int DebugClient(int i, const char *info) {
     return 0;
 }
 
+int DebugChars(const char *info, int size){
+    int fd = open("LOG", O_APPEND | O_WRONLY | O_CREAT, 0644);
+    if (fd < 0) {
+        return -1;
+    }
+
+    int wr_rc = 0;
+
+    int count = 0;
+    while(count<size){
+        char str[5];
+        sprintf(str, "%d ", info[count]);
+        wr_rc = write(fd, str, strlen(str));
+        count++;
+    }
+    wr_rc = write(fd, "\n", 1);
+    return wr_rc;
+}
+
+void PrintChars(const char *info, int size){
+    int count = 0;
+    while(count< size){
+        printf("%d ", info[count]);
+        count++;
+    }
+    printf("\n");
+}
+
 int CloseFile() {
     int fd = open("LOG", O_APPEND | O_WRONLY | O_CREAT, 0644);
     close(fd);
+
+
 }
 
 int TEST_DebugClient() {
@@ -98,3 +132,6 @@ int TEST_DebugClient() {
 //     TEST_DebugClient();
 //     return 0;
 // }
+
+
+#endif

@@ -30,7 +30,7 @@ extern "C" const char *clientInit(char *argin, u32 inlen, u32 outlen) {
 }
 
 
-extern "C" const char *clientOpen(char *argin, u32 inlen, u32 outlen) {
+extern "C" const char *clientOpen(char *argin, u32 inlen, u32 outlen, char *argOutChar) {
     os_remote::ArgRequest request;
     os_remote::ArgReply reply;
     ClientContext context;
@@ -41,6 +41,7 @@ extern "C" const char *clientOpen(char *argin, u32 inlen, u32 outlen) {
     Status status = stub_->Open(&context, request, &reply);
 
     if (status.ok()) {
+        memcpy(argOutChar, reply.outarg().data(), outlen);
         return reply.outarg().data();
     } else {
         std::cout << status.error_code() << ": " << status.error_message() << std::endl;
@@ -319,7 +320,7 @@ extern "C" const char *clientSectorSize(char *argin, u32 inlen, u32 outlen) {
     }
 }
 
-extern "C" const char *clientDeviceCharacteristics(char *argin, u32 inlen, u32 outlen) {
+extern "C" const char *clientDeviceCharacteristics(char *argin, u32 inlen, u32 outlen, char *str) {
     os_remote::ArgRequest request;
     os_remote::ArgReply reply;
     ClientContext context;
@@ -330,6 +331,7 @@ extern "C" const char *clientDeviceCharacteristics(char *argin, u32 inlen, u32 o
     Status status = stub_->DeviceCharacteristics(&context, request, &reply);
 
     if (status.ok()) {
+        memcpy(str, reply.outarg().data(), outlen);
         return reply.outarg().data();
     } else {
         std::cout << status.error_code() << ": " << status.error_message() << std::endl;
@@ -371,7 +373,7 @@ extern "C" const char *clientLock(char *argin, u32 inlen, u32 outlen) {
         return "RPC failed";
     }
 }
-extern "C" const char *clientUnlock(char *argin, u32 inlen, u32 outlen) {
+extern "C" const char *clientUnlock(char *argin, u32 inlen, u32 outlen, char *str) {
     os_remote::ArgRequest request;
     os_remote::ArgReply reply;
     ClientContext context;
@@ -382,6 +384,7 @@ extern "C" const char *clientUnlock(char *argin, u32 inlen, u32 outlen) {
     Status status = stub_->Unlock(&context, request, &reply);
 
     if (status.ok()) {
+        memcpy(str, reply.outarg().data(), outlen);
         return reply.outarg().data();
     } else {
         std::cout << status.error_code() << ": " << status.error_message() << std::endl;
