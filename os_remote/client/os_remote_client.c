@@ -9,7 +9,7 @@ extern const char *clientDelete(char *argin, u32 inlen, u32 outlen);
 
 extern const char *clientAccess(char *argin, u32 inlen, u32 outlen);
 
-extern const char *clientFullPathname(char *argin, u32 inlen, u32 outlen);
+extern const char *clientFullPathname(char *argin, u32 inlen, u32 outlen ,int * outl);
 /*
  * 以下几个函数直接调用客户端函数，不用调用remote：
  *      unixRandomness
@@ -172,18 +172,22 @@ static int remoteFullPathname(
         int nOut,                     /* Size of output buffer in bytes */
         char *zOut
 ) {
-    DebugClient(sprintf(debugStr, "---start remoteFullPathname:\n"), debugStr);
+    DebugClient(sprintf(debugStr, "---start remoteFullPathname: InputPath = %s ; nout = %d\n",zPath,nOut), debugStr);
 
-    char argInChar[sizeof(ArgInFullPathname)];
-    memset(argInChar, 0, sizeof(ArgInFullPathname));
+    int arg_len = getFullPathname_ARG_LEN((nOut));
+    int return_len = getFullPathname_RETURN_LEN((nOut));
+    char argInChar[arg_len];
+    memset(argInChar, 0, arg_len);
     int rc = SQLITE_OK;
 
     unixFullPathnameConvertArgInToChar(pVfs, zPath, nOut, zOut, argInChar);
-    const char *argOutChar = clientFullPathname(argInChar, sizeof(ArgInFullPathname),
-                                                sizeof(ReturnFullPathname));
-    unixFullPathnameConvertCharToReturn(argOutChar, zOut, &rc);
+    int outl = 0;
+    const char *argOutChar = clientFullPathname(argInChar,arg_len,
+                                                return_len,&outl);
+    DebugClient(sprintf(debugStr, "---Middle remoteFullPathname: zOut=%s ;zout_len = %d,arg_len = %d,return_len = %d ,outl = %d \n",argOutChar,strlen(argOutChar),arg_len,return_len,outl), debugStr);
+    unixFullPathnameConvertCharToReturn(argOutChar,nOut, zOut, &rc);
 
-    DebugClient(sprintf(debugStr, "---ended remoteFullPathname: rc=%d\n", rc), debugStr);
+    DebugClient(sprintf(debugStr, "---ended remoteFullPathname: rc=%d ; zOut=%s ;zout_len = %d\n", rc,zOut,strlen(zOut)), debugStr);
     return rc;
 }
 

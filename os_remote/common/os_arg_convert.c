@@ -389,17 +389,33 @@ void unixAccessConvertReturnToChar(          // server
 
 /************** function unixFullPathname *****************************************/
 
-struct ArgInFullPathname {
-    char path[512];
-    int nOut;
-    char zOut[512];
-};
-typedef struct ArgInFullPathname ArgInFullPathname;
-struct ReturnFullPathname {
-    char zOut[512];
-    int rc;
-};
-typedef struct ReturnFullPathname ReturnFullPathname;
+// //#define GetArgInFullPathname(OUT_Len) 
+// struct ArgInFullPathname {   
+//     int nOut;                      
+//     char * path;            
+//     //char zOut[OUT_Len];           
+// };                           
+// typedef struct ArgInFullPathname ArgInFullPathname; 
+// struct ReturnFullPathname {  
+//     char zOut[OUT_Len];          
+//     int rc;                  
+// };                           
+// typedef struct ReturnFullPathname ReturnFullPathname;
+
+int getFullPathname_ARG_LEN(int nOut)
+{
+    return sizeof(int)+nOut;
+}
+
+int getFullPathname_RETURN_LEN(int nOut)
+{
+    return sizeof(int)+nOut;
+}
+
+int getFullPathname_OUT_LEN(const char * arg)
+{    
+    return *((const int *)arg);
+}
 
 void unixFullPathnameConvertArgInToChar(// client
         sqlite3_vfs *pVfs,
@@ -408,39 +424,47 @@ void unixFullPathnameConvertArgInToChar(// client
         char *zOut,
         char *arg
 ) {
-    strcpy(arg, zPath);
-    memcpy(arg + 512, &nOut, sizeof(int));
+    memcpy(arg, &nOut, sizeof(int));
+    memcpy(arg+sizeof(int), zPath,nOut);
+    
 //    memcpy(arg + 512 + sizeof(int), zOut, 512);
 }
 
 void unixFullPathnameConvertCharToReturn( // client
         const char *arg,
+        int nOut,
         char *zOut,
         int *pRc
 ) {
-    strcpy(zOut, arg);
-    memcpy(pRc, arg + 512, sizeof(int));
+    //strcpy(zOut, arg);
+    memcpy(zOut,arg,nOut);
+    memcpy(pRc, arg + nOut, sizeof(int));
+     //printf("CONVERT CHAR TO RETURN  Zout = %s\n",zOut);
 }
 
 void unixFullPathnameConvertCharToArgIn( // server
         const char *arg,
         sqlite3_vfs *pVfs,
         char *zPath,
-        int *nOut,
+        int * nOut,
         char *zOut
 ) {
-    strcpy(zPath, arg);
-    memcpy(nOut, arg + 512, sizeof(int));
+    *nOut = getFullPathname_OUT_LEN(arg);
+    strcpy(zPath, arg+sizeof(int));
+    //memcpy(nOut, arg + 512, sizeof(int));
 //    strcpy(zOut, arg + 512 + sizeof(int));
 }
 
 void unixFullPathnameConvertReturnToChar( //server
+        int nOut,
         char *zOut,
         int *pRc,
         char *arg
 ) {
+    printf("CONVERT RETURN TO CHAR Zout = %s\n",zOut);
     strcpy(arg, zOut);
-    memcpy(arg + 512, pRc, sizeof(int));
+    memcpy(arg + nOut, pRc, sizeof(int));
+    printf("CONVERT RETURN TO CHAR char = %s\n",(char*)arg);
 }
 
 

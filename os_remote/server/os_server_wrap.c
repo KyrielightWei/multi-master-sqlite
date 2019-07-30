@@ -115,13 +115,17 @@ void WrapAccess(const char *argIn, char *argOut) {
 void WrapFullPathname(const char *argIn, char *argOut) {
     printf("--WrapFileControl:\n");
 
-    char path[512];
     int nOut;
-    char zOut[512];
+    nOut = getFullPathname_OUT_LEN(argIn);
+    char * path =  (char *)malloc(sizeof(char)*nOut);
+    char * zOut = (char *)malloc(sizeof(char)*nOut);
 
     unixFullPathnameConvertCharToArgIn(argIn, &aVfs[0], path, &nOut, zOut);
+    printf("FULL path = %s \n\n",path);
     int rc = unixFullPathname(&aVfs[0], path, nOut, zOut);
-    unixFullPathnameConvertReturnToChar(zOut, &rc, argOut);
+    printf("FULL zOut = %s \n\n",zOut);
+    unixFullPathnameConvertReturnToChar(nOut,zOut, &rc, argOut);
+    printf("FULL argOut = %s \n\n",argOut);
 }
 /*
  * 以下几个函数直接调用客户端函数，不用调用remote：

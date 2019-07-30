@@ -70,6 +70,7 @@ class OSRemoteServiceImpl final : public OSRemote::Service {
         WrapFullPathname(in, out_struct);
 
         reply->set_outarg(out_struct, out_size);
+      //  std::cout << reply->outarg().data() << std::endl;
         return Status::OK;
     }
     /*

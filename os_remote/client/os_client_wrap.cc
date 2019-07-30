@@ -86,7 +86,8 @@ extern "C" const char *clientAccess(char *argin, u32 inlen, u32 outlen) {
     }
 }
 
-extern "C" const char *clientFullPathname(char *argin, u32 inlen, u32 outlen) {
+
+extern "C" const char *clientFullPathname(char *argin, u32 inlen, u32 outlen,int * outl) {
     os_remote::ArgRequest request;
     os_remote::ArgReply reply;
     ClientContext context;
@@ -97,6 +98,7 @@ extern "C" const char *clientFullPathname(char *argin, u32 inlen, u32 outlen) {
     Status status = stub_->FullPathname(&context, request, &reply);
 
     if (status.ok()) {
+        *outl = reply.outarg().size();
         return reply.outarg().data();
     } else {
         std::cout << status.error_code() << ": " << status.error_message() << std::endl;
