@@ -23,7 +23,12 @@ typedef struct PCache PCache;
 ** structure.
 */
 /**
- * sqlite3_pcache_page的结构体子类？
+ * 神奇的结构：   （互相指向）
+ * 同一个页的sqlite3_pcache_page和PgHdr两个结构体同时存在
+ * sqlite3_pcache_page的pExtra指向PgHdr对象
+ * PgHdr的pPage指向sqlite3_pcache_page对象
+ * 
+ * 具体初始化方式见pcacheFetchFinishWithInit
  */
 struct PgHdr {
   sqlite3_pcache_page *pPage;    /* Pcache object page handle */
