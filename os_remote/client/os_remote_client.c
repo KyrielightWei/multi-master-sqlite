@@ -111,7 +111,7 @@ static int remoteOpen(
         int flags,                   /* Input flags to control the opening */
         int *pOutFlags               /* Output flags returned to SQLite core */
 ) {
-    DebugClient(sprintf(debugStr, "---start remoteOpen:\n"), debugStr);
+    DebugClient(sprintf(debugStr, "---start remoteOpen        :\n"), debugStr);
 
     char argInChar[sizeof(ArgInOpen)];
     memset(argInChar, 0, sizeof(ArgInOpen));
@@ -123,8 +123,7 @@ static int remoteOpen(
     clientOpen(argInChar, sizeof(ArgInOpen), sizeof(ReturnOpen), argOutChar);
     unixOpenConvertCharToReturn(argOutChar, pFile, pOutFlags, &rc);
 
-    DebugClient(sprintf(debugStr, "---ended remoteOpen        : fd=%d, rc=%d, path=%s\n", ((unixFile *) pFile)->h, rc,
-                        zPath), debugStr);
+    DebugClient(sprintf(debugStr, "---ended remoteOpen        : fd=%d, rc=%d \n", ((unixFile *) pFile)->h, rc ), debugStr);
     return rc;
 }
 
@@ -381,7 +380,7 @@ static int remoteFileSize(sqlite3_file *id, i64 *pSize) {
 }
 
 static int remoteFileControl(sqlite3_file *id, int op, void *pArg) {
-    DebugClient(sprintf(debugStr, "---start remoteFileControl:\n"), debugStr);
+    DebugClient(sprintf(debugStr, "---start remoteFileControl :\n"), debugStr);
 
     char argInChar[sizeof(ArgInFileControl)];
     memset(argInChar, 0, sizeof(ArgInFileControl));
@@ -394,8 +393,10 @@ static int remoteFileControl(sqlite3_file *id, int op, void *pArg) {
     clientFileControl(argInChar, sizeof(ArgInFileControl), sizeof(ReturnFileControl), argOutChar);
     unixFileControlConvertCharToReturn(argOutChar, id, pArg, &rc, op);
 
-    DebugClient(sprintf(debugStr, "---ended remoteFileControl : fd=%d, op=%d, rc=%d\n", ((unixFile *) id)->h, op, rc),
-                debugStr);
+    DebugClient(
+            sprintf(debugStr, "---ended remoteFileControl : fd=%d, op=%d, rc=%d\n", ((unixFile *) id)->h, op,
+                    rc),
+            debugStr);
     DebugClient(sprintf(debugStr, "pArg:"), debugStr);
     DebugChars((char *) pArg, size);
     return rc;
