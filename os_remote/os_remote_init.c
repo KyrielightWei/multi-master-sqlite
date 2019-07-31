@@ -132,7 +132,8 @@ REMOTE_IOMTETHODS(
  */
 void setClientRemotePMethods(sqlite3_file *pf)   //recive on client: ->return
 {
-    pf->pMethods = &remote_posixIoMethods;
+    if(pf->pMethods != NULL)
+        pf->pMethods = &remote_posixIoMethods;
 }
 
 

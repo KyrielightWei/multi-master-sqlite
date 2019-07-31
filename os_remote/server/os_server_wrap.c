@@ -94,7 +94,7 @@ void WrapOpen(const char *argIn, char *argOut) {
 //           &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
     unixOpenConvertReturnToChar(pId, &out_flags, &rc, argOut);
 
-    DebugClient(sprintf(debugStr, "---ended WrapOpen.        \n"), debugStr);
+    DebugClient(sprintf(debugStr, "---ended WrapOpen. id.h = %d IOmethod = %d path = %s   \n",file_infor.h,pId->pMethods,file_infor.zPath), debugStr);
 }
 
 void WrapDelete(const char *argIn, char *argOut) {
@@ -309,7 +309,7 @@ void WrapFileControl(const char *argIn, char *argOut) {
     size = LenFileControlPArg(op, pArg);
     unixFileControlConvertReturnToChar(pId, pArg, &rc, argOut, op, &size);
 
-    DebugClient(sprintf(debugStr, "---ended WrapFileControl. \n"), debugStr);
+    DebugClient(sprintf(debugStr, "---ended WrapFileControl.  id.h = %d , path = %s, path_address = %d\n", id.h, id.zPath,id.zPath) ,debugStr);
 }
 
 void WrapSectorSize(const char *argIn, char *argOut) {
@@ -353,7 +353,9 @@ void WrapClose(const char *argIn, char *argOut) {
     int rc;
 
     unixCloseConvertCharToArgIn(argIn, pId);
+  
     getServerUnixPMethods(id.h, pId);
+    DebugClient(sprintf(debugStr, "---Middle WrapClose.  id.h = %d unixclose=%d nolockIoMethods= %d PMethods=%d \n", id.h,posixIoMethods,nolockIoMethods, pId->pMethods ), debugStr);
     if (pId->pMethods) {
         rc = pId->pMethods->xClose(pId);
         pId->pMethods = 0;
@@ -361,7 +363,7 @@ void WrapClose(const char *argIn, char *argOut) {
     setServerUnixPMethods(id.h, pId);
     unixCloseConvertReturnToChar(pId, &rc, argOut);
 
-    DebugClient(sprintf(debugStr, "---ended WrapClose.       \n"), debugStr);
+    DebugClient(sprintf(debugStr, "---ended WrapClose.   "), debugStr);
 }
 
 void WrapLock(const char *argIn, char *argOut) {
