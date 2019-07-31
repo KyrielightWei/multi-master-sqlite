@@ -35,30 +35,9 @@ void setClientRemotePMethods(sqlite3_file *pf)   //recive on client: ->return
   }
 
 static sqlite3_vfs aVfs[] = {
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
-        UNIXVFS("unix",          autolockIoFinder ),
-#elif OS_VXWORKS
-        UNIXVFS("unix",          vxworksIoFinder ),
-#else
         UNIXVFS("unix", posixIoFinder),
-#endif
         UNIXVFS("unix-none", nolockIoFinder),
-        UNIXVFS("unix-dotfile", dotlockIoFinder),
-        UNIXVFS("unix-excl", posixIoFinder),
-#if OS_VXWORKS
-        UNIXVFS("unix-namedsem", semIoFinder ),
-#endif
-#if SQLITE_ENABLE_LOCKING_STYLE || OS_VXWORKS
-        UNIXVFS("unix-posix",    posixIoFinder ),
-#endif
-#if SQLITE_ENABLE_LOCKING_STYLE
-        UNIXVFS("unix-flock",    flockIoFinder ),
-#endif
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
-UNIXVFS("unix-afp",      afpIoFinder ),
-    UNIXVFS("unix-nfs",      nfsIoFinder ),
-    UNIXVFS("unix-proxy",    proxyIoFinder ),
-#endif
+
 };
 
 void WrapInit(const char *argIn, char *argOut) {
@@ -84,17 +63,18 @@ void WrapOpen(const char *argIn, char *argOut) {
 
     unixOpenConvertCharToArgIn(argIn, &aVfs[0], path, pId, &in_flags, &out_flags);
     getServerUnixPMethods(file_infor.h, pId);
-//    printf("   id.h = %d,  method = %s\n", file_infor.h,
-//           &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
+    getServicePath(file_infor.h, &file_infor);
     printf("   path = %s\n", path);
     if (-1 == out_flags) { rc = aVfs[0].xOpen(&aVfs[0], path, pId, in_flags & 0x87f7f, NULL); }
     else { rc = aVfs[0].xOpen(&aVfs[0], path, pId, in_flags & 0x87f7f, &out_flags); }
     setServerUnixPMethods(file_infor.h, pId);
-//    printf("   id.h = %d,  method = %s\n", file_infor.h,
-//           &posixIoMethods == pId->pMethods ? "posixIoMethods" : "otherMethods");
+    setServicePath(file_infor.h, path);
     unixOpenConvertReturnToChar(pId, &out_flags, &rc, argOut);
 
-    DebugClient(sprintf(debugStr, "---ended WrapOpen. id.h = %d IOmethod = %d path = %s   \n",file_infor.h,pId->pMethods,file_infor.zPath), debugStr);
+
+    DebugClient(
+            sprintf(debugStr, "---ended WrapOpen. id.h = %d IOmethod = %d path = %s   \n", file_infor.h, pId->pMethods,
+                    file_infor.zPath), debugStr);
 }
 
 void WrapDelete(const char *argIn, char *argOut) {
@@ -211,8 +191,10 @@ void WrapWrite(const char *argIn, char *argOut) {
 
     unixWriteConvertCharToArgIn(argIn, pId, pBuf, &amt, &offset);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
     int rc = unixWrite(pId, pBuf, amt, offset);
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     unixWriteConvertReturnToChar(pId, pBuf, &amt, &rc, argOut);
 
     DebugClient(sprintf(debugStr, "---ended WrapWrite.       \n"), debugStr);
@@ -230,8 +212,10 @@ void WrapRead(const char *argIn, char *argOut) {
 
     unixReadConvertCharToArgIn(argIn, pId, pBuf, &amt, &offset);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
     int rc = unixRead(pId, pBuf, amt, offset);
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     unixReadConvertReturnToChar(pId, pBuf, &amt, &rc, argOut);
 
     DebugClient(sprintf(debugStr, "---ended WrapRead.        \n"), debugStr);
@@ -247,8 +231,10 @@ void WrapTruncate(const char *argIn, char *argOut) {
 
     unixTruncateConvertCharToArgIn(argIn, pId, &nByte);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
     int rc = unixTruncate(pId, nByte);
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     unixTruncateConvertReturnToChar(pId, &rc, argOut);
 
     DebugClient(sprintf(debugStr, "---ended WrapTruncate.    \n"), debugStr);
@@ -264,8 +250,10 @@ void WrapSync(const char *argIn, char *argOut) {
 
     unixSyncConvertCharToArgIn(argIn, pId, &flags);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
     int rc = unixSync(pId, flags);
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     unixSyncConvertReturnToChar(pId, &rc, argOut);
 
     DebugClient(sprintf(debugStr, "---ended WrapSync.        \n"), debugStr);
@@ -281,8 +269,10 @@ void WrapFileSize(const char *argIn, char *argOut) {
 
     unixFileSizeConvertCharToArgIn(argIn, pId, &pSize);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
     int rc = unixFileSize(pId, &pSize);
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     unixFileSizeConvertReturnToChar(pId, &pSize, &rc, argOut);
 
     DebugClient(sprintf(debugStr, "                         fd=%d, size=%d, rc=%d\n", id.h, pSize, rc), debugStr);
@@ -303,13 +293,17 @@ void WrapFileControl(const char *argIn, char *argOut) {
 
     unixFileControlConvertCharToArgIn(argIn, pId, &op, pArg, &size);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
     if (size > 0) { rc = unixFileControl(pId, op, &pArg); }
     else { rc = unixFileControl(pId, op, 0); }
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     size = LenFileControlPArg(op, pArg);
     unixFileControlConvertReturnToChar(pId, pArg, &rc, argOut, op, &size);
 
-    DebugClient(sprintf(debugStr, "---ended WrapFileControl.  id.h = %d , path = %s, path_address = %d\n", id.h, id.zPath,id.zPath) ,debugStr);
+    DebugClient(
+            sprintf(debugStr, "---ended WrapFileControl      :id.h=%d , path=%s, path_address=%d\n", id.h, id.zPath,
+                    id.zPath), debugStr);
 }
 
 void WrapSectorSize(const char *argIn, char *argOut) {
@@ -321,8 +315,10 @@ void WrapSectorSize(const char *argIn, char *argOut) {
 
     unixSectorSizeConvertCharToArgIn(argIn, pId);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
     int sectorSize = unixSectorSize(pId);
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     unixSectorSizeConvertReturnToChar(pId, &sectorSize, argOut);
 
     DebugClient(sprintf(debugStr, "---ended WrapSectorSize.  \n"), debugStr);
@@ -337,15 +333,20 @@ void WrapDeviceCharacteristics(const char *argIn, char *argOut) {
 
     unixDeviceCharacteristicsConvertCharToArgIn(argIn, pId);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
+    printf("                      : path=%s\n", id.zPath);
     int deviceCharacteristics = unixDeviceCharacteristics(pId);
+    printf("                      : path=%s\n", id.zPath);
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     unixDeviceCharacteristicsConvertReturnToChar(pId, &deviceCharacteristics, argOut);
 
-    DebugClient(sprintf(debugStr, "---ended WrapDeviceCharacteristics.\n"), debugStr);
+    DebugClient(sprintf(debugStr, "---ended WrapDeviceCharacteristics: id.h=%d , path=%s, path_address=%d\n", id.h, id.zPath,
+                        id.zPath), debugStr);
 }
 
 void WrapClose(const char *argIn, char *argOut) {
-    printf("---WrapClose:\n");
+    printf("---WrapClose: ");
     DebugClient(sprintf(debugStr, "---start WrapClose.       \n"), debugStr);
 
     unixFile id;
@@ -353,17 +354,19 @@ void WrapClose(const char *argIn, char *argOut) {
     int rc;
 
     unixCloseConvertCharToArgIn(argIn, pId);
-  
     getServerUnixPMethods(id.h, pId);
-    DebugClient(sprintf(debugStr, "---Middle WrapClose.  id.h = %d unixclose=%d nolockIoMethods= %d PMethods=%d \n", id.h,posixIoMethods,nolockIoMethods, pId->pMethods ), debugStr);
+    getServicePath(id.h, &id);
+
+    DebugClient(
+            sprintf(debugStr, "---Middle WrapClose.  id.h=%d, unixclose=%d, nolockIoMethods=%d, PMethods=%d \n", id.h,
+                    &posixIoMethods, &nolockIoMethods, pId->pMethods), debugStr);
     if (pId->pMethods) {
         rc = pId->pMethods->xClose(pId);
         pId->pMethods = 0;
     }
-    setServerUnixPMethods(id.h, pId);
     unixCloseConvertReturnToChar(pId, &rc, argOut);
 
-    DebugClient(sprintf(debugStr, "---ended WrapClose.   "), debugStr);
+    DebugClient(sprintf(debugStr, "---ended WrapClose.       \n"), debugStr);
 }
 
 void WrapLock(const char *argIn, char *argOut) {
@@ -376,8 +379,10 @@ void WrapLock(const char *argIn, char *argOut) {
 
     unixLockConvertCharToArgIn(argIn, pId, &eFileLock);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
     int rc = unixLock(pId, eFileLock);
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     unixLockConvertReturnToChar(pId, &rc, argOut);
 
     DebugClient(sprintf(debugStr, "---ended WrapLock.        \n"), debugStr);
@@ -393,8 +398,10 @@ void WrapUnlock(const char *argIn, char *argOut) {
 
     unixUnlockConvertCharToArgIn(argIn, pId, &eFileLock);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
     int rc = unixUnlock(pId, eFileLock);
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     unixUnlockConvertReturnToChar(pId, &rc, argOut);
 
     DebugClient(sprintf(debugStr, "---ended WrapUnlock.      \n"), debugStr);
@@ -410,8 +417,10 @@ void WrapCheckReservedLock(const char *argIn, char *argOut) {
 
     unixCheckReservedLockConvertCharToArgIn(argIn, pId, &pResOut);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
     int rc = unixCheckReservedLock(pId, &pResOut);
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     unixCheckReservedLockConvertReturnToChar(pId, &pResOut, &rc, argOut);
 
     DebugClient(sprintf(debugStr, "---ended WrapCheckReservedLock.\n"), debugStr);
@@ -429,8 +438,10 @@ void WrapFetch(const char *argIn, char *argOut) {
 
     unixFetchConvertCharToArgIn(argIn, pId, &iOff, &nAmt, &pData);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
     int rc = unixFetch(pId, iOff, nAmt, &pData);
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     unixFetchsConvertReturnToChar(pId, (char *) pData, nAmt, &rc, argOut);
 
     DebugClient(sprintf(debugStr, "---ended WrapFetch.       \n"), debugStr);
@@ -447,9 +458,11 @@ void WrapUnfetch(const char *argIn, char *argOut) {
 
     unixUnfetchConvertCharToArgIn(argIn, pId, &iOff, &p_flag);
     getServerUnixPMethods(id.h, pId);
+    getServicePath(id.h, &id);
     void *pData = (p_flag == 0 ? 0 : &id);
     int rc = unixUnfetch(pId, iOff, pData);
     setServerUnixPMethods(id.h, pId);
+    setServicePath(id.h, id.zPath);
     unixUnfetchConvertReturnToChar(pId, &rc, argOut);
     DebugClient(sprintf(debugStr, "---ended WrapUnfetch.     \n"), debugStr);
 }

@@ -43,6 +43,7 @@
 struct MethodAndFD {
     int fd;
     sqlite3_io_methods *method;
+    char path[512];
     struct MethodAndFD *next;
 };
 typedef struct MethodAndFD MethodAndFD;
@@ -107,8 +108,26 @@ void DeleteNode(int fd) {
 /////////////// client and server PMethods ////////////////////////////////////////////
 extern void setClientRemotePMethods(sqlite3_file *pf);
 
-void setServerUnixPMethods(int h, sqlite3_file *pf) {
-    AddNode(h, (sqlite3_io_methods *) pf->pMethods);
+void setServicePath(int fd, const char *path) {
+    MethodAndFD *prev = listHead;
+    MethodAndFD *node = FindNode(fd, &prev);
+    if (NULL != node) {
+//        TODO : when use memset , program will wrong
+//        memset(node->path, 0, 512);
+        memcpy(node->path, path, strlen(path));
+    }
+}
+
+void getServicePath(int fd, unixFile *id) {
+    MethodAndFD *prev = listHead;
+    MethodAndFD *node = FindNode(fd, &prev);
+    if (NULL != node) {
+        id->zPath = node->path;
+    }
+}
+
+void setServerUnixPMethods(int fd, sqlite3_file *pf) {
+    AddNode(fd, (sqlite3_io_methods *) pf->pMethods);
 }
 
 void getServerUnixPMethods(int fd, sqlite3_file *pf) {
@@ -119,6 +138,9 @@ void getServerUnixPMethods(int fd, sqlite3_file *pf) {
     } else {
         pf->pMethods = node->method;
     }
+
+//    memset(path, 0, 512);
+//    memcpy(path, node->path, strlen(node->path));
 }
 /////////////// end PMethods ////////////////////////////////////////////
 
@@ -1025,8 +1047,6 @@ void unixCloseConvertCharToReturn(const char *arg, sqlite3_file *id, int *rc) {
 
 void unixCloseConvertCharToArgIn(const char *arg, sqlite3_file *id) {
     memcpy(id, arg, SIZE_UNIXFILE);
-
-
 }
 
 void unixCloseConvertReturnToChar(sqlite3_file *id, int *rc, char *arg) {
