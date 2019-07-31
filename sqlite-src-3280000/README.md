@@ -1,5 +1,43 @@
 # Sqlite3.28 src （参考用源码）
 
+## Pager
+pager负责读写数据库，管理内存缓存和页面（page），以及管理事务，锁和崩溃恢复。
+
+页面大小 0.5K ~ 32K，编译时确认默认的页面大小
+
+## Pcache1
+内存分配有三种来源。
+
+1. 一般的内存分配 - sqlite3Malloc()
+2. sqlite3_config() 提供的全局页缓存内存(SQLITE_CONFIG_PAGECACHE)
+3. PCache本地的批量分配                   
+
+如果传入的参数N是正的，则分配N个页的内存，并使用前N个页的内存；
+如果传入的参数N是负的，则分配-1024\*N字节的内存，并使用尽可能多个页的内存。
+实验表明在一般的负载下，N=100的方法（3）性能会高出5%
+
+## 页缓存的结构
+```
+** -------------------------------------------------------------
+** | database page content | PgHdr1 | MemPage | PgHdr |
+** -------------------------------------------------------------
+```
++ PgHdr1
+sqlite3_pcache_page的子类，包含通过页号搜索页的需要的信息
+sqlite3_pcache_page.pBuf指向database page content的起始
+sqlite3_pcache_page.pExtra指向PgHdr
++ MemPage
+由bree.c组件添加，描述了数据库页的序号和数据库页如何被使用
++ PgHdr
+由pcache.c层添加，包含了追踪脏页需要的信息          
+> 注：（模块交流机制）
+> 1. pcache1.c 追踪PgHdr1指针，与pcache1.c模块有交流的只有pcache.c，通过传入或传出PgHdr1指针传递信息
+> 2. pcache.c与pager.c模块处理PgHdr指针
+> 3. btree.c模块处理MemPage的指针
+
+
+
+
 ## PCache 部分注解
 ### Pcache
 > 一个完整的页缓存是这个结构的一个实例
