@@ -103,6 +103,11 @@ typedef struct PGroup PGroup;
 ** ensures there is no such gap, and therefore no bytes of unitialized memory
 ** in the structure.
 */
+/**
+ * 页号作为key
+ * 维护了一个unpinned的LRU链表
+ * "pinned"意味着页在活跃使用中并且不会被销毁
+ */
 struct PgHdr1 {
   sqlite3_pcache_page page;      /* Base class. Must be first. pBuf & pExtra */
   unsigned int iKey;             /* Key value (page number) */
@@ -144,6 +149,14 @@ struct PgHdr1 {
 ** PGroup which is the pcache1.grp global variable and its mutex is
 ** SQLITE_MUTEX_STATIC_LRU.
 */
+/**
+ * 每个页缓存属于一个PGroup，同一个PGroup中的PCache在内存紧张时可以重用成员的unpinned页。
+ * 页缓存的工作有两种模式:
+ * 1. 每个PCache属于一个PGroup
+ * 2. 有一个全局的PGroup，所有的PCache是其中的一个成员
+ * 模式1会使用更多的内存，但其不需要使用mutex，因此一般会更快速
+ * 模式2需要使用mutex保证线程安全，但回收内存页会更有效率
+ */
 struct PGroup {
   sqlite3_mutex *mutex;          /* MUTEX_STATIC_LRU or NULL */
   unsigned int nMaxPage;         /* Sum of nMax for purgeable caches */
@@ -161,6 +174,11 @@ struct PGroup {
 ** Pointers to structures of this type are cast and returned as 
 ** opaque sqlite3_pcache* handles.
 */
+/***
+ * 每个页缓存都是一个PCache的实例。
+ * 每个打开的数据库文件（包括内存数据库、临时数据库）都有一个单独的页缓存
+ * 当需要传递或返回这个结构的指针时，通过sqlite3_pcache*处理
+ */
 struct PCache1 {
   /* Cache configuration parameters. Page size (szPage) and the purgeable
   ** flag (bPurgeable) and the pnPurgeable pointer are all set when the
@@ -195,6 +213,9 @@ struct PCache1 {
 ** Free slots in the allocator used to divide up the global page cache
 ** buffer provided using the SQLITE_CONFIG_PAGECACHE mechanism.
 */
+/**
+ * 分配器中的空的槽，用于分割全局页缓存缓冲区
+ */
 struct PgFreeslot {
   PgFreeslot *pNext;  /* Next free slot */
 };
