@@ -114,7 +114,7 @@ void setServicePath(int fd, const char *path) {
     if (NULL != node) {
 //        TODO : when use memset , program will wrong
 //        memset(node->path, 0, 512);
-        memcpy(node->path, path, strlen(path));
+        memcpy(node->path, path, strlen(path)+1);
     }
 }
 
