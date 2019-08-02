@@ -1,9 +1,6 @@
 #include "../common/os_arg_convert.c"
 #include "util.c"
 
-#define CLIENT_DEBUG_FLAG 0
-
-
 extern const char *clientInit(char *argin, u32 inlen, u32 outlen, char *outarg);
 
 extern const char *clientOpen(char *argin, u32 inlen, u32 outlen, char *outarg);
@@ -91,9 +88,8 @@ static int remoteDeviceCharacteristics(sqlite3_file *id);
 
 //////////////// funtion unixOpen ///////////////////////////////////////////
 int remote_sqlite3_os_init(void) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remote_sqlite3_os_init: \n"), debugStr);
-#endif
+
     char argInChar[sizeof(ArgInInit)];
     memset(argInChar, 0, sizeof(ArgInInit));
     char argOutChar[sizeof(ReturnInit)];
@@ -102,9 +98,8 @@ int remote_sqlite3_os_init(void) {
 
     clientInit(argInChar, sizeof(ArgInInit), sizeof(struct ReturnInit), argOutChar);
     sqlite3_os_initConvertCharToReturn(argOutChar, &rc);
-#if CLIENT_DEBUG_FLAG
+
     DebugClient(sprintf(debugStr, "---ended remote_sqlite3_os_init:\n"), debugStr);
-#endif
     return rc;
 }
 
@@ -116,9 +111,8 @@ static int remoteOpen(
         int flags,                   /* Input flags to control the opening */
         int *pOutFlags               /* Output flags returned to SQLite core */
 ) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteOpen        :\n"), debugStr);
-#endif
+
     char argInChar[sizeof(ArgInOpen)];
     memset(argInChar, 0, sizeof(ArgInOpen));
     char argOutChar[sizeof(ReturnOpen)];
@@ -128,10 +122,8 @@ static int remoteOpen(
     unixOpenConvertArgInToChar(pVfs, zPath, pFile, flags, pOutFlags, argInChar);
     clientOpen(argInChar, sizeof(ArgInOpen), sizeof(ReturnOpen), argOutChar);
     unixOpenConvertCharToReturn(argOutChar, pFile, pOutFlags, &rc);
-#if CLIENT_DEBUG_FLAG
-    DebugClient(sprintf(debugStr, "---ended remoteOpen        : fd=%d, rc=%d \n", ((unixFile *) pFile)->h, rc),
-                debugStr);
-#endif
+
+    DebugClient(sprintf(debugStr, "---ended remoteOpen        : fd=%d, rc=%d \n", ((unixFile *) pFile)->h, rc ), debugStr);
     return rc;
 }
 
@@ -141,9 +133,7 @@ static int remoteDelete(
         const char *zPath,        /* Name of file to be deleted */
         int dirSync             /* Output flags returned to SQLite core */
 ) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteDelete:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInDelete)];
     memset(argInChar, 0, sizeof(ArgInDelete));
@@ -154,9 +144,8 @@ static int remoteDelete(
     unixDeleteConvertArgInToChar(NotUsed, zPath, dirSync, argInChar);
     clientDelete(argInChar, sizeof(ArgInDelete), sizeof(ReturnDelete), argOutChar);
     unixDeleteConvertCharToReturn(argOutChar, &rc);
-#if CLIENT_DEBUG_FLAG
+
     DebugClient(sprintf(debugStr, "---ended remoteDelete      : rc=%d, path=%s\n", rc, zPath), debugStr);
-#endif
     return rc;
 }
 
@@ -167,9 +156,7 @@ static int remoteAccess(
         int flags,              /* What do we want to learn about the zPath file? */
         int *pResOut            /* Write result boolean here */
 ) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteAccess:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInAccess)];
     memset(argInChar, 0, sizeof(ArgInAccess));
@@ -180,10 +167,8 @@ static int remoteAccess(
     unixAccessConvertArgInToChar(NotUsed, zPath, flags, pResOut, argInChar);
     clientAccess(argInChar, sizeof(ArgInAccess), sizeof(ReturnAccess), argOutChar);
     unixAccessConvertCharToReturn(argOutChar, pResOut, &rc);
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "                     zPath :%s\n", zPath), debugStr);
     DebugClient(sprintf(debugStr, "---ended remoteAccess      : pResult=%d, rc=%d\n", *pResOut, rc), debugStr);
-#endif
     return rc;
 }
 
@@ -194,9 +179,7 @@ static int remoteFullPathname(
         int nOut,                     /* Size of output buffer in bytes */
         char *zOut
 ) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteFullPathname: InputPath = %s ; nout = %d\n", zPath, nOut), debugStr);
-#endif
 
     int arg_len = getFullPathname_ARG_LEN((nOut));
     int return_len = getFullPathname_RETURN_LEN((nOut));
@@ -218,11 +201,9 @@ static int remoteFullPathname(
     // }
     unixFullPathnameConvertCharToReturn(outarg, nOut, zOut, &rc);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(
             sprintf(debugStr, "---ended remoteFullPathname: rc=%d ; zOut=%s ;zout_len = %d\n", rc, zOut, strlen(zOut)),
             debugStr);
-#endif
     return rc;
 }
 
@@ -288,9 +269,7 @@ static int remoteCurrentTimeInt64(sqlite3_vfs *NotUsed, sqlite3_int64 *piNow) {
 
 //////////////// funtion unixGetLastError ///////////////////////////////////////////
 static int remoteGetLastError(sqlite3_vfs *NotUsed, int NotUsed2, char *NotUsed3) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteGetLastError:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInGetLastError)];
     memset(argInChar, 0, sizeof(ArgInGetLastError));
@@ -302,9 +281,7 @@ static int remoteGetLastError(sqlite3_vfs *NotUsed, int NotUsed2, char *NotUsed3
     clientGetLastError(argInChar, sizeof(ArgInGetLastError), sizeof(ReturnGetLastError), argOutChar);
     unixGetLastErrorConvertCharToReturn(argOutChar, &rc_errno);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteGetLastError: rc_errno=%d\n", rc_errno), debugStr);
-#endif
     return rc_errno;
 }
 
@@ -315,9 +292,7 @@ static int remoteWrite(
         int amt,
         sqlite3_int64
         offset) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteWrite:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInWrite)];
     memset(argInChar, 0, sizeof(ArgInWrite));
@@ -329,17 +304,13 @@ static int remoteWrite(
     clientWrite(argInChar, sizeof(ArgInWrite), sizeof(ReturnWrite), argOutChar);
     unixWriteConvertCharToReturn(argOutChar, id, (char *) pBuf, &amt, &rc);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteWrite       : fd=%d, rc=%d\n", ((unixFile *) id)->h, rc), debugStr);
-#endif
     return rc;
 }
 
 static int remoteRead(sqlite3_file *id, void *pBuf, int amt, sqlite3_int64 offset
 ) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteRead:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInRead)];
     memset(argInChar, 0, sizeof(ArgInRead));
@@ -351,16 +322,12 @@ static int remoteRead(sqlite3_file *id, void *pBuf, int amt, sqlite3_int64 offse
     clientRead(argInChar, sizeof(ArgInRead), sizeof(ReturnRead), argOutChar);
     unixReadConvertCharToReturn(argOutChar, id, (char *) pBuf, &amt, &rc);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteRead        : fd=%d, rc=%d\n", ((unixFile *) id)->h, rc), debugStr);
-#endif
     return rc;
 }
 
 static int remoteTruncate(sqlite3_file *id, i64 nByte) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteTruncate:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInTruncate)];
     memset(argInChar, 0, sizeof(ArgInTruncate));
@@ -372,16 +339,12 @@ static int remoteTruncate(sqlite3_file *id, i64 nByte) {
     clientTruncate(argInChar, sizeof(ArgInTruncate), sizeof(ReturnTruncate), argOutChar);
     unixTruncateConvertCharToReturn(argOutChar, id, &rc);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteTruncate    : fd=%d, rc=%d\n", ((unixFile *) id)->h, rc), debugStr);
-#endif
     return rc;
 }
 
 static int remoteSync(sqlite3_file *id, int flags) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteSync:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInSync)];
     memset(argInChar, 0, sizeof(ArgInSync));
@@ -393,16 +356,12 @@ static int remoteSync(sqlite3_file *id, int flags) {
     clientSync(argInChar, sizeof(ArgInSync), sizeof(ReturnSync), argOutChar);
     unixSyncConvertCharToReturn(argOutChar, id, &rc);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteSync        : fd=%d, rc=%d\n", ((unixFile *) id)->h, rc), debugStr);
-#endif
     return rc;
 }
 
 static int remoteFileSize(sqlite3_file *id, i64 *pSize) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteFileSize:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInFileSize)];
     memset(argInChar, 0, sizeof(ArgInFileSize));
@@ -414,18 +373,14 @@ static int remoteFileSize(sqlite3_file *id, i64 *pSize) {
     clientFileSize(argInChar, sizeof(ArgInFileSize), sizeof(ReturnFileSize), argOutChar);
     unixFileSizeConvertCharToReturn(argOutChar, id, pSize, &rc);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(
             sprintf(debugStr, "---ended remoteFileSize    : fd=%d, size=%d, rc=%d\n", ((unixFile *) id)->h, *pSize, rc),
             debugStr);
-#endif
     return rc;
 }
 
 static int remoteFileControl(sqlite3_file *id, int op, void *pArg) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteFileControl :\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInFileControl)];
     memset(argInChar, 0, sizeof(ArgInFileControl));
@@ -438,21 +393,17 @@ static int remoteFileControl(sqlite3_file *id, int op, void *pArg) {
     clientFileControl(argInChar, sizeof(ArgInFileControl), sizeof(ReturnFileControl), argOutChar);
     unixFileControlConvertCharToReturn(argOutChar, id, pArg, &rc, op);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(
             sprintf(debugStr, "---ended remoteFileControl : fd=%d, op=%d, rc=%d\n", ((unixFile *) id)->h, op,
                     rc),
             debugStr);
-#endif
-//    DebugClient(sprintf(debugStr, "pArg:"), debugStr);
-//    DebugChars((char *) pArg, size);
+    DebugClient(sprintf(debugStr, "pArg:"), debugStr);
+    DebugChars((char *) pArg, size);
     return rc;
 }
 
 static int remoteSectorSize(sqlite3_file *id) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteFileControl:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInSectorSize)];
     memset(argInChar, 0, sizeof(ArgInSectorSize));
@@ -464,18 +415,14 @@ static int remoteSectorSize(sqlite3_file *id) {
     clientSectorSize(argInChar, sizeof(ArgInSectorSize), sizeof(ReturnSectorSize), argOutChar);
     unixSectorSizeConvertCharToReturn(argOutChar, id, &sectorSize);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(
             sprintf(debugStr, "---ended remoteSectorSize  : fd=%d, sectorSize=%d\n", ((unixFile *) id)->h, sectorSize),
             debugStr);
-#endif
     return sectorSize;
 }
 
 static int remoteDeviceCharacteristics(sqlite3_file *id) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteDeviceCharacteristics:\n"), debugStr);
-#endif
 
 
     char argInChar[sizeof(ArgInDeviceCharacteristics)];
@@ -489,16 +436,12 @@ static int remoteDeviceCharacteristics(sqlite3_file *id) {
                                 sizeof(ReturnDeviceCharacteristics), argOutChar);
     unixDeviceCharacteristicsConvertCharToReturn(argOutChar, id, &deviceCharacteristics);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteDeviceCharacteristics : %d\n", deviceCharacteristics), debugStr);
-#endif
     return deviceCharacteristics;
 }
 
 static int remoteClose(sqlite3_file *id) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteClose:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInClose)];
     memset(argInChar, 0, sizeof(ArgInClose));
@@ -510,16 +453,12 @@ static int remoteClose(sqlite3_file *id) {
     clientClose(argInChar, sizeof(ArgInClose), sizeof(ReturnClose), argOutChar);
     unixCloseConvertCharToReturn(argOutChar, id, &rc);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteClose       : fd=%d, rc=%d\n", ((unixFile *) id)->h, rc), debugStr);
-#endif
     return rc;
 }
 
 static int remoteLock(sqlite3_file *id, int eFileLock) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteLock:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInLock)];
     memset(argInChar, 0, sizeof(ArgInLock));
@@ -531,16 +470,12 @@ static int remoteLock(sqlite3_file *id, int eFileLock) {
     clientLock(argInChar, sizeof(ArgInLock), sizeof(ReturnLock), argOutChar);
     unixLockConvertCharToReturn(argOutChar, id, &rc);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteLock        : fd=%d, rc=%d\n", ((unixFile *) id)->h, rc), debugStr);
-#endif
     return rc;
 }
 
 static int remoteUnlock(sqlite3_file *id, int eFileLock) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteUnlock:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInUnlock)];
     memset(argInChar, 0, sizeof(ArgInUnlock));
@@ -552,16 +487,12 @@ static int remoteUnlock(sqlite3_file *id, int eFileLock) {
     clientUnlock(argInChar, sizeof(ArgInUnlock), sizeof(ReturnUnlock), argOutChar);
     unixUnlockConvertCharToReturn(argOutChar, id, &rc);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteUnlock      : fd=%d, rc=%d\n", ((unixFile *) id)->h, rc), debugStr);
-#endif
     return rc;
 }
 
 static int remoteCheckReservedLock(sqlite3_file *id, int *pResOut) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteCheckReservedLock:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInCheckReservedLock)];
     memset(argInChar, 0, sizeof(ArgInCheckReservedLock));
@@ -573,17 +504,13 @@ static int remoteCheckReservedLock(sqlite3_file *id, int *pResOut) {
     clientCheckReservedLock(argInChar, sizeof(ArgInCheckReservedLock),
                             sizeof(ReturnCheckReservedLock), argOutChar);
     unixCheckReservedLockConvertCharToReturn(argOutChar, id, pResOut, &rc);
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteCheckReservedLock : fd=%d, rc=%d\n", ((unixFile *) id)->h, rc),
                 debugStr);
-#endif
     return rc;
 }
 
 static int remoteFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteFetch:\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInFetch)];
     memset(argInChar, 0, sizeof(ArgInFetch));
@@ -597,16 +524,12 @@ static int remoteFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp) {
     unixFetchConvertCharToReturn(argOutChar, fd, str, nAmt, &rc);
     *pp = str;
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteFetch       : fd=%d, rc=%d\n", ((unixFile *) fd)->h, rc), debugStr);
-#endif
     return rc;
 }
 
 static int remoteUnfetch(sqlite3_file *fd, i64 iOff, void *p) {
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteUnfetch.\n"), debugStr);
-#endif
 
     char argInChar[sizeof(ArgInUnfetch)];
     memset(argInChar, 0, sizeof(ArgInUnfetch));
@@ -616,16 +539,12 @@ static int remoteUnfetch(sqlite3_file *fd, i64 iOff, void *p) {
 
     int p_flag;
     p_flag = (p == 0 ? 0 : 1);
-#if CLIENT_DEBUG_FLAG
     printf("p_flag = %d\n", p_flag);
-#endif
     unixUnfetchConvertArgInToChar(fd, iOff, &p_flag, argInChar);
     clientUnfetch(argInChar, sizeof(ArgInUnfetch), sizeof(ReturnUnfetch), argOutChar);
     unixUnfetchConvertCharToReturn(argOutChar, fd, &rc);
 
-#if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteUnfetch     : fd=%d, rc=%d\n", ((unixFile *) fd)->h, rc), debugStr);
-#endif
     return rc;
 }
 //static int remote ( ){

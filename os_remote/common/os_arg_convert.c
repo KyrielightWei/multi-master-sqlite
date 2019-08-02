@@ -30,7 +30,6 @@
 //void nameConvertCharToArgIn() // server
 //void nameConvertReturnToChar()  //server
 
-#define CONVERT_DEBUG_FLAG 0
 #define OS_REMOTE_DEBUG 0
 
 #if  OS_REMOTE_DEBUG
@@ -57,7 +56,6 @@ void InitList() {
 }
 
 void PrintList() {
-#if CONVERT_DEBUG_FLAG
     printf("   ---PrintList:\n");
     if (NULL == listHead) { InitList(); }
     MethodAndFD *temp = listHead->next;
@@ -65,7 +63,6 @@ void PrintList() {
         printf("      fd : %d, method : %d\n", temp->fd, temp->method);
         temp = temp->next;
     }
-#endif
 }
 
 MethodAndFD *FindNode(int fd, MethodAndFD **pre) {
@@ -150,7 +147,6 @@ void getServerUnixPMethods(int fd, sqlite3_file *pf) {
 
 
 void print_char(char *p, int len) {
-#if CONVERT_DEBUG_FLAG
     int i;
     printf("%s\n", p);
     for (i = 0; i < len; i++) {
@@ -160,7 +156,6 @@ void print_char(char *p, int len) {
         }
     }
     printf("\n");
-#endif
 }
 
 /*
@@ -486,14 +481,10 @@ void unixFullPathnameConvertReturnToChar( //server
         int *pRc,
         char *arg
 ) {
-#if CONVERT_DEBUG_FLAG
     printf("CONVERT RETURN TO CHAR Zout = %s\n", zOut);
-#endif
     strcpy(arg, zOut);
     memcpy(arg + nOut, pRc, sizeof(int));
-#if CONVERT_DEBUG_FLAG
     printf("CONVERT RETURN TO CHAR char = %s\n", (char *) arg);
-#endif
 }
 
 
