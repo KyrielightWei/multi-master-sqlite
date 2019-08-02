@@ -6,7 +6,7 @@
         {
             "label": "make server",
             "type": "shell",
-            "command": "make",
+            "command": "source ~/.bashrc && make",
             "options": {
                 "cwd": "${workspaceFolder}/os_remote/server/"
             },
@@ -14,7 +14,7 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "dependsOn":[
+            "dependsOn": [
                 "clean server"
             ],
             "dependsOrder": "sequence"
@@ -30,8 +30,8 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "dependsOn":[
-                "clean sqlite3",
+            "dependsOn": [
+                "clean sqlite3"
             ],
             "dependsOrder": "sequence"
         },
@@ -58,8 +58,7 @@
             "problemMatcher": [
                 "$gcc"
             ]
-        }
-        ,
+        },
         {
             "label": "clean server",
             "type": "shell",

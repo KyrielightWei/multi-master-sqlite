@@ -300,7 +300,7 @@ void WrapFileControl(const char *argIn, char *argOut) {
     setServicePath(id.h, id.zPath);
     size = LenFileControlPArg(op, pArg);
     unixFileControlConvertReturnToChar(pId, pArg, &rc, argOut, op, &size);
-
+    printf("WrapFileControl      :id.h=%d , path=%s, path_address=%d\n",id.h,id.zPath,id.zPath);
     DebugClient(
             sprintf(debugStr, "---ended WrapFileControl      :id.h=%d , path=%s, path_address=%d\n", id.h, id.zPath,
                     id.zPath), debugStr);

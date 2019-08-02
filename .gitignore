@@ -30,7 +30,6 @@ out/
 .vscode/**
 !.vscode/*.json
 
-target
 tmp
 /bin
 
