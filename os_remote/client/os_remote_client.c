@@ -1,7 +1,7 @@
 #include "../common/os_arg_convert.c"
 #include "util.c"
 
-#define CLIENT_DEBUG_FLAG 0
+#include "../common/os_remote_debug.h"
 
 
 extern const char *clientInit(char *argin, u32 inlen, u32 outlen, char *outarg);

@@ -3,7 +3,7 @@
 #include "../common/os_arg_convert.c"
 #include "../client/util.c"
 
-#define SERVER_DEBUG_FLAG 0
+#include "../common/os_remote_debug.h"
 
 void setClientRemotePMethods(sqlite3_file *pf)   //recive on client: ->return
 {
