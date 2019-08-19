@@ -30,7 +30,8 @@
 //void nameConvertCharToArgIn() // server
 //void nameConvertReturnToChar()  //server
 
-#define CONVERT_DEBUG_FLAG 0
+//#define CONVERT_DEBUG_FLAG 0
+#include "os_remote_debug.h"
 #define OS_REMOTE_DEBUG 0
 
 #if  OS_REMOTE_DEBUG
