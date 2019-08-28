@@ -82,6 +82,7 @@ void WrapOpen(const char *argIn, char *argOut) {
 
 
 #if SERVER_DEBUG_FLAG
+    printf("   id.h = %d\n", file_infor.h);
     DebugClient(
             sprintf(debugStr, "---ended WrapOpen. id.h = %d IOmethod = %d path = %s   \n", file_infor.h, pId->pMethods,
                     file_infor.zPath), debugStr);
@@ -465,6 +466,7 @@ void WrapLock(const char *argIn, char *argOut) {
     unixLockConvertReturnToChar(pId, &rc, argOut);
 
 #if SERVER_DEBUG_FLAG
+    DebugClient(sprintf(debugStr, "id.h = %d , id.zPath = %s        \n",id.h,id.zPath), debugStr);
     DebugClient(sprintf(debugStr, "---ended WrapLock.        \n"), debugStr);
 #endif
 }
