@@ -53,6 +53,6 @@ export LIBRARY_PATH="$GCC_PRE/$gmp/lib:$GCC_PRE/$mpfr/lib:$GCC_PRE/$mpc/lib:$GCC
 export PATH="$ENV_PATH/make-install/bin:$PATH"
 
 #=============Ant
-export ANT_HOME=$WORK_PATH/apache-ant-1.9.14
+export ANT_HOME=$ENV_PATH/apache-ant-1.9.14
 
 export PATH=$PATH:$ANT_HOME/bin
