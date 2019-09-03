@@ -23,7 +23,10 @@ endif
 
 SQLITE_AUTOCONF:=../sqlite-autoconf-3280000
 OS_REMOTE_DIR:=../os_remote
+LIB_DIR:=../lib
 REMOTE_SOURCR:=$(TARGET)/os_remote
+LIB_LINK_DIR:=$(TARGET)/lib/static/
+LIB_LINK_FLAG:= -L$(LIB_LINK_DIR) -lConfigIo -lLogFlush
 GRPC_LDFLAGS += -lstdc++ -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl
 
 CCFLAGS:= -I$(SQLITE_OUT) -I$(SQLITE_SOURCE) $(CCFLAGS)
@@ -46,6 +49,7 @@ $(SQLITE_UNPACKED): $(SQLITE_ARCHIVE)
 	#unzip -qo $< -d $(TARGET)/tmp.$(version)
 	(mv $(TARGET)/tmp.$(version)/$(SQLITE_AMAL_PREFIX) $(TARGET) && rmdir $(TARGET)/tmp.$(version)) || mv $(TARGET)/tmp.$(version)/ $(TARGET)/$(SQLITE_AMAL_PREFIX)
 	cp -r $(OS_REMOTE_DIR) $(TARGET)
+	cp -r $(LIB_DIR) $(TARGET)
 	touch $@
 
 $(TARGET)/common-lib/org/sqlite/%.class: src/main/java/org/sqlite/%.java
@@ -98,7 +102,7 @@ $(SQLITE_OUT)/$(LIBNAME): $(SQLITE_OUT)/sqlite3.o $(SRC)/org/sqlite/core/NativeD
 	$(CXX)  -std=c++11  -fPIC -c -o $(SQLITE_OUT)/os_client_wrap.o $(REMOTE_SOURCR)/client/os_client_wrap.cc
 	$(CXX)  -std=c++11  -fPIC -c -o $(SQLITE_OUT)/os_remote.grpc.pb.o $(REMOTE_SOURCR)/common/os_remote.grpc.pb.cc
 	$(CXX)  -std=c++11  -fPIC -c -o $(SQLITE_OUT)/os_remote.pb.o $(REMOTE_SOURCR)/common/os_remote.pb.cc
-	$(CC) $(CCFLAGS) -o $@ $(SQLITE_OUT)/*.o $(LINKFLAGS) $(GRPC_LDFLAGS)
+	$(CC) $(CCFLAGS) -o $@ $(SQLITE_OUT)/*.o $(LINKFLAGS) $(GRPC_LDFLAGS) $(LIB_LINK_FLAG)
 # Workaround for strip Protocol error when using VirtualBox on Mac
 	cp $@ /tmp/$(@F)
 	$(STRIP) /tmp/$(@F)

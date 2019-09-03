@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 #include <grpcpp/grpcpp.h>
+#include <fstream>
 
 #include "../common/os_remote.grpc.pb.h"
 
@@ -13,6 +14,19 @@ typedef unsigned int u32;
 
 std::unique_ptr <os_remote::OSRemote::Stub> stub_ = os_remote::OSRemote::NewStub(
         grpc::CreateChannel("127.0.0.1:50051", grpc::InsecureChannelCredentials()));
+
+//"127.0.0.1:50051"
+//"10.11.1.191:50051"
+
+extern "C" void initGrpcChannel(const char * hostChar)
+{
+    std::string host = hostChar;
+    if(host.length() > 1)
+    {
+        stub_ = os_remote::OSRemote::NewStub( grpc::CreateChannel(host.c_str(), grpc::InsecureChannelCredentials()));
+    }
+        
+}
 
 extern "C" const char *clientInit(char *argin, u32 inlen, u32 outlen, char *outarg) {
     os_remote::ArgRequest request;
