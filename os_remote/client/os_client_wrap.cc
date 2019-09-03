@@ -12,8 +12,8 @@ using grpc::Status;
 
 typedef unsigned int u32;
 
-std::unique_ptr <os_remote::OSRemote::Stub> stub_ = os_remote::OSRemote::NewStub(
-        grpc::CreateChannel("127.0.0.1:50051", grpc::InsecureChannelCredentials()));
+std::unique_ptr <os_remote::OSRemote::Stub> stub_ = nullptr;//= os_remote::OSRemote::NewStub(
+       // grpc::CreateChannel("127.0.0.1:50051", grpc::InsecureChannelCredentials()));
 
 //"127.0.0.1:50051"
 //"10.11.1.191:50051"
