@@ -116,6 +116,9 @@ static int remoteOpen(
         int flags,                   /* Input flags to control the opening */
         int *pOutFlags               /* Output flags returned to SQLite core */
 ) {
+#if CLIENT_PERFORMANCE_RECORD_FLAG
+    beginIndicatiorTimeRecord_C_API(PERFORMANCE_OPEN_CLIENT_TIME);
+#endif
 #if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteOpen        :\n"), debugStr);
 #endif
@@ -131,6 +134,9 @@ static int remoteOpen(
 #if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteOpen        : fd=%d, rc=%d \n", ((unixFile *) pFile)->h, rc),
                 debugStr);
+#endif
+#if CLIENT_PERFORMANCE_RECORD_FLAG
+    endIndicatiorTimeRecord_C_API(PERFORMANCE_OPEN_CLIENT_TIME);
 #endif
     return rc;
 }
