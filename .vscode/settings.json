@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "array": "cpp",
-        "os_remote_debug.h": "c"
+        "os_remote_debug.h": "c",
+        "performance_api.h": "c"
     }
 }

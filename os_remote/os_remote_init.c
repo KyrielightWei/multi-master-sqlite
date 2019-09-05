@@ -2,6 +2,14 @@
  * os_remote 初始化编程
  *
  * */
+#include "../lib/include/config_io_api.h"
+#if CLIENT_DEBUG_LOG_FLAG
+#include "../lib/include/log_api.h"
+#endif
+#if CLIENT_PERFORMANCE_RECORD_FLAG
+#include "../lib/include/performance_api.h"
+#endif
+
 #include "client/os_remote_client.c"
 
 #define OS_REMOTE_DEBUG 0

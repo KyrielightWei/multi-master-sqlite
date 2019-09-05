@@ -1,4 +1,4 @@
-
+//#define PERFORMANCE_INCLUDE
 #ifndef PERFORMANCE_INCLUDE
 #define PERFORMANCE_INCLUDE
 #include <stdint.h>
@@ -14,7 +14,7 @@
 //============================================================
 /***
  *  Performance API
- * */
+ **/
 
 #ifdef __cplusplus
 
