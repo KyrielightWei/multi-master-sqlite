@@ -315,6 +315,7 @@ void RunServer() {
 }
 
 int main(int argc, char **argv) {
+    initServer();
     RunServer();
 
     return 0;

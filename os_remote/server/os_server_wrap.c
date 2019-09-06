@@ -5,6 +5,24 @@
 
 #include "../common/os_remote_debug.h"
 
+#if  SERVER_PERFORMANCE_RECORD_FLAG
+#include "../../lib/include/performance_api.h"
+#define PERFORMANCE_WRITE_SERVER_TIME "ServerWriteTime"
+#define PERFORMANCE_WRITE_SERVER_BYTE "ServerWriteByte"
+#define PERFORMANCE_READ_SERVER_TIME "ServerReadTime"
+#define PERFORMANCE_READ_SERVER_BYTE "ServerReadByte"
+#endif // 0
+
+void initServer()
+{
+    #if SERVER_PERFORMANCE_RECORD_FLAG
+        createIndicatior_C_API(".",PERFORMANCE_WRITE_SERVER_TIME);
+        createIndicatior_C_API(".",PERFORMANCE_READ_SERVER_TIME);
+        createIndicatior_C_API(".",PERFORMANCE_WRITE_SERVER_BYTE);
+        createIndicatior_C_API(".",PERFORMANCE_READ_SERVER_BYTE);
+    #endif    
+}
+
 void setClientRemotePMethods(sqlite3_file *pf)   //recive on client: ->return
 {
     char NotOnClient = 0;
@@ -230,7 +248,16 @@ void WrapWrite(const char *argIn, char *argOut) {
     unixWriteConvertCharToArgIn(argIn, pId, pBuf, &amt, &offset);
     getServerUnixPMethods(id.h, pId);
     getServicePath(id.h, &id);
+#if SERVER_PERFORMANCE_RECORD_FLAG
+    beginIndicatiorTimeRecord_C_API(PERFORMANCE_WRITE_SERVER_TIME);
+    addPerformanceRecord_C_API(PERFORMANCE_WRITE_SERVER_BYTE,amt);
+#endif
     int rc = unixWrite(pId, pBuf, amt, offset);
+#if SERVER_PERFORMANCE_RECORD_FLAG
+    endIndicatiorTimeRecord_C_API(PERFORMANCE_WRITE_SERVER_TIME);
+    flushNow_C_API(PERFORMANCE_WRITE_SERVER_TIME);
+    flushNow_C_API(PERFORMANCE_WRITE_SERVER_BYTE);
+#endif
     setServerUnixPMethods(id.h, pId);
     setServicePath(id.h, id.zPath);
     unixWriteConvertReturnToChar(pId, pBuf, &amt, &rc, argOut);
@@ -255,7 +282,16 @@ void WrapRead(const char *argIn, char *argOut) {
     unixReadConvertCharToArgIn(argIn, pId, pBuf, &amt, &offset);
     getServerUnixPMethods(id.h, pId);
     getServicePath(id.h, &id);
+#if SERVER_PERFORMANCE_RECORD_FLAG
+    beginIndicatiorTimeRecord_C_API(PERFORMANCE_READ_SERVER_TIME);
+    addPerformanceRecord_C_API(PERFORMANCE_READ_SERVER_BYTE,amt);
+#endif
     int rc = unixRead(pId, pBuf, amt, offset);
+#if SERVER_PERFORMANCE_RECORD_FLAG
+    endIndicatiorTimeRecord_C_API(PERFORMANCE_READ_SERVER_TIME);
+    flushNow_C_API(PERFORMANCE_READ_SERVER_TIME);
+    flushNow_C_API(PERFORMANCE_READ_SERVER_BYTE);
+#endif
     setServerUnixPMethods(id.h, pId);
     setServicePath(id.h, id.zPath);
     unixReadConvertReturnToChar(pId, pBuf, &amt, &rc, argOut);

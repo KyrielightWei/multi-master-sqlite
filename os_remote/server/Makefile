@@ -5,7 +5,7 @@ all : server
 .PHONY : all
 
 server : ../common/os_remote.pb.o ../common/os_remote.grpc.pb.o ./os_server_wrap.o ./os_remote_server.o
-	gcc $^ $(LDFLAGS) -lstdc++ -o ../server/server
+	gcc $^ $(LDFLAGS) -lstdc++ -o ../server/server -lPerformanceThread -L../../lib/static/
 
 PROTOC = protoc
 GRPC_CPP_PLUGIN_PATH ?= `which grpc_cpp_plugin`

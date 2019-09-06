@@ -5,6 +5,8 @@
 #ifndef OS_REMOTE_OS_SERVER_WRAP_H
 #define OS_REMOTE_OS_SERVER_WRAP_H
 
+void initServer();
+
 void WrapInit(const char *argIn, char *argOut);
 void WrapOpen(const char *argIn, char *argOut);
 void WrapDelete(const char *argIn, char *argOut);
