@@ -1,4 +1,5 @@
 
+os_remote/server/*.csv
 sqlite-jdbc-3.28.0/host_log
 sqlite-jdbc-3.28.0/debug_log
 sqlite-jdbc-3.28.0/performance_res/*
