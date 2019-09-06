@@ -26,7 +26,7 @@ OS_REMOTE_DIR:=../os_remote
 LIB_DIR:=../lib
 REMOTE_SOURCR:=$(TARGET)/os_remote
 LIB_LINK_DIR:=$(TARGET)/lib/static/
-LIB_LINK_FLAG:= -L$(LIB_LINK_DIR) -lConfigIo -lLogFlush
+LIB_LINK_FLAG:= -L$(LIB_LINK_DIR) -lConfigIo -lLogFlush -lPerformanceOnetime
 GRPC_LDFLAGS += -lstdc++ -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc` -Wl,--as-needed -lpthread -ldl
 
 CCFLAGS:= -I$(SQLITE_OUT) -I$(SQLITE_SOURCE) $(CCFLAGS)

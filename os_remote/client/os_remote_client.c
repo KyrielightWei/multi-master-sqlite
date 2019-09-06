@@ -1,7 +1,7 @@
 #include "../common/os_arg_convert.c"
 #include "util.c"
 
-#include "../common/os_remote_debug.h"
+//#include "../common/os_remote_debug.h"
 
 
 extern const char *clientInit(char *argin, u32 inlen, u32 outlen, char *outarg);
@@ -116,6 +116,9 @@ static int remoteOpen(
         int flags,                   /* Input flags to control the opening */
         int *pOutFlags               /* Output flags returned to SQLite core */
 ) {
+// #if CLIENT_PERFORMANCE_RECORD_FLAG
+//     beginIndicatiorTimeRecord_C_API(PERFORMANCE_OPEN_CLIENT_TIME);
+// #endif
 #if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteOpen        :\n"), debugStr);
 #endif
@@ -132,6 +135,9 @@ static int remoteOpen(
     DebugClient(sprintf(debugStr, "---ended remoteOpen        : fd=%d, rc=%d \n", ((unixFile *) pFile)->h, rc),
                 debugStr);
 #endif
+// #if CLIENT_PERFORMANCE_RECORD_FLAG
+//     endIndicatiorTimeRecord_C_API(PERFORMANCE_OPEN_CLIENT_TIME);
+// #endif
     return rc;
 }
 
@@ -315,6 +321,10 @@ static int remoteWrite(
         int amt,
         sqlite3_int64
         offset) {
+#if CLIENT_PERFORMANCE_RECORD_FLAG
+    beginIndicatiorTimeRecord_C_API(PERFORMANCE_WRITE_CLIENT_TIME);
+    addPerformanceRecord_C_API(PERFORMANCE_WRITE_CLIENT_BYTE,amt);
+#endif
 #if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteWrite:\n"), debugStr);
 #endif
@@ -332,6 +342,9 @@ static int remoteWrite(
 #if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteWrite       : fd=%d, rc=%d\n", ((unixFile *) id)->h, rc), debugStr);
 #endif
+#if CLIENT_PERFORMANCE_RECORD_FLAG
+    endIndicatiorTimeRecord_C_API(PERFORMANCE_WRITE_CLIENT_TIME);
+#endif
     return rc;
 }
 
@@ -340,7 +353,10 @@ static int remoteRead(sqlite3_file *id, void *pBuf, int amt, sqlite3_int64 offse
 #if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---start remoteRead:\n"), debugStr);
 #endif
-
+#if CLIENT_PERFORMANCE_RECORD_FLAG
+    beginIndicatiorTimeRecord_C_API(PERFORMANCE_READ_CLIENT_TIME);
+    addPerformanceRecord_C_API(PERFORMANCE_READ_CLIENT_BYTE,amt);
+#endif
     char argInChar[sizeof(ArgInRead)];
     memset(argInChar, 0, sizeof(ArgInRead));
     char argOutChar[sizeof(ReturnRead)];
@@ -353,6 +369,9 @@ static int remoteRead(sqlite3_file *id, void *pBuf, int amt, sqlite3_int64 offse
 
 #if CLIENT_DEBUG_FLAG
     DebugClient(sprintf(debugStr, "---ended remoteRead        : fd=%d, rc=%d\n", ((unixFile *) id)->h, rc), debugStr);
+#endif
+#if CLIENT_PERFORMANCE_RECORD_FLAG
+    endIndicatiorTimeRecord_C_API(PERFORMANCE_READ_CLIENT_TIME);
 #endif
     return rc;
 }
